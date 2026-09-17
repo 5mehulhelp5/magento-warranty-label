@@ -1,0 +1,48 @@
+<!-- ko if: isNested -->
+<button type="button"
+        class="copex-wl-trigger copex-wl-trigger--garan"
+        aria-haspopup="dialog"
+        data-bind="attr: {'aria-controls': dialogId, 'aria-label': alt}">
+    <!-- ko if: pngNested -->
+    <img class="copex-wl-garan__nested" alt="" aria-hidden="true" width="240" height="37" data-bind="attr: {src: pngNested}"/>
+    <!-- /ko -->
+    <!-- ko ifnot: pngNested -->
+    <span class="copex-wl-garan__fallback" data-bind="text: alt"></span>
+    <!-- /ko -->
+</button>
+<dialog class="copex-wl-dialog" data-bind="attr: {id: dialogId, 'aria-label': alt}, afterRender: initDialog">
+    <div class="copex-wl-dialog__header">
+        <button type="button" class="copex-wl-dialog__close" data-copex-wl-close="" data-bind="text: closeLabel"></button>
+    </div>
+    <div class="copex-wl-scroll copex-wl-garan">
+        <!-- ko if: pngFull -->
+        <img class="copex-wl-garan__image" width="270" height="284" loading="lazy" data-bind="attr: {src: pngFull, alt: alt}"/>
+        <!-- /ko -->
+        <!-- ko ifnot: pngFull -->
+        <p class="copex-wl-garan__fallback" data-bind="text: alt"></p>
+        <!-- /ko -->
+    </div>
+    <p class="copex-wl-garan__links">
+        <a class="copex-wl-link" data-bind="attr: {href: infoUrl}, text: infoLabel"></a>
+        <!-- ko if: termsUrl -->
+        <a class="copex-wl-link" data-bind="attr: {href: termsUrl}, text: termsLabel"></a>
+        <!-- /ko -->
+    </p>
+</dialog>
+<!-- /ko -->
+<!-- ko ifnot: isNested -->
+<div class="copex-wl-scroll copex-wl-garan">
+    <!-- ko if: pngFull -->
+    <img class="copex-wl-garan__image" width="270" height="284" data-bind="attr: {src: pngFull, alt: alt}"/>
+    <!-- /ko -->
+    <!-- ko ifnot: pngFull -->
+    <p class="copex-wl-garan__fallback" data-bind="text: alt"></p>
+    <!-- /ko -->
+</div>
+<p class="copex-wl-garan__links">
+    <a class="copex-wl-link" data-bind="attr: {href: infoUrl}, text: infoLabel"></a>
+    <!-- ko if: termsUrl -->
+    <a class="copex-wl-link" data-bind="attr: {href: termsUrl}, text: termsLabel"></a>
+    <!-- /ko -->
+</p>
+<!-- /ko -->

@@ -1,0 +1,45 @@
+name: Lint
+
+# Runs for everyone, forks included: it needs nothing but public packages.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  phpcs:
+    name: Coding standard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      # magento/magento-coding-standard is on Packagist; the magento/* runtime packages are not, which is why
+      # this job installs only the standard and never the module's dependencies.
+      #
+      # It installs into .lint/ on purpose: `composer init` in the checkout root would overwrite the module's
+      # own composer.json without a word of warning (verified — it exits 0 and leaves name: copex/lint-runner).
+      - name: Install the coding standard
+        run: |
+          mkdir -p .lint
+          cd .lint
+          composer init --quiet --no-interaction --name=copex/lint-runner
+          composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer require --no-interaction --no-progress magento/magento-coding-standard
+
+      - name: Check the module's composer.json survived
+        run: composer validate --no-check-all --no-check-publish --no-check-lock
+
+      - name: PHP syntax
+        run: |
+          find . -path ./.lint -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: phpcs (Magento2, errors only)
+        run: |
+          .lint/vendor/bin/phpcs --standard=Magento2 --warning-severity=0 \
+            Api Console Model Observer Plugin Setup ViewModel registration.php

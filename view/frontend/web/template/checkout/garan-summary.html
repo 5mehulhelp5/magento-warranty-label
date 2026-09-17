@@ -1,0 +1,13 @@
+<!-- ko if: labels.length -->
+<section class="copex-wl copex-wl--garan-summary">
+    <p class="copex-wl-garan-list__title" data-bind="text: title"></p>
+    <ul class="copex-wl-garan-list">
+        <!-- ko foreach: {data: labels, as: 'label'} -->
+        <li class="copex-wl-garan-list__item">
+            <p class="copex-wl-garan-list__name" data-bind="text: label.productName"></p>
+            <!-- ko template: {name: 'CopeX_WarrantyLabel/checkout/garan-label', data: label} --><!-- /ko -->
+        </li>
+        <!-- /ko -->
+    </ul>
+</section>
+<!-- /ko -->

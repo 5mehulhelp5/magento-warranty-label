@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="copex_warrantylabel" translate="label" sortOrder="905"
+                 showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>EU Guarantee Notice &amp; GARAN Label</label>
+            <tab>sales</tab>
+            <resource>CopeX_WarrantyLabel::config</resource>
+            <group id="general" translate="label comment" sortOrder="10"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+                <comment><![CDATA[Implements the EU harmonised notice on the legal guarantee of conformity and the EU GARAN label (Implementing Regulation (EU) 2025/1960, applicable from 27 September 2026). This module does not constitute legal advice.]]></comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Module</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Kill switch: "No" removes every notice and label output for this scope.</comment>
+                </field>
+                <field id="language" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Label Language</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\Language</source_model>
+                    <comment>Selects the official notice version and the Your Europe link. Set it explicitly when the store locale does not match the language of the store content.</comment>
+                </field>
+                <field id="trigger_text" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Nested Display Button Text</label>
+                    <comment>Text of the button that opens the notice in nested mode. Leave empty for the translated default "Your legal guarantee rights".</comment>
+                </field>
+                <field id="alt_text" translate="label comment" type="text" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notice Alternative Text</label>
+                    <comment>Alternative text of the notice image for screen readers and blocked images in emails. Leave empty for the translated default.</comment>
+                </field>
+                <field id="min_width_px" translate="label comment" type="text" sortOrder="50"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Minimum Notice Width (CSS px)</label>
+                    <validate>validate-digits</validate>
+                    <comment>The notice is never rendered narrower than this, so its QR code stays at least 2 x 2 cm.</comment>
+                </field>
+                <field id="excluded_product_types" translate="label comment" type="multiselect" sortOrder="60"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Product Types Without Legal Guarantee Notice</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\ProductType</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <comment>Non-goods such as gift cards or downloads. Checkout and email show the notice only if the cart or order contains at least one other item.</comment>
+                </field>
+            </group>
+            <group id="notice_placement" translate="label comment" sortOrder="20"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Legal Guarantee Notice Placements</label>
+                <comment><![CDATA["Direct" shows the complete official notice. "Nested" shows a button that opens the notice in a dialog on the first click (EU guidelines p. 16-19); a stricter interpretation requires the direct display.]]></comment>
+                <field id="header" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Header</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                </field>
+                <field id="footer" translate="label" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Footer</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                </field>
+                <field id="category" translate="label" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Category Page</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                </field>
+                <field id="search" translate="label" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Search Results</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                </field>
+                <field id="cart" translate="label" type="select" sortOrder="50"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Shopping Cart</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                </field>
+                <field id="checkout" translate="label" type="select" sortOrder="60"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Checkout (before Place Order)</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                </field>
+                <field id="success" translate="label" type="select" sortOrder="70"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Checkout Success Page</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                </field>
+                <field id="email" translate="label comment" type="select" sortOrder="80"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Order Confirmation Email</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                    <comment>Emails cannot open dialogs, "Nested" is rendered like "Direct".</comment>
+                </field>
+            </group>
+            <group id="garan" translate="label comment" sortOrder="30"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>EU GARAN Label</label>
+                <comment><![CDATA[Shown only for products whose producer offers a commercial guarantee of durability free of charge, for the entire good and for more than two years. Maintain brand, model identifier, duration and guarantee terms URL on the simple product (variant).]]></comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable GARAN Label</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="pdp" translate="label" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Page</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="checkout" translate="label" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Checkout (before Place Order)</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="success" translate="label" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Checkout Success Page</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="email" translate="label" type="select" sortOrder="50"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Order Confirmation Email</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="attach_terms" translate="label comment" type="select" sortOrder="60"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Attach Guarantee Terms to the Order Confirmation</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[The guarantee statement must reach the consumer on a durable medium at the latest at delivery (§ 9a (3) KSchG, § 479 (2) BGB); a link to a website is not sufficient (CJEU C-49/11). The file is attached only to orders that contain at least one product with a GARAN label.]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="terms_file" translate="label comment" type="file" sortOrder="70"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Guarantee Terms File (PDF)</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\File</backend_model>
+                    <upload_dir config="system/filesystem/media" scope_info="1">copex_warranty_label/terms</upload_dir>
+                    <base_url type="media" scope_info="1">copex_warranty_label/terms</base_url>
+                    <comment>One document per store view. It must name the goods it covers, e.g. "applies to all products of brand X carrying the GARAN label".</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="attach_terms">1</field>
+                    </depends>
+                </field>
+                <field id="terms_filename" translate="label comment" type="text" sortOrder="80"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Attachment File Name</label>
+                    <comment>Name the customer sees in the email. Leave empty for the uploaded file name.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="attach_terms">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \CopeX\WarrantyLabel\ViewModel\Notice $viewModel */
+$viewModel = $block->getData('view_model');
+$placement = (string) $block->getData('placement');
+if (!$viewModel->isVisible($placement)) {
+    return;
+}
+$isNested = $viewModel->isNested($placement);
+$dialogId = $viewModel->getDialogId($placement);
+$minWidth = $viewModel->getMinWidthPx();
+$cssClass = 'copex-wl copex-wl--notice copex-wl--' . $placement . ' copex-wl--' . ($isNested ? 'nested' : 'direct');
+?>
+<div class="<?= $escaper->escapeHtmlAttr($cssClass) ?>"
+     style="--copex-wl-min-width: <?= (int) $minWidth ?>px;"
+    <?php if ($isNested): ?>
+     data-mage-init='{"CopeX_WarrantyLabel/js/dialog": {}}'
+    <?php endif; ?>>
+    <?php if ($isNested): ?>
+        <button type="button"
+                class="copex-wl-trigger"
+                aria-haspopup="dialog"
+                aria-controls="<?= $escaper->escapeHtmlAttr($dialogId) ?>">
+            <?= $escaper->escapeHtml($viewModel->getTriggerText()) ?>
+        </button>
+        <dialog id="<?= $escaper->escapeHtmlAttr($dialogId) ?>"
+                class="copex-wl-dialog"
+                aria-label="<?= $escaper->escapeHtmlAttr($viewModel->getDialogLabel()) ?>">
+            <div class="copex-wl-dialog__header">
+                <button type="button" class="copex-wl-dialog__close" data-copex-wl-close>
+                    <?= $escaper->escapeHtml(__('Close')) ?>
+                </button>
+            </div>
+    <?php endif; ?>
+    <div class="copex-wl-scroll">
+        <img class="copex-wl-notice__image"
+             src="<?= $escaper->escapeUrl($viewModel->getImageUrl()) ?>"
+             alt="<?= $escaper->escapeHtmlAttr($viewModel->getAltText()) ?>"
+             width="<?= (int) $minWidth ?>"
+             height="<?= (int) $viewModel->getImageHeightPx() ?>"
+             loading="lazy">
+    </div>
+    <a class="copex-wl-link" href="<?= $escaper->escapeUrl($viewModel->getLinkUrl()) ?>">
+        <?= $escaper->escapeHtml($viewModel->getLinkLabel()) ?>
+    </a>
+    <?php if ($isNested): ?>
+        </dialog>
+    <?php endif; ?>
+</div>

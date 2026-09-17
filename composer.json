@@ -1,0 +1,68 @@
+{
+    "name": "copex/module-warranty-label",
+    "description": "Magento 2 EU harmonised notice on the legal guarantee of conformity and EU GARAN label for commercial guarantees of durability (Implementing Regulation (EU) 2025/1960)",
+    "type": "magento2-module",
+    "version": "1.1.4",
+    "license": [
+        "MIT"
+    ],
+    "keywords": [
+        "magento",
+        "magento2",
+        "magento-2-module",
+        "eu",
+        "compliance",
+        "legal-guarantee",
+        "guarantee",
+        "warranty",
+        "garan",
+        "consumer-protection",
+        "gewaehrleistung"
+    ],
+    "homepage": "https://copex.io",
+    "authors": [
+        {
+            "name": "CopeX GmbH",
+            "email": "office@copex.io",
+            "homepage": "https://copex.io",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/CopeX/magento-warranty-label/issues",
+        "source": "https://github.com/CopeX/magento-warranty-label"
+    },
+    "require": {
+        "php": ">=8.2",
+        "ext-gd": "*",
+        "magento/framework": "*",
+        "magento/module-catalog": "*",
+        "magento/module-checkout": "*",
+        "magento/module-config": "*",
+        "magento/module-configurable-product": "*",
+        "magento/module-eav": "*",
+        "magento/module-quote": "*",
+        "magento/module-sales": "*",
+        "magento/module-store": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "CopeX\\WarrantyLabel\\": ""
+        }
+    },
+    "archive": {
+        "exclude": [
+            "AGENTS.md",
+            ".gitignore",
+            "phpunit.xml",
+            "Test/*",
+            ".github/*"
+        ]
+    }
+}

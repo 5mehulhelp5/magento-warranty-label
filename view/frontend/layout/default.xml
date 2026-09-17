@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="head.additional">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="copex.warrantylabel.styles"
+                   template="CopeX_WarrantyLabel::head/styles.phtml"
+                   ifconfig="copex_warrantylabel/general/enabled">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">CopeX\WarrantyLabel\ViewModel\Notice</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+        <referenceContainer name="header-wrapper">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="copex.warrantylabel.notice.header"
+                   template="CopeX_WarrantyLabel::notice.phtml"
+                   ifconfig="copex_warrantylabel/general/enabled">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">CopeX\WarrantyLabel\ViewModel\Notice</argument>
+                    <argument name="placement" xsi:type="string">header</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="footer">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="copex.warrantylabel.notice.footer"
+                   template="CopeX_WarrantyLabel::notice.phtml"
+                   ifconfig="copex_warrantylabel/general/enabled">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">CopeX\WarrantyLabel\ViewModel\Notice</argument>
+                    <argument name="placement" xsi:type="string">footer</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

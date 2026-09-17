@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- category.products.list is a child of category.products, so the sibling anchor is its parent -->
+        <referenceContainer name="content">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="copex.warrantylabel.notice.category"
+                   template="CopeX_WarrantyLabel::notice.phtml"
+                   after="category.products"
+                   ifconfig="copex_warrantylabel/general/enabled">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">CopeX\WarrantyLabel\ViewModel\Notice</argument>
+                    <argument name="placement" xsi:type="string">category</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

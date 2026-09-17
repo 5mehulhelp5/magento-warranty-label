@@ -1,0 +1,32 @@
+<!-- ko if: isVisible() -->
+<div class="copex-wl copex-wl--notice copex-wl--checkout"
+     data-bind="css: {'copex-wl--nested': isNested(), 'copex-wl--direct': !isNested()}, attr: {style: getWrapperStyle()}">
+    <!-- ko if: isNested() -->
+    <button type="button"
+            class="copex-wl-trigger"
+            aria-haspopup="dialog"
+            data-bind="attr: {'aria-controls': dialogId}, text: notice.triggerText"></button>
+    <dialog class="copex-wl-dialog"
+            data-bind="attr: {id: dialogId, 'aria-label': notice.dialogLabel}, afterRender: initDialog">
+        <div class="copex-wl-dialog__header">
+            <button type="button"
+                    class="copex-wl-dialog__close"
+                    data-copex-wl-close=""
+                    data-bind="text: notice.closeLabel"></button>
+        </div>
+        <div class="copex-wl-scroll">
+            <img class="copex-wl-notice__image"
+                 data-bind="attr: {src: notice.svgUrl, alt: notice.altText, width: getMinWidth(), height: getImageHeight()}"/>
+        </div>
+        <a class="copex-wl-link" data-bind="attr: {href: notice.linkUrl}, text: notice.linkLabel"></a>
+    </dialog>
+    <!-- /ko -->
+    <!-- ko ifnot: isNested() -->
+    <div class="copex-wl-scroll">
+        <img class="copex-wl-notice__image"
+             data-bind="attr: {src: notice.svgUrl, alt: notice.altText, width: getMinWidth(), height: getImageHeight()}"/>
+    </div>
+    <a class="copex-wl-link" data-bind="attr: {href: notice.linkUrl}, text: notice.linkLabel"></a>
+    <!-- /ko -->
+</div>
+<!-- /ko -->

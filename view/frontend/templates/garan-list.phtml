@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \CopeX\WarrantyLabel\ViewModel\GaranList $viewModel */
+$viewModel = $block->getData('view_model');
+$entries = $viewModel->getEntries();
+if ($entries === []) {
+    return;
+}
+$isNested = $viewModel->isNested();
+$infoUrl = $viewModel->getInfoUrl();
+?>
+<section class="copex-wl copex-wl--garan-list"
+         aria-labelledby="copex-wl-garan-list-title"
+         data-mage-init='{"CopeX_WarrantyLabel/js/dialog": {}}'>
+    <h2 id="copex-wl-garan-list-title" class="copex-wl-garan-list__title">
+        <?= $escaper->escapeHtml(__('Producer guarantee (EU GARAN label)')) ?>
+    </h2>
+    <ul class="copex-wl-garan-list">
+        <?php foreach ($entries as $entry): ?>
+            <li class="copex-wl-garan-list__item">
+                <p class="copex-wl-garan-list__name"><?= $escaper->escapeHtml($entry['name']) ?></p>
+                <?php foreach ($entry['labels'] as $label): ?>
+                    <div class="copex-wl-garan-list__label">
+                        <?php if ($label['productName'] !== '' && $label['productName'] !== $entry['name']): ?>
+                            <p class="copex-wl-garan-list__child"><?= $escaper->escapeHtml($label['productName']) ?></p>
+                        <?php endif; ?>
+                        <?php if ($isNested): ?>
+                            <button type="button"
+                                    class="copex-wl-trigger copex-wl-trigger--garan"
+                                    aria-haspopup="dialog"
+                                    aria-controls="<?= $escaper->escapeHtmlAttr($label['dialogId']) ?>"
+                                    aria-label="<?= $escaper->escapeHtmlAttr($label['alt']) ?>">
+                                <?php if ($label['pngNested'] !== ''): ?>
+                                    <img class="copex-wl-garan__nested"
+                                         src="<?= $escaper->escapeUrl($label['pngNested']) ?>"
+                                         alt=""
+                                         aria-hidden="true"
+                                         width="240"
+                                         height="37">
+                                <?php else: ?>
+                                    <span class="copex-wl-garan__fallback">
+                                        <?= $escaper->escapeHtml($label['alt']) ?>
+                                    </span>
+                                <?php endif; ?>
+                            </button>
+                            <dialog id="<?= $escaper->escapeHtmlAttr($label['dialogId']) ?>"
+                                    class="copex-wl-dialog"
+                                    aria-label="<?= $escaper->escapeHtmlAttr($label['alt']) ?>">
+                                <div class="copex-wl-dialog__header">
+                                    <button type="button" class="copex-wl-dialog__close" data-copex-wl-close>
+                                        <?= $escaper->escapeHtml(__('Close')) ?>
+                                    </button>
+                                </div>
+                        <?php endif; ?>
+                        <div class="copex-wl-scroll copex-wl-garan">
+                            <?php if ($label['pngFull'] !== ''): ?>
+                                <img class="copex-wl-garan__image"
+                                     src="<?= $escaper->escapeUrl($label['pngFull']) ?>"
+                                     alt="<?= $escaper->escapeHtmlAttr($label['alt']) ?>"
+                                     width="270"
+                                     height="284"
+                                     loading="lazy">
+                            <?php else: ?>
+                                <p class="copex-wl-garan__fallback"><?= $escaper->escapeHtml($label['alt']) ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <p class="copex-wl-garan__links">
+                            <a class="copex-wl-link" href="<?= $escaper->escapeUrl($infoUrl) ?>">
+                                <?= $escaper->escapeHtml(__('Information on the EU guarantee label')) ?>
+                            </a>
+                            <?php if ($label['termsUrl'] !== ''): ?>
+                                <a class="copex-wl-link" href="<?= $escaper->escapeUrl($label['termsUrl']) ?>">
+                                    <?= $escaper->escapeHtml(__('Guarantee terms and conditions')) ?>
+                                </a>
+                            <?php endif; ?>
+                        </p>
+                        <?php if ($isNested): ?>
+                            </dialog>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</section>

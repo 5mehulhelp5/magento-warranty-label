@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="CopeX\WarrantyLabel\Api\GaranLabelResolverInterface"
+                type="CopeX\WarrantyLabel\Model\Garan\Resolver"/>
+
+    <!-- GARAN snapshot on the order item at order placement -->
+    <type name="Magento\Quote\Model\Quote\Item\ToOrderItem">
+        <plugin name="copex_warranty_label_garan_snapshot"
+                type="CopeX\WarrantyLabel\Plugin\Quote\ToOrderItemPlugin"/>
+    </type>
+
+    <!-- Notice and GARAN labels in the new order email -->
+    <type name="Magento\Sales\Block\Order\Email\Items">
+        <plugin name="copex_warranty_label_email_items"
+                type="CopeX\WarrantyLabel\Plugin\Sales\EmailItemsPlugin"/>
+    </type>
+
+    <!--
+        Attaches the guarantee terms registered for the order confirmation email.
+        sortOrder 100 keeps this after every other afterGetTransport listener: "after" plugins run in ascending
+        sortOrder (Magento\Framework\Interception\PluginList\PluginList::_sort treats a missing sortOrder as
+        PHP_INT_MIN), and other extensions that attach files (dropshipping suites, PDF customisers) register
+        without a sortOrder and replace the whole message body, which would drop ours.
+    -->
+    <type name="Magento\Framework\Mail\Template\TransportBuilder">
+        <plugin name="copex_warranty_label_attach_pending_files"
+                type="CopeX\WarrantyLabel\Plugin\Mail\AttachPendingFiles"
+                sortOrder="100"/>
+    </type>
+
+    <!-- Console commands -->
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="copex_warranty_label_audit" xsi:type="object">CopeX\WarrantyLabel\Console\Command\AuditCommand</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="CopeX\WarrantyLabel\Console\Command\AuditCommand">
+        <arguments>
+            <argument name="collectionFactory" xsi:type="object">Magento\Catalog\Model\ResourceModel\Product\CollectionFactory\Proxy</argument>
+            <argument name="labelValidator" xsi:type="object">CopeX\WarrantyLabel\Model\Garan\LabelValidator\Proxy</argument>
+            <argument name="storeManager" xsi:type="object">Magento\Store\Model\StoreManagerInterface\Proxy</argument>
+        </arguments>
+    </type>
+</config>

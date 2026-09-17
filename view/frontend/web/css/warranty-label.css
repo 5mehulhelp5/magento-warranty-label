@@ -1,0 +1,184 @@
+/**
+ * CopeX_WarrantyLabel: layout only. The official graphics are never recoloured, filtered or cropped.
+ */
+
+.copex-wl {
+    margin: 1rem 0;
+}
+
+/* Narrow viewports scroll horizontally instead of shrinking the graphic below the minimum width */
+.copex-wl-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.copex-wl-notice__image {
+    display: block;
+    width: var(--copex-wl-min-width, 420px);
+    min-width: var(--copex-wl-min-width, 420px);
+    max-width: none;
+    height: auto;
+    filter: none;
+    opacity: 1;
+    mix-blend-mode: normal;
+}
+
+/* GARAN label PNGs (2x): full 539 x 567 px shown at 270 CSS px, nested 737 x 113 px at 240 CSS px */
+.copex-wl-garan__image,
+.copex-wl-garan__nested {
+    display: block;
+    max-width: none;
+    height: auto;
+    filter: none;
+    opacity: 1;
+    mix-blend-mode: normal;
+}
+
+.copex-wl-garan__image {
+    width: 270px;
+    min-width: 270px;
+}
+
+.copex-wl-garan__nested {
+    width: 240px;
+    min-width: 240px;
+}
+
+.copex-wl-garan__fallback {
+    display: block;
+    margin: 0;
+}
+
+.copex-wl-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    overflow-wrap: anywhere;
+}
+
+.copex-wl-trigger {
+    margin: 0;
+    padding: 0.25rem 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.copex-wl-trigger--garan {
+    padding: 0;
+    text-decoration: none;
+    line-height: 0;
+}
+
+.copex-wl-trigger:focus-visible,
+.copex-wl-dialog__close:focus-visible,
+.copex-wl-link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.copex-wl-dialog {
+    box-sizing: border-box;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    padding: 1rem;
+    border: 0;
+    overflow: auto;
+    background: #fff;
+    color: #000;
+}
+
+.copex-wl-dialog:not([open]) {
+    display: none;
+}
+
+.copex-wl-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Inside the dialog the complete notice is scaled proportionally to the available width, never cropped
+   (EU guidelines: keep proportions, do not crop; the 2 x 2 cm QR minimum applies to the GARAN label only). */
+.copex-wl-dialog .copex-wl-notice__image {
+    width: min(560px, calc(100vw - 4rem));
+    min-width: 0;
+    max-width: 100%;
+}
+
+.copex-wl-dialog__header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.copex-wl-dialog__close {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid currentColor;
+    background: #fff;
+    color: #000;
+    font: inherit;
+    cursor: pointer;
+}
+
+.copex-wl-garan-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.copex-wl-garan-list__item {
+    margin: 0 0 1.5rem;
+}
+
+.copex-wl-garan-list__name {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+}
+
+.copex-wl-garan-list__label {
+    margin: 0 0 1rem;
+}
+
+.copex-wl [hidden] {
+    display: none !important;
+}
+
+.copex-wl-garan-list__title {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+}
+
+.copex-wl--garan-item {
+    margin: 0.5rem 0 0;
+}
+
+.copex-wl--garan-summary {
+    margin: 1rem 0;
+}
+
+.copex-wl-garan__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+    margin: 0;
+}
+
+@media (max-width: 480px) {
+    .copex-wl-dialog {
+        width: 100vw;
+        max-width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        max-height: 100vh;
+        max-height: 100dvh;
+        margin: 0;
+        padding: 0.75rem;
+    }
+
+    .copex-wl-dialog .copex-wl-notice__image {
+        width: calc(100vw - 1.5rem);
+    }
+}
