@@ -125,10 +125,22 @@ guarantee data — deciding which products qualify and maintaining their values 
 
 ## Themes
 
-Luma and MageSuite are supported out of the box through layout XML and Knockout components. Placements are ordinary
-layout containers, so a project theme can move a block in its own theme source.
+**Luma** is supported out of the box. Every placement is an ordinary Magento core container — `header-wrapper`,
+`footer`, `content`, `cart.summary`, `product.info.main` — and the checkout components attach to Magento's own
+`sidebar > summary` nodes (`before-place-order`, `after_details`). No third-party theme is required anywhere.
 
-Hyvä is prepared but not part of this release.
+A project theme that moves the price out of `product.info.main` also has to move the GARAN block; do that in the
+project, not in this module.
+
+**Hyvä** is partially usable today and not yet complete:
+
+| | Status |
+|---|---|
+| Notice in *direct* mode — header, footer, category, search, cart, success page | works — `notice.phtml` renders server-side and loads no JavaScript |
+| Nested display (dialog) and the variant switch on the product page | not yet — both load through RequireJS, and the variant switch also uses jQuery |
+| Checkout | not yet — the three components extend `uiComponent` and render through Knockout templates |
+
+Contributions for the Hyvä side are welcome.
 
 ## Translations
 

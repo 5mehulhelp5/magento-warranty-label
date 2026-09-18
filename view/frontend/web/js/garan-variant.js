@@ -3,8 +3,8 @@
  *
  * The server provides a map childId => {attributes: {attributeId: optionId}, label: {alt, pngFull, pngNested,
  * termsUrl}} of the qualifying variants; this module swaps image URLs, alt texts and the terms link.
- * Swatch renderers (Luma and MageSuite server-side swatches) update the super_attribute inputs and trigger a
- * jQuery "change" event, which is only visible to jQuery listeners.
+ * Swatch renderers (Luma, and server-side swatch implementations of other themes) update the super_attribute
+ * inputs and trigger a jQuery "change" event, which is only visible to jQuery listeners.
  */
 define([
     'jquery',
