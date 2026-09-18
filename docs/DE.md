@@ -120,7 +120,7 @@ Ein Feld, neben dem **Use Default** oder **Use system value** angehakt ist, übe
 1. Stellen Sie **Enable Module** auf *Yes*.
 2. Wählen Sie bei **Label Language** die Sprache, in der die Inhalte dieser Storefront verfasst sind. *Automatic* genügt, wenn die Locale des Store Views zur Sprache passt. Bei einer englischsprachigen Storefront auf deutscher Locale wählen Sie ausdrücklich *English*.
 3. Lassen Sie **Nested Display Button Text** und **Notice Alternative Text** zunächst leer. Das Modul verwendet dann die übersetzten Standardtexte, im Deutschen „Ihre gesetzlichen Gewährleistungsrechte". Tragen Sie nur etwas ein, wenn Ihr Shop die Kunden duzt oder eine andere Formulierung verwendet.
-4. Lassen Sie **Minimum Notice Width** auf *420*.
+4. Lassen Sie **Minimum Notice Width (CSS px)** auf *420*.
 5. Prüfen Sie **Product Types Without Legal Guarantee Notice**. Verkaufen Sie Gutscheine oder Downloads über einen eigenen Produkttyp, der in der Liste nicht markiert ist, markieren Sie ihn zusätzlich (Strg-Klick).
 6. Klicken Sie auf **Save Config**.
 
@@ -279,7 +279,7 @@ Alle Einstellungen liegen unter *Stores → Configuration → Sales → EU Guara
 - **Nested Display Button Text** — die Beschriftung des Buttons, der den Hinweis in der geschachtelten Anzeige öffnet. Leer lassen für den übersetzten Standardtext „Ihre gesetzlichen Gewährleistungsrechte".
 - **Notice Alternative Text** — der Alternativtext der Grafik für Screenreader und für E-Mail-Programme, die Bilder blockieren. Leer lassen für den übersetzten Standardtext.
 - **Minimum Notice Width (CSS px)** — die Grafik wird nie schmaler dargestellt als dieser Wert, damit ihr QR-Code scanbar bleibt. *Standard: 420.* Verkleinern Sie ihn nicht ohne Not: Bei geringerer Breite unterschreitet der QR-Code die geforderte Mindestgröße.
-- **Product Types Without Legal Guarantee Notice** — Produkttypen, die keine Waren im Sinne der Gewährleistung sind, etwa Gutscheine oder Downloads. *Standard: Virtual, Downloadable, Gift Card, MageWorx Gift Cards.* Im Warenkorb, im Checkout und in der E-Mail erscheint der Hinweis nur, wenn mindestens ein anderer Artikel enthalten ist.
+- **Product Types Without Legal Guarantee Notice** — Produkttypen, die keine Waren im Sinne der Gewährleistung sind, etwa Gutscheine oder Downloads. *Standard: Virtual, Downloadable, Gift Card, MageWorx Gift Cards.* Im Checkout und in der E-Mail erscheint der Hinweis nur, wenn mindestens ein anderer Artikel enthalten ist. Die übrigen Platzierungen, auch der Warenkorb, zeigen ihn unabhängig vom Inhalt.
 
 ### 4.2 Platzierungen des Gewährleistungshinweises
 

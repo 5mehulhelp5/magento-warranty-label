@@ -119,7 +119,7 @@ Open the group **General Settings**.
 1. Set **Enable Module** to *Yes*.
 2. For **Label Language**, choose the language the content of this storefront is written in. *Automatic* is enough when the locale of the store view matches that language. For an English storefront on a German locale, choose *English* explicitly.
 3. Leave **Nested Display Button Text** and **Notice Alternative Text** empty for now. The module then uses the translated defaults, in English "Your legal guarantee rights". Enter a text only if your shop uses a different wording.
-4. Leave **Minimum Notice Width** at *420*.
+4. Leave **Minimum Notice Width (CSS px)** at *420*.
 5. Check **Product Types Without Legal Guarantee Notice**. If you sell vouchers or downloads through a product type of their own that is not highlighted in the list, highlight it as well (Ctrl-click).
 6. Click **Save Config**.
 
@@ -278,7 +278,7 @@ All settings live under *Stores → Configuration → Sales → EU Guarantee Not
 - **Nested Display Button Text** — the caption of the button that opens the notice in nested mode. Leave empty for the translated default "Your legal guarantee rights".
 - **Notice Alternative Text** — the alternative text of the graphic for screen readers and for email clients that block images. Leave empty for the translated default.
 - **Minimum Notice Width (CSS px)** — the graphic is never rendered narrower than this, so its QR code stays scannable. *Default: 420.* Do not lower it without good reason: below that width the QR code falls under the required minimum size.
-- **Product Types Without Legal Guarantee Notice** — product types that are not goods in the sense of the legal guarantee, such as vouchers or downloads. *Default: Virtual, Downloadable, Gift Card, MageWorx Gift Cards.* In the cart, the checkout and the email, the notice appears only if at least one other item is present.
+- **Product Types Without Legal Guarantee Notice** — product types that are not goods in the sense of the legal guarantee, such as vouchers or downloads. *Default: Virtual, Downloadable, Gift Card, MageWorx Gift Cards.* In the checkout and the email, the notice appears only if at least one other item is present. The other placements, the cart included, show it whatever the content.
 
 ### 4.2 Legal guarantee notice placements
 
