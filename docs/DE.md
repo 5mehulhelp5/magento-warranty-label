@@ -12,12 +12,13 @@ Email: office@copex.io
 
 1. [Einleitung](#1-einleitung)
 2. [Voraussetzungen](#2-voraussetzungen)
-3. [Konfiguration](#3-konfiguration)
-4. [Produktdaten des GARAN-Labels](#4-produktdaten-des-garan-labels)
-5. [Garantiebedingungen als Anhang](#5-garantiebedingungen-als-anhang)
-6. [Datenkontrolle](#6-datenkontrolle)
-7. [Fehlerbehandlung](#7-fehlerbehandlung)
-8. [Pflichten, die beim Betreiber bleiben](#8-pflichten-die-beim-betreiber-bleiben)
+3. [Einrichtung Schritt für Schritt](#3-einrichtung-schritt-für-schritt)
+4. [Konfiguration](#4-konfiguration)
+5. [Produktdaten des GARAN-Labels](#5-produktdaten-des-garan-labels)
+6. [Garantiebedingungen als Anhang](#6-garantiebedingungen-als-anhang)
+7. [Datenkontrolle](#7-datenkontrolle)
+8. [Fehlerbehandlung](#8-fehlerbehandlung)
+9. [Pflichten, die beim Betreiber bleiben](#9-pflichten-die-beim-betreiber-bleiben)
 
 ---
 
@@ -54,8 +55,11 @@ Der Gewährleistungshinweis funktioniert auch ohne GD, weil er als fertige Grafi
 composer require copex/module-warranty-label
 bin/magento setup:upgrade
 bin/magento setup:di:compile
+bin/magento setup:static-content:deploy   # nur im Production-Modus nötig
 bin/magento cache:flush
 ```
+
+Nach der Installation ist im Shop noch nichts zu sehen. Die Einrichtung beschreibt Kapitel 3.
 
 ### 2.2 Deinstallation
 
@@ -76,15 +80,199 @@ Label-Grafiken unter `pub/media/copex_warranty_label/garan`.
 `pub/media/copex_warranty_label/terms`. Das ist Ihr Dokument, möglicherweise noch aus alten Bestellungen
 verlinkt; löschen Sie es von Hand, wenn Sie es nicht mehr benötigen.
 
+### 2.3 Themes
+
+| Theme | Stand |
+|---|---|
+| **Luma** und **Blank** sowie davon abgeleitete Themes | Vollständig unterstützt. Alle Platzierungen wurden in beiden Themes auf dem Desktop (1280 px) und auf dem Smartphone (375 px) geprüft, einschließlich Bestellung, Erfolgsseite und E-Mail. |
+| **Hyvä** | Teilweise. Der Hinweis im Modus *Direct* funktioniert in Header, Footer, Kategorie, Suche, Warenkorb und auf der Erfolgsseite. Die geschachtelte Anzeige, der Variantenwechsel auf der Produktseite und der Checkout benötigen Luma-Technik (RequireJS, Knockout) und sind für Hyvä noch nicht umgesetzt. Dieser Stand ist nicht in einer Hyvä-Installation abgenommen; prüfen Sie dort jede Platzierung nach Schritt 4 und 5. |
+| **Eigener Checkout** (One-Step-Checkout, Bestell-Button außerhalb der Zahlungsart) | Hinweis und GARAN-Liste stehen in Magentos Bereich über dem Bestell-Button der gewählten Zahlungsart – an derselben Stelle wie die AGB-Checkboxen. Rendert Ihr Checkout diesen Bereich nicht, muss Ihre Agentur die beiden Komponenten im Projekt-Theme versetzen. Das Muster dafür steht in der `README.md` des Moduls, Abschnitt *Themes*. |
+
+Ob Ihr Checkout betroffen ist, zeigt Schritt 5 der Einrichtung in wenigen Minuten.
+
 ---
 
-## 3 Konfiguration
+## 3 Einrichtung Schritt für Schritt
+
+Dieses Kapitel führt einmal vollständig durch die Einrichtung. Die Schritte 1 bis 5 betreffen den Gewährleistungshinweis und damit **jeden Shop**. Die Schritte 6 bis 9 brauchen Sie nur, wenn Sie Produkte mit einer qualifizierenden Herstellergarantie führen (siehe Abschnitt 5.1). Schritt 10 schließt die Einrichtung ab.
+
+Richten Sie das Modul zuerst in einer Testumgebung ein und übertragen Sie die Einstellungen danach in den Live-Shop. Planen Sie für den Hinweis etwa eine halbe Stunde ein, für das GARAN-Label zusätzlich die Zeit für die Datenpflege.
+
+### Schritt 1: Den Geltungsbereich wählen
+
+Öffnen Sie *Stores → Configuration → Sales → EU Guarantee Notice & GARAN Label*.
+
+Alle Felder des Moduls gelten **pro Store View**. Oben links steht der Umschalter **Scope**:
+
+- In **Default Config** setzen Sie, was für alle Storefronts gleich sein soll – in der Regel den Hauptschalter und die Anzeigemodi.
+- Im jeweiligen **Store View** setzen Sie, was sich unterscheidet – in der Regel die Sprache, die Garantiebedingungen und bei Bedarf den Button-Text.
+
+Ein Feld, neben dem **Use Default** oder **Use system value** angehakt ist, übernimmt den Wert der darüberliegenden Ebene. Entfernen Sie den Haken, um es zu bearbeiten.
+
+> Führen Sie Store Views für Marktplätze (Amazon, eBay …) oder für reine B2B-Storefronts, lassen Sie das Modul dort ausgeschaltet. Die Pflicht betrifft den Verkauf von Waren an Verbraucher.
+
+### Schritt 2: Den Hinweis einschalten
+
+Öffnen Sie die Gruppe **General Settings**.
+
+![Die Gruppe General Settings](screenshots/01a_config_general.png)
+
+1. Stellen Sie **Enable Module** auf *Yes*.
+2. Wählen Sie bei **Label Language** die Sprache, in der die Inhalte dieser Storefront verfasst sind. *Automatic* genügt, wenn die Locale des Store Views zur Sprache passt. Bei einer englischsprachigen Storefront auf deutscher Locale wählen Sie ausdrücklich *English*.
+3. Lassen Sie **Nested Display Button Text** und **Notice Alternative Text** zunächst leer. Das Modul verwendet dann die übersetzten Standardtexte, im Deutschen „Ihre gesetzlichen Gewährleistungsrechte". Tragen Sie nur etwas ein, wenn Ihr Shop die Kunden duzt oder eine andere Formulierung verwendet.
+4. Lassen Sie **Minimum Notice Width** auf *420*.
+5. Prüfen Sie **Product Types Without Legal Guarantee Notice**. Verkaufen Sie Gutscheine oder Downloads über einen eigenen Produkttyp, der in der Liste nicht markiert ist, markieren Sie ihn zusätzlich (Strg-Klick).
+6. Klicken Sie auf **Save Config**.
+
+### Schritt 3: Die Platzierungen festlegen
+
+Öffnen Sie die Gruppe **Legal Guarantee Notice Placements**.
+
+![Die Gruppe Legal Guarantee Notice Placements](screenshots/01b_config_notice_placements.png)
+
+Jede Zeile ist eine Stelle im Shop, jede Stelle hat einen der drei Modi *Off*, *Direct* und *Nested* (siehe Abschnitt 4.2). Die Voreinstellung ist ein sinnvoller Ausgangspunkt: geschachtelt überall dort, wo die Grafik das Layout sprengen würde, direkt dort, wo der Kunde unmittelbar vor oder nach der Bestellung steht.
+
+| Platzierung | Wo der Hinweis in Luma erscheint |
+|---|---|
+| Header | In einer eigenen Zeile unter dem Logo, auf jeder Seite |
+| Footer | Am Ende des Footers, auf jeder Seite |
+| Category Page | Unter der Produktliste |
+| Search Results | Unter den Suchergebnissen |
+| Shopping Cart | In der Zusammenfassung, unter den Summen |
+| Checkout (before Place Order) | Im Schritt *Zahlung*, in der gewählten Zahlungsart direkt über dem Bestell-Button |
+| Checkout Success Page | Unter der Bestellbestätigung |
+| Order Confirmation Email | Unter der Artikelliste der E-Mail |
+
+![Der Hinweis im Header von Luma, geschachtelt](screenshots/12_header_notice.png)
+
+Header und Footer zeigen denselben Hinweis auf jeder Seite. Wenn Ihnen eine der beiden Stellen genügt, stellen Sie die andere auf *Off*. **Welche Platzierungen Sie brauchen und ob die geschachtelte Anzeige für Sie ausreicht, ist eine Rechtsfrage** – stimmen Sie die Auswahl mit Ihrer Rechtsberatung ab und halten Sie das Ergebnis fest.
+
+Klicken Sie auf **Save Config**.
+
+### Schritt 4: Cache leeren und den Hinweis im Shop prüfen
+
+Leeren Sie unter *System → Cache Management* den Cache (**Flush Magento Cache**). Ohne diesen Schritt zeigen bereits zwischengespeicherte Seiten den Hinweis nicht.
+
+Rufen Sie danach die Storefront auf und gehen Sie die Stellen durch – einmal am Desktop, einmal am Smartphone:
+
+- [ ] Startseite: Button im Header und im Footer, ein Klick öffnet die vollständige Grafik, Escape oder *Schließen* schließt sie wieder
+- [ ] eine Kategorieseite und eine Suchergebnisseite
+- [ ] der Warenkorb mit mindestens einem Artikel
+- [ ] die Sprache der Grafik passt zur Storefront
+- [ ] der QR-Code lässt sich mit dem Smartphone vom Bildschirm scannen und führt auf die Seite der EU
+- [ ] der Link unter der Grafik führt auf dieselbe Seite
+
+![Der Dialog zeigt die vollständige amtliche Grafik](screenshots/06_notice_dialog.png)
+
+### Schritt 5: Den Checkout prüfen – mit jeder Zahlungsart
+
+Legen Sie einen Artikel in den Warenkorb und gehen Sie bis zum Schritt *Zahlung*. Der Hinweis steht in der gewählten Zahlungsart, direkt über dem Bestell-Button und neben den AGB-Checkboxen.
+
+![Der Hinweis im Checkout von Luma, direkt über dem Bestell-Button](screenshots/10_checkout_notice_direct.png)
+
+**Klicken Sie jede Zahlungsart Ihres Shops einmal an** und prüfen Sie, ob der Hinweis dort erscheint. Den Bereich über dem Bestell-Button gibt jede Zahlungsart selbst aus. Lässt das Modul eines Zahlungsanbieters ihn weg, fehlen bei dieser Zahlungsart der Hinweis **und** die AGB-Checkboxen. Wenden Sie sich in diesem Fall an Ihre Agentur (siehe Abschnitt 8.6).
+
+Auf dem Smartphone ist der Checkout schmaler als die Mindestbreite der Grafik. Im Modus *Direct* lässt sich die Grafik dort seitlich verschieben; sie wird nie verkleinert oder beschnitten. Gefällt Ihnen das nicht, stellen Sie die Platzierung *Checkout* auf *Nested*.
+
+**Haben Sie keine Produkte mit qualifizierender Herstellergarantie, fahren Sie mit Schritt 9 fort.**
+
+### Schritt 6: Das GARAN-Label einschalten
+
+Öffnen Sie die Gruppe **EU GARAN Label**.
+
+![Die Gruppe EU GARAN Label](screenshots/01c_config_garan.png)
+
+1. Stellen Sie **Enable GARAN Label** auf *Yes*.
+2. Belassen Sie die vier Anzeigemodi zunächst auf der Voreinstellung: *Nested* auf der Produktseite, *Direct* im Checkout, auf der Erfolgsseite und in der E-Mail.
+3. Klicken Sie auf **Save Config**.
+
+Im Shop ändert sich dadurch noch nichts. Ein Label erscheint erst an Produkten, deren Daten Sie im nächsten Schritt pflegen.
+
+### Schritt 7: Die Produktdaten pflegen
+
+Öffnen Sie unter *Catalog → Products* ein **einfaches Produkt** und dort die Gruppe **EU GARAN Guarantee**.
+
+![Die vier GARAN-Attribute am einfachen Produkt](screenshots/02_product_garan_attributes.png)
+
+| Feld | Beispiel | Hinweis |
+|---|---|---|
+| GARAN Brand | `Musterwerk` | Die Marke, wie sie auf dem Label stehen soll |
+| GARAN Model Identifier | `MW-2000-S` | Die Modellkennung des Herstellers für genau diese Variante |
+| GARAN Guarantee Duration (Years) | `5` | Ganze Jahre von 3 bis 99. Halbe Jahre siehe Abschnitt 5.3 |
+| GARAN Guarantee Terms URL | `https://www.example.com/garantie` | Vollständige Adresse. Das Feld gilt pro Store View: Wechseln Sie oben links den Store View, um je Sprache eine eigene Adresse zu hinterlegen |
+
+Speichern Sie das Produkt. Lehnt Magento die Marke oder die Modellkennung ab, ist der Text zu breit für das Feld des Labels (siehe Abschnitt 8.2).
+
+Bei **konfigurierbaren Produkten** pflegen Sie die Werte an den einzelnen Varianten, nicht am Elternprodukt. Bei vielen Produkten pflegen Sie die vier Attribute über den Import; die Attributcodes lauten `garan_brand`, `garan_model_identifier`, `garan_duration_years` und `garan_terms_url`.
+
+Rufen Sie das Produkt danach in der Storefront auf. Unter dem Preis steht das Label als Button, ein Klick zeigt es vollständig. Bei einem konfigurierbaren Produkt erscheint es erst, nachdem eine Variante gewählt wurde.
+
+![Auf der Produktseite öffnet ein Button das Label](screenshots/03_product_garan_trigger.png)
+
+### Schritt 8: Die Garantiebedingungen hochladen
+
+Die Garantiebedingungen müssen den Kunden als Datei erreichen, ein Link genügt nicht (siehe Kapitel 6). In der Gruppe **EU GARAN Label**:
+
+1. Wechseln Sie oben links in den **Store View**, für den das Dokument gilt. Je Store View gibt es ein Dokument, passend zur Sprache.
+2. Stellen Sie **Attach Guarantee Terms to the Order Confirmation** auf *Yes*.
+3. Wählen Sie bei **Guarantee Terms File (PDF)** Ihre PDF-Datei aus.
+4. Tragen Sie bei **Attachment File Name** den Namen ein, den der Kunde sehen soll, etwa `Garantiebedingungen.pdf`.
+5. Klicken Sie auf **Save Config**. Erst dabei wird die Datei hochgeladen; danach steht ihr Pfad unter dem Feld.
+
+Das Dokument muss selbst benennen, für welche Waren es gilt (siehe Abschnitt 6.2).
+
+### Schritt 9: Eine Testbestellung ausführen
+
+Bestellen Sie in der Testumgebung einmal bis zum Ende – mit GARAN-Label am besten ein Produkt mit und eines ohne Label.
+
+- [ ] Im Checkout steht das Label am Artikel in der Bestellübersicht und gesammelt über dem Bestell-Button
+- [ ] Die Erfolgsseite zeigt den Hinweis und die Labels der bestellten Artikel
+- [ ] Die Bestellbestätigung enthält den Hinweis, je Artikel das Label mit beiden Links und die PDF-Datei als Anhang
+- [ ] Eine Bestellung **ohne** Produkt mit Label enthält den Hinweis, aber keinen Anhang
+
+![Das Label am Artikel in der Bestellübersicht](screenshots/11_checkout_item_label.png)
+
+![Die GARAN-Labels über dem Bestell-Button, hier auf dem Smartphone](screenshots/07_checkout_garan_summary.png)
+
+![Die Bestellbestätigung mit Label, Links und dem Hinweis auf den Anhang](screenshots/09_email_garan_section.png)
+
+### Schritt 10: Daten prüfen und live schalten
+
+Lassen Sie Ihre Agentur oder Ihren Administrator die Datenprüfung ausführen, je Store View einmal:
+
+```bash
+bin/magento copex:warranty-label:audit --store=<Store-View-Code>
+```
+
+Die Liste nennt jedes Produkt, das wegen unvollständiger oder ungültiger Daten **kein** Label zeigt, mit dem Grund (siehe Abschnitt 8.1). Ist die Liste leer, sind alle gepflegten Produkte vollständig.
+
+Für den Live-Shop:
+
+1. Übertragen Sie die Einstellungen aus den Schritten 2, 3 und 6. Ihre Agentur kann das per Kommandozeile erledigen; der Konfigurationspfad steht im Admin unter jedem Feld:
+
+   ```bash
+   bin/magento config:set --scope=stores --scope-code=<Store-View-Code> copex_warrantylabel/general/enabled 1
+   bin/magento config:set --scope=stores --scope-code=<Store-View-Code> copex_warrantylabel/notice_placement/footer nested
+   ```
+
+   Die Werte der Anzeigemodi lauten `off`, `direct` und `nested`.
+2. **Laden Sie die PDF-Datei im Live-Shop erneut im Admin hoch.** Die Kommandozeile kann Datei-Felder nicht setzen (siehe Abschnitt 6.1).
+3. Leeren Sie den Cache.
+4. Wiederholen Sie die Prüfungen aus den Schritten 4, 5 und 9 im Live-Shop.
+
+Die Pflicht gilt ab dem **27. September 2026**. Der Hauptschalter **Enable Module** schaltet jede Ausgabe des Moduls in einem Geltungsbereich sofort wieder ab, falls im Live-Shop etwas nicht stimmt.
+
+---
+
+## 4 Konfiguration
+
+Dieses Kapitel beschreibt jedes Feld im Einzelnen. Die Reihenfolge der Einrichtung steht in Kapitel 3.
 
 Alle Einstellungen liegen unter *Stores → Configuration → Sales → EU Guarantee Notice & GARAN Label*. Der Bereich gilt **pro Store View**, sodass jede Storefront eine eigene Sprache und eigene Anzeigemodi haben kann.
 
 ![Der Konfigurationsbereich mit allen drei Gruppen](screenshots/01_config_copex_warrantylabel.png)
 
-### 3.1 Allgemeine Einstellungen
+### 4.1 Allgemeine Einstellungen
 
 - **Enable Module** — der Hauptschalter. Steht er auf *No*, erscheint in diesem Geltungsbereich weder ein Hinweis noch ein Label, unabhängig von allen anderen Einstellungen. *Standard: No.*
 - **Label Language** — wählt die amtliche Sprachfassung des Hinweises und das Ziel des Links. *Automatic (from store locale)* leitet die Sprache aus der Store-Locale ab. Setzen Sie den Wert ausdrücklich, wenn die Locale nicht der Sprache Ihrer Shop-Inhalte entspricht — etwa bei einer englischsprachigen Storefront, die technisch auf `de_AT` läuft. Lässt sich keine Sprache bestimmen, greift Englisch.
@@ -93,7 +281,7 @@ Alle Einstellungen liegen unter *Stores → Configuration → Sales → EU Guara
 - **Minimum Notice Width (CSS px)** — die Grafik wird nie schmaler dargestellt als dieser Wert, damit ihr QR-Code scanbar bleibt. *Standard: 420.* Verkleinern Sie ihn nicht ohne Not: Bei geringerer Breite unterschreitet der QR-Code die geforderte Mindestgröße.
 - **Product Types Without Legal Guarantee Notice** — Produkttypen, die keine Waren im Sinne der Gewährleistung sind, etwa Gutscheine oder Downloads. *Standard: Virtual, Downloadable, Gift Card, MageWorx Gift Cards.* Im Warenkorb, im Checkout und in der E-Mail erscheint der Hinweis nur, wenn mindestens ein anderer Artikel enthalten ist.
 
-### 3.2 Platzierungen des Gewährleistungshinweises
+### 4.2 Platzierungen des Gewährleistungshinweises
 
 Für jede Platzierung wählen Sie einen von drei Modi:
 
@@ -118,7 +306,7 @@ Die geschachtelte Anzeige ist nach den Leitlinien der EU-Kommission zulässig. E
 
 Zwei Hinweise zur Wahl des Modus:
 
-- **Enge Container brauchen „Nested".** Ist der verfügbare Platz schmaler als die eingestellte Mindestbreite, wirkt die direkte Grafik abgeschnitten. Die Checkout-Seitenleiste vieler Themes ist schmaler. Im Dialog erscheint die Grafik dagegen in voller Größe.
+- **Enge Container sprechen für „Nested".** Ist der verfügbare Platz schmaler als die eingestellte Mindestbreite, wird die direkte Grafik nicht verkleinert, sondern lässt sich seitlich verschieben – sie ist vollständig, wirkt aber abgeschnitten. Das betrifft vor allem den Checkout auf dem Smartphone. Im Dialog erscheint die Grafik dagegen in voller Größe.
 - **In E-Mails gibt es keine Dialoge.** Steht die E-Mail-Platzierung auf *Nested*, wird sie wie *Direct* ausgegeben.
 
 Der Dialog ist vollständig mit der Tastatur bedienbar: Enter oder Leertaste öffnen ihn, Escape schließt ihn, und der Fokus kehrt anschließend auf den Button zurück.
@@ -127,23 +315,23 @@ Der Dialog ist vollständig mit der Tastatur bedienbar: Enter oder Leertaste öf
 
 ![Der Dialog zeigt die vollständige amtliche Grafik](screenshots/06_notice_dialog.png)
 
-### 3.3 GARAN-Label
+### 4.3 GARAN-Label
 
 - **Enable GARAN Label** — schaltet das Label frei. *Standard: No.* Solange es ausgeschaltet ist, bleiben die Produktattribute erhalten, werden aber nirgends angezeigt.
 - **Product Page** — *Standard: Nested.*
-- **Checkout (before Place Order)** — *Standard: Direct.* Das Label erscheint sowohl am jeweiligen Artikel als auch gesammelt direkt über dem Bestell-Button. Die zweite Stelle ist auf Mobilgeräten wichtig, wo die Artikelliste eingeklappt ist.
+- **Checkout (before Place Order)** — *Standard: Direct.* Das Label erscheint an zwei Stellen: am jeweiligen Artikel in der Bestellübersicht und gesammelt in der gewählten Zahlungsart, direkt über dem Bestell-Button. Die zweite Stelle ist auf Mobilgeräten wichtig, wo die Bestellübersicht eingeklappt ist.
 - **Checkout Success Page** — *Standard: Direct.*
 - **Order Confirmation Email** — *Standard: Direct.*
 
-Die übrigen Felder der Gruppe betreffen den Anhang und sind in Kapitel 5 beschrieben.
+Die übrigen Felder der Gruppe betreffen den Anhang und sind in Kapitel 6 beschrieben.
 
-![Der Gewährleistungshinweis im Checkout, hier geschachtelt](screenshots/08_checkout_notice.png)
+![Hinweis und GARAN-Labels im Checkout, hier beide geschachtelt](screenshots/08_checkout_notice.png)
 
 ![Das GARAN-Label im Checkout, direkt über dem Bestell-Button](screenshots/07_checkout_garan_summary.png)
 
 ---
 
-## 4 Produktdaten des GARAN-Labels
+## 5 Produktdaten des GARAN-Labels
 
 Das Modul erzeugt keine Garantiedaten. Es zeigt nur an, was Sie pflegen.
 
@@ -164,7 +352,7 @@ Ein Label erscheint nur, wenn **alle vier Werte vorhanden und gültig** sind. Fe
 
 ![Das vollständige GARAN-Label im Dialog](screenshots/04_product_garan_label.png)
 
-### 4.1 Wann ein Produkt überhaupt in Frage kommt
+### 5.1 Wann ein Produkt überhaupt in Frage kommt
 
 Das GARAN-Label ist kein Werbemittel, sondern eine Pflichtangabe für einen eng umrissenen Fall. Die Garantie muss
 
@@ -175,7 +363,7 @@ Das GARAN-Label ist kein Werbemittel, sondern eine Pflichtangabe für einen eng 
 
 Trifft auch nur eines davon nicht zu, darf kein Label gesetzt werden. Lassen Sie die Dauer dann leer.
 
-### 4.2 Varianten
+### 5.2 Varianten
 
 Bei konfigurierbaren Produkten hängen die Werte an der gewählten Variante. Das Modul zeigt deshalb
 
@@ -185,25 +373,25 @@ Bei konfigurierbaren Produkten hängen die Werte an der gewählten Variante. Das
 
 Bei Bundle-Produkten werden alle enthaltenen Artikel berücksichtigt.
 
-### 4.3 Halbe Garantiejahre
+### 5.3 Halbe Garantiejahre
 
 Die Verordnung erlaubt halbe Jahre. In der amtlichen Schriftgröße passen jedoch nur ganze Jahre von 3 bis 99 sowie der Wert `7,5` in das dafür vorgesehene Feld. Andere Halbjahreswerte wie `2,5` oder `4,5` können Sie speichern, es entsteht aber **kein Label**, und die Datenprüfung nennt den Grund `duration_does_not_fit`.
 
 Das ist Absicht. Die Alternative wäre, die Schrift zu verkleinern oder das Kalendersymbol zu verschieben — beides verstößt gegen die Gestaltungsvorgaben. Eine Klärung bei der EU-Kommission ist angestoßen.
 
-### 4.4 Bestellte Ware behält ihr Label
+### 5.4 Bestellte Ware behält ihr Label
 
 Beim Abschluss einer Bestellung speichert das Modul die Labeldaten an der Bestellposition. Ändern Sie später ein Attribut, ändert das **alte Bestellungen nicht**. Ein erneut versandter Beleg zeigt weiterhin die Angaben, die zum Kaufzeitpunkt galten.
 
 ---
 
-## 5 Garantiebedingungen als Anhang
+## 6 Garantiebedingungen als Anhang
 
 Ein Link auf eine Webseite genügt rechtlich nicht. Die Garantieerklärung muss den Verbraucher **auf einem dauerhaften Datenträger** erreichen, spätestens bei der Lieferung (Art. 17 Abs. 2 der Richtlinie (EU) 2019/771, § 9a Abs. 3 KSchG, § 479 Abs. 2 BGB). Der Europäische Gerichtshof hat entschieden, dass eine Webseite, auf die nur verwiesen wird, diese Anforderung nicht erfüllt (Rechtssache C-49/11).
 
 Das Modul hängt deshalb eine PDF-Datei an die Bestellbestätigung — und zwar nur bei Bestellungen, die mindestens ein Produkt mit GARAN-Label enthalten. Ein Zusatzmodul ist dafür nicht nötig.
 
-### 5.1 Einrichtung
+### 6.1 Einrichtung
 
 - **Attach Guarantee Terms to the Order Confirmation** — schaltet den Anhang ein. *Standard: No.*
 - **Guarantee Terms File (PDF)** — die Datei. Ein Dokument je Store View.
@@ -213,7 +401,7 @@ Das Modul hängt deshalb eine PDF-Datei an die Bestellbestätigung — und zwar 
 
 ![Die Bestellbestätigung mit Label, Links und dem Hinweis auf den Anhang](screenshots/09_email_garan_section.png)
 
-### 5.2 Ein Dokument für mehrere Produkte
+### 6.2 Ein Dokument für mehrere Produkte
 
 Ein Dokument je Store View genügt, solange darin steht, für welche Waren es gilt — etwa „gilt für alle Produkte der Marke X mit GARAN-Label". Benötigen Sie unterschiedliche Bedingungen für unterschiedliche Marken, fassen Sie diese in einem Dokument zusammen oder trennen Sie die Marken auf eigene Store Views.
 
@@ -221,7 +409,7 @@ Der Anhang ersetzt nicht den Link am Label. Beide sind vorgeschrieben: der Link 
 
 ---
 
-## 6 Datenkontrolle
+## 7 Datenkontrolle
 
 Der folgende Befehl listet alle einfachen Produkte, deren GARAN-Daten unvollständig oder ungültig sind und die deshalb kein Label zeigen:
 
@@ -246,11 +434,11 @@ Führen Sie den Befehl nach jedem Massenimport aus. Werkzeuge, die direkt in die
 
 ---
 
-## 7 Fehlerbehandlung
+## 8 Fehlerbehandlung
 
-### 7.1 Es erscheint kein GARAN-Label
+### 8.1 Es erscheint kein GARAN-Label
 
-Die Datenprüfung aus Kapitel 6 nennt für jedes Produkt einen Grund:
+Die Datenprüfung aus Kapitel 7 nennt für jedes Produkt einen Grund:
 
 | Grund | Bedeutung |
 |---|---|
@@ -259,31 +447,45 @@ Die Datenprüfung aus Kapitel 6 nennt für jedes Produkt einen Grund:
 | `missing_duration` | Die Dauer fehlt. |
 | `missing_terms_url` | Der Link auf die Garantiebedingungen fehlt. |
 | `invalid_duration` | Die Dauer ist keine Zahl über 2 in Schritten von 0,5, oder sie liegt über 99. |
-| `duration_does_not_fit` | Die Dauer ist zulässig, passt aber nicht in das Feld des Labels (siehe Abschnitt 4.3). |
+| `duration_does_not_fit` | Die Dauer ist zulässig, passt aber nicht in das Feld des Labels (siehe Abschnitt 5.3). |
 | `invalid_terms_url` | Der Link ist keine vollständige `http://`- oder `https://`-Adresse. |
 | `too_long` | Marke oder Modellkennung sind zu breit für das vorgesehene Feld. |
 
 Meldet die Prüfung nichts und es erscheint trotzdem kein Label, prüfen Sie der Reihe nach: Ist *Enable Module* aktiv? Ist *Enable GARAN Label* aktiv? Steht die Platzierung nicht auf *Off*? Handelt es sich um ein einfaches Produkt beziehungsweise wurde eine Variante gewählt?
 
-### 7.2 Marke oder Modellkennung werden abgelehnt
+### 8.2 Marke oder Modellkennung werden abgelehnt
 
 Die Felder des Labels haben eine feste Breite. Das Modul misst den Text in der amtlichen Schrift und lehnt zu breite Werte ab, statt die Schrift zu verkleinern. Kürzen Sie die Angabe — meist genügt es, Zusätze wie die Produktlinie wegzulassen.
 
-### 7.3 Der Hinweis wirkt abgeschnitten
+### 8.3 Der Hinweis wirkt abgeschnitten
 
-Der Container ist schmaler als die eingestellte Mindestbreite. Stellen Sie diese Platzierung auf *Nested*; im Dialog erscheint die Grafik in voller Größe. Verringern Sie nicht die Mindestbreite, sonst wird der QR-Code zu klein.
+Der Container ist schmaler als die eingestellte Mindestbreite, typischerweise im Checkout auf dem Smartphone. Die Grafik ist vollständig vorhanden und lässt sich seitlich verschieben. Stellen Sie diese Platzierung auf *Nested*, wenn Sie das vermeiden möchten; im Dialog erscheint die Grafik in voller Größe. Verringern Sie nicht die Mindestbreite, sonst wird der QR-Code zu klein.
 
-### 7.4 Die E-Mail enthält keinen Anhang
+### 8.4 Die E-Mail enthält keinen Anhang
 
-Der Anhang wird nur bei Bestellungen mitgeschickt, die mindestens ein Produkt mit GARAN-Label enthalten. Prüfen Sie außerdem, ob *Attach Guarantee Terms* im richtigen Store View aktiv ist und ob dort tatsächlich eine Datei hinterlegt wurde — ein über die Kommandozeile gesetzter Wert bleibt wirkungslos (siehe Abschnitt 5.1).
+Der Anhang wird nur bei Bestellungen mitgeschickt, die mindestens ein Produkt mit GARAN-Label enthalten. Prüfen Sie außerdem, ob *Attach Guarantee Terms* im richtigen Store View aktiv ist und ob dort tatsächlich eine Datei hinterlegt wurde — ein über die Kommandozeile gesetzter Wert bleibt wirkungslos (siehe Abschnitt 6.1).
 
-### 7.5 Die Sprache passt nicht zum Shop
+### 8.5 Die Sprache passt nicht zum Shop
 
 Die Sprache des Hinweises folgt der Einstellung *Label Language*, nicht der Locale. Steht sie auf *Automatic*, wird die Locale des Store Views herangezogen. Bei einer englischsprachigen Storefront auf deutscher Locale setzen Sie die Sprache ausdrücklich.
 
+### 8.6 Der Hinweis fehlt im Checkout
+
+Prüfen Sie der Reihe nach:
+
+1. **Steht die Platzierung *Checkout* auf *Off*?** Siehe Abschnitt 4.2.
+2. **Enthält der Warenkorb nur Artikel ohne Gewährleistung?** Bei einem Warenkorb, der ausschließlich aus Gutscheinen, Downloads oder anderen ausgenommenen Produkttypen besteht, erscheint der Hinweis absichtlich nicht.
+3. **Fehlt er nur bei einer bestimmten Zahlungsart?** Dann gibt das Modul dieses Zahlungsanbieters den Bereich über dem Bestell-Button nicht aus. Erkennbar ist das daran, dass bei dieser Zahlungsart auch die AGB-Checkboxen fehlen. Ihre Agentur kann das Template der Zahlungsart ergänzen oder den Hinweis an eine andere Stelle des Checkouts setzen.
+4. **Fehlt er bei allen Zahlungsarten?** Dann verwendet Ihr Shop einen Checkout, der diesen Bereich nicht kennt – etwa einen One-Step-Checkout oder ein Theme mit Bestell-Button in der Seitenleiste. Ihre Agentur versetzt die beiden Komponenten im Projekt-Theme; das Muster steht in der `README.md` des Moduls, Abschnitt *Themes*.
+5. **Wurde der Cache geleert?**
+
+### 8.7 Nach der Aktivierung ist im Shop nichts zu sehen
+
+Leeren Sie den Cache unter *System → Cache Management*. Prüfen Sie außerdem, ob Sie die Einstellung im richtigen Geltungsbereich vorgenommen haben: Ein Wert in *Default Config* wirkt nicht, wenn im Store View ein abweichender Wert gesetzt ist. Im Production-Modus müssen nach der Installation zusätzlich die statischen Dateien bereitgestellt werden (siehe Abschnitt 2.1).
+
 ---
 
-## 8 Pflichten, die beim Betreiber bleiben
+## 9 Pflichten, die beim Betreiber bleiben
 
 Das Modul stellt die vorgeschriebenen Angaben dar. Es beurteilt nicht, ob sie zutreffen. In Ihrer Verantwortung bleiben:
 
