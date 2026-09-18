@@ -125,12 +125,84 @@ guarantee data — deciding which products qualify and maintaining their values 
 
 ## Themes
 
-**Luma** is supported out of the box. Every placement is an ordinary Magento core container — `header-wrapper`,
-`footer`, `content`, `cart.summary`, `product.info.main` — and the checkout components attach to Magento's own
-`sidebar > summary` nodes (`before-place-order`, `after_details`). No third-party theme is required anywhere.
+**Luma** (and Blank) is supported out of the box and is what the module is tested against. Every placement is an
+ordinary Magento core container — `header-wrapper`, `footer`, `content`, `cart.summary`, `product.info.main`. No
+third-party theme is required anywhere.
 
-A project theme that moves the price out of `product.info.main` also has to move the GARAN block; do that in the
-project, not in this module.
+The checkout uses two regions of `Magento_Checkout`:
+
+| Output | jsLayout node | Where Luma shows it |
+|---|---|---|
+| Notice and the GARAN labels of all items | `steps > billing-step > payment > payments-list > before-place-order` | inside the selected payment method, directly above the place order button — next to the checkout agreements |
+| GARAN labels of one item | `sidebar > summary > cart_items > details`, region `after_details` | below the item in the order summary |
+
+Magento renders `before-place-order` once per payment method, so the dialog ids of the nested display are made
+unique at runtime. **A payment method whose template leaves that region out shows neither the checkout agreements
+nor the notice** — select every payment method of the shop once and look for the notice above its button.
+
+A project theme that moves the price out of `product.info.main` also has to move the GARAN block, and a checkout
+whose place order button lives outside the payment methods — or a payment method without the region — needs the
+two checkout components somewhere else. Do that in the project, not in this module. The parent has to be a node
+with a component of its own, otherwise the children are never attached; `afterMethods` below the payment methods
+is one Magento provides:
+
+```xml
+<!-- app/design/frontend/<Vendor>/<theme>/Magento_Checkout/layout/checkout_index_index.xml -->
+<referenceBlock name="checkout.root">
+    <arguments>
+        <argument name="jsLayout" xsi:type="array">
+            <item name="components" xsi:type="array">
+                <item name="checkout" xsi:type="array">
+                    <item name="children" xsi:type="array">
+                        <item name="steps" xsi:type="array">
+                            <item name="children" xsi:type="array">
+                                <item name="billing-step" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="payment" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+                                                <!-- the new place -->
+                                                <item name="afterMethods" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="copex-warranty-notice" xsi:type="array">
+                                                            <item name="component" xsi:type="string">CopeX_WarrantyLabel/js/view/checkout/notice</item>
+                                                        </item>
+                                                        <item name="copex-warranty-garan-summary" xsi:type="array">
+                                                            <item name="component" xsi:type="string">CopeX_WarrantyLabel/js/view/checkout/garan-summary</item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                                <!-- the originals, switched off so nothing shows twice -->
+                                                <item name="payments-list" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="before-place-order" xsi:type="array">
+                                                            <item name="children" xsi:type="array">
+                                                                <item name="copex-warranty-notice" xsi:type="array">
+                                                                    <item name="config" xsi:type="array">
+                                                                        <item name="componentDisabled" xsi:type="boolean">true</item>
+                                                                    </item>
+                                                                </item>
+                                                                <item name="copex-warranty-garan-summary" xsi:type="array">
+                                                                    <item name="config" xsi:type="array">
+                                                                        <item name="componentDisabled" xsi:type="boolean">true</item>
+                                                                    </item>
+                                                                </item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </item>
+            </item>
+        </argument>
+    </arguments>
+</referenceBlock>
+```
 
 **Hyvä** is partially usable today and not yet complete:
 

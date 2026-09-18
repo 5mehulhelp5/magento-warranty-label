@@ -2,7 +2,7 @@
     "name": "copex/module-warranty-label",
     "description": "Magento 2 EU harmonised notice on the legal guarantee of conformity and EU GARAN label for commercial guarantees of durability (Implementing Regulation (EU) 2025/1960)",
     "type": "magento2-module",
-    "version": "1.1.4",
+    "version": "1.2.0",
     "license": [
         "MIT"
     ],

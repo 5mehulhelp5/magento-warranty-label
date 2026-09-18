@@ -60,6 +60,7 @@ Nicht verifiziert: Die nationalen Fundstellen stammen aus der Aufbereitung von C
 | Marktplätze | Für Amazon, eBay, Kaufland, Mirakl u. a. liegt die Pflicht beim jeweiligen Interface; solche Store Views sollten das Modul deaktiviert haben |
 | Rechnung, Lieferschein, weitere Mails | Nicht abgedeckt; LL verlangen nur die Bestellbestätigung |
 | Englischsprachige Store Views mit deutscher Locale | Grafik, Link, Button- und Alt-Text sind konfigurierbar englisch; systemseitige Texte wie „Schließen“ und die GARAN-Beschriftungen folgen der Locale und erscheinen dort deutsch |
+| Zahlungsarten ohne `before-place-order` | Hinweis und GARAN-Liste stehen im Checkout in Magentos Region `payments-list > before-place-order`, die jede Zahlungsart in ihrem eigenen Template über dem Bestell-Button ausgibt – dieselbe Stelle wie die AGB-Checkboxen. Eine Zahlungsart, deren Template die Region weglässt, zeigt weder AGB-Checkboxen noch Hinweis. **Je Zahlungsart prüfen:** Zahlungsart wählen, Hinweis muss über dem Button stehen. Fehlt er, ist das Template der Zahlungsart zu korrigieren oder die Komponente im Projekt-Theme an eine andere Stelle zu setzen (README, Abschnitt Themes) |
 | Hyvä | Adapter vorbereitet, aber nicht Teil dieses Release |
 
 ## 5. Nachweise aus der Verifikation (lokal, 2026-09-15)
@@ -70,3 +71,17 @@ Nicht verifiziert: Die nationalen Fundstellen stammen aus der Aufbereitung von C
 - Testbestellung mit Bestätigungs-E-Mail (Notice-PNG + Link, zwei GARAN-Labels mit Links, alle Bilder HTTP 200).
 - Alle 24 Your-Europe-Links live geprüft; Asset-Prüfsummen automatisiert getestet.
 - Screenshots und Logs: `.omc/artifacts/warranty-label/` (nicht Teil des Moduls).
+
+### Nachtrag Luma und Blank (lokal, 2026-09-18, Version 1.2.0)
+
+- Anlass: In Luma erschienen Hinweis und GARAN-Liste im Checkout nicht (N2, G5), weil sie an einem Knoten hingen, den nur
+  das ursprüngliche Projekt-Theme kannte. Seit 1.2.0 stehen beide in Magentos Region `payments-list > before-place-order`.
+- Browser (Headless Chrome, Magento 2.4.8-p3, Themes Magento/luma und Magento/blank, je 1280 px und 375 px): Header,
+  Footer, Kategorie, Suche, Warenkorb, Produktseite (einfach und konfigurierbar mit Swatches: 5 Jahre → Label,
+  10 Jahre → anderes Label, Variante ohne Garantie → keines), Checkout mit zwei Zahlungsarten in den Modi direkt und
+  geschachtelt (je Zahlungsart eigener Dialog, keine doppelten IDs), kein horizontaler Überlauf auf 375 px.
+- Testbestellung in Luma: Erfolgsseite mit Hinweis und GARAN-Liste; Bestätigungs-E-Mail mit Notice-PNG, Link und
+  GARAN-Labels.
+- Unit-Tests 334, darunter `Test/Unit/Layout/CheckoutLayoutTest`, der jeden Eltern-Knoten der Checkout-Komponenten
+  gegen das Layout von `Magento_Checkout` prüft; phpcs Magento2 ohne Fehler.
+- Nicht geprüft: Hyvä, Zahlungsarten von Drittanbietern (siehe Abschnitt 4, „Zahlungsarten ohne `before-place-order`“).

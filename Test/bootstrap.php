@@ -55,14 +55,14 @@ namespace {
 
 /**
  * Magento generates `*Factory` classes during `setup:di:compile` and autoloads them from generated/code.
- * A plain Composer autoloader has no such directory, so the two factories the tests mock would be missing.
+ * A plain Composer autoloader has no such directory, so the factories the tests mock would be missing.
  *
  * They are only ever passed to getMockBuilder(), never instantiated, so a declaration matching Magento's
- * generated shape is enough. Both are guarded: a real installation that already provides them wins.
+ * generated shape is enough. All are guarded: an autoloader that finds the real class wins.
  */
 
 namespace CopeX\WarrantyLabel\Model\Garan {
-    if (!class_exists(GaranLabelDataFactory::class, false)) {
+    if (!class_exists(GaranLabelDataFactory::class)) {
         class GaranLabelDataFactory
         {
             protected $_objectManager;
@@ -85,7 +85,7 @@ namespace CopeX\WarrantyLabel\Model\Garan {
 }
 
 namespace Magento\Eav\Setup {
-    if (!class_exists(EavSetupFactory::class, false)) {
+    if (!class_exists(EavSetupFactory::class)) {
         class EavSetupFactory
         {
             protected $_objectManager;
@@ -94,6 +94,29 @@ namespace Magento\Eav\Setup {
             public function __construct(
                 \Magento\Framework\ObjectManagerInterface $objectManager,
                 $instanceName = EavSetup::class
+            ) {
+                $this->_objectManager = $objectManager;
+                $this->_instanceName = $instanceName;
+            }
+
+            public function create(array $data = [])
+            {
+                return $this->_objectManager->create($this->_instanceName, $data);
+            }
+        }
+    }
+}
+
+namespace Magento\Catalog\Model\ResourceModel\Product {
+    if (!class_exists(CollectionFactory::class)) {
+        class CollectionFactory
+        {
+            protected $_objectManager;
+            protected $_instanceName;
+
+            public function __construct(
+                \Magento\Framework\ObjectManagerInterface $objectManager,
+                $instanceName = Collection::class
             ) {
                 $this->_objectManager = $objectManager;
                 $this->_instanceName = $instanceName;

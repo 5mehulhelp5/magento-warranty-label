@@ -86,6 +86,7 @@ i18n/                                  de_DE.csv, de_AT.csv (Magento loads modul
 | PNG output size / cache key | `Model/Render/GaranPngRenderer.php` (bump `TEMPLATE_VERSION` after template changes) |
 | Order email output | `Plugin/Sales/EmailItemsPlugin.php` |
 | Checkout data | `Model/Checkout/ConfigProvider.php`, `view/frontend/web/js/view/checkout/` |
+| Checkout position | `view/frontend/layout/checkout_index_index.xml` — notice + GARAN summary in `payments-list > before-place-order`, GARAN per item in `cart_items > details` (`after_details`) |
 | Official assets, licences, QR measurement | `view/base/web/ASSETS.md` |
 | Which legal requirement a change touches | `docs/COMPLIANCE-DE.md` (requirement → implementation → gaps) |
 
@@ -94,13 +95,24 @@ i18n/                                  de_DE.csv, de_AT.csv (Magento loads modul
 - Never recolour, crop, filter, restyle or add elements to the official notice/label files (LL §2.1.4, §3.1.5).
 - Never scale the notice below `min_width_px` (420 px keeps the smallest QR, FR 18.04 % of the width, at ≥ 2 cm).
   The 2 × 2 cm rule is explicit only for the GARAN label (LL §3.1.2); for the notice LL §2.1.2 requires a scannable QR.
-- Never use `direct` for a placement whose container is narrower than `min_width_px` (e.g. a narrow checkout
-  sidebar, ~370 px): the notice would look cut off. Use `nested` there (the dialog shows it at full size).
+- Prefer `nested` for a placement whose container is narrower than `min_width_px`: `.copex-wl-scroll` lets the
+  notice scroll horizontally instead of overflowing (Luma checkout on a phone: 345 px), which is complete but looks
+  cut off. The dialog shows it at full size.
 - Never change font size or move the calendar icon to make a duration fit — no label instead.
 - Never show a GARAN label for configurable parents or before a variant is selected (LL p.39, no ambiguity).
 - Never add a layout block to `sales_email_order_items` for output — it is dropped; use the plugin.
 - Never save the order or observe order save for the snapshot: dropshipping extensions split orders into purchase
   orders on save, and an extra save corrupts that state.
+- Never hang a checkout component on a jsLayout node `Magento_Checkout` does not define (it was
+  `sidebar > summary > before-place-order` once): without a parent component the child is created but never
+  attached, renders nowhere and reports nothing — the notice was simply absent in Luma.
+  `Test/Unit/Layout/CheckoutLayoutTest` compares every parent with the layout of `Magento_Checkout`.
+- Never look a dialog up by id alone: `before-place-order` is rendered once per payment method, so ids repeat and
+  `getElementById` returns the copy inside a hidden method. `dialog.js` takes the `<dialog>` that follows the trigger.
+- Never let the graphic set the width of the payment `<fieldset>` (`min-width: min-content` by the browser's
+  stylesheet; the mobile checkout grew to 420 px + padding): above the place order button `.copex-wl-scroll` has
+  `width: 0; min-width: 100%`, reset inside `.copex-wl-dialog`, which sizes itself by its content. Never apply that
+  pair globally — in a shrink-to-fit container of a project theme it collapses the graphic to nothing.
 - Never inline `<script>` in templates (`Test/Unit/Templates/NoInlineScriptTest.php`).
 - Never load Inter from Google Fonts (GDPR) — the TTFs are only used server-side.
 - Never inline the official label SVG in HTML/JSON (~300 KB each because the QR code is ~700 paths); use the cached PNGs.

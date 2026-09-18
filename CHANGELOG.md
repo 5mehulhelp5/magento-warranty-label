@@ -4,6 +4,53 @@ All notable changes to `copex/module-warranty-label` are documented in this file
 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] – 2026-09-18
+
+Luma compatibility, checked placement by placement in a Luma and a Blank storefront at 1280 px and 375 px,
+including a placed order, the success page and the confirmation email.
+
+### Fixed
+
+- **The notice and the GARAN summary never appeared in the Luma checkout.** Both hung on
+  `sidebar > summary > before-place-order`, a node `Magento_Checkout` does not define. A jsLayout child of a node
+  without a component is created but never attached to a parent, so it never renders, and nothing reports it. They
+  now use
+  `payments-list > before-place-order`, the region every payment method renders above its place order button and
+  the one the checkout agreements use.
+- The nested display opened the wrong dialog there: Magento renders that region once per payment method, which
+  repeated the dialog ids, and the id lookup found the copy of a payment method that is not displayed. The dialog
+  next to the trigger wins now, and repeated ids are made unique.
+- A direct notice widened the mobile checkout by 75 px. Magento's payment method templates wrap their content in a
+  `<fieldset>`, whose `min-width` is `min-content` by the browser's own stylesheet, so the 420 px graphic set the
+  width of the page. Above the place order button the scroll container no longer contributes to the intrinsic
+  width of its ancestors.
+- The full GARAN label (270 px) did not fit beside the thumbnail of a summary item: 183 px on a phone. It starts at
+  the left edge of the item now, below the thumbnail.
+- The header notice sat squeezed between Luma's floated logo and search; it takes a row of its own.
+- `Test/bootstrap.php` declares `Magento\Catalog\Model\ResourceModel\Product\CollectionFactory` like the other
+  two generated factories. Without it `AuditCommandTest` failed wherever the autoloader does not cover
+  `generated/code`. The three guards now autoload before they declare, so a real generated class wins as the
+  comment always said.
+
+### Changed
+
+- **Upgrade note: themes that do provide `sidebar > summary > before-place-order` lose the notice in that place.**
+  Register the two components there again in the project theme; the README section *Themes* shows the pattern
+  with `afterMethods`, the node name is the only difference.
+- **Check every payment method after the update.** The region is rendered by the template of the payment method; one
+  that leaves it out shows no notice (and no checkout agreements). See `docs/COMPLIANCE-DE.md`, section 4.
+
+### Added
+
+- **Setup guide in the user manual** (`docs/DE.md`, `docs/EN.md`, new chapter 3): ten steps from choosing the scope to
+  going live, with a check list per step — including the one that matters most after this release, selecting every
+  payment method once. New sections on themes (2.3) and on a notice missing in the checkout (8.6, 8.7); the chapters
+  after 2 move up by one.
+- Screenshots: the three configuration groups separately and without the "Module Version" field removed in 1.1.0,
+  plus the Luma header, checkout (direct and nested) and the label on the summary item.
+- `Test/Unit/Layout/CheckoutLayoutTest` compares the checkout layout with the one of `Magento_Checkout`: every
+  parent of a component of this module has to exist there and carry a component.
+
 ## [1.1.4] – 2026-09-17
 
 ### Fixed

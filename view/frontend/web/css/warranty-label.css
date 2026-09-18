@@ -13,6 +13,28 @@
     -webkit-overflow-scrolling: touch;
 }
 
+/* Magento's payment method templates wrap their content in a <fieldset>, whose min-width is min-content by the
+   browser's own stylesheet: the page would grow with the 420 px graphic. width 0 + min-width 100 % keeps the
+   graphic out of the intrinsic width of its ancestors. Only above the place order button — in a shrink-to-fit
+   container of a project theme the same rule would collapse the graphic to nothing. */
+.copex-wl--checkout .copex-wl-scroll,
+.copex-wl--garan-summary .copex-wl-scroll {
+    width: 0;
+    min-width: 100%;
+}
+
+/* The dialog sizes itself by its content, so there the graphic has to count */
+.copex-wl--checkout .copex-wl-dialog .copex-wl-scroll,
+.copex-wl--garan-summary .copex-wl-dialog .copex-wl-scroll {
+    width: auto;
+    min-width: 0;
+}
+
+/* Luma floats logo, search and minicart inside the header container; the notice takes a row of its own */
+.copex-wl--header {
+    clear: both;
+}
+
 .copex-wl-notice__image {
     display: block;
     width: var(--copex-wl-min-width, 420px);
@@ -153,6 +175,18 @@
 
 .copex-wl--garan-item {
     margin: 0.5rem 0 0;
+}
+
+/* Luma and Blank indent the details of a summary item by the thumbnail (88 px), which leaves 183 px on a phone
+   for the 270 px label. Start the label at the left edge of the item and keep the name block as high as the
+   thumbnail (75 px in Luma, 78 px in Blank), so the label lands below it. Both rules depend on :has() together:
+   a browser without it keeps the label beside the thumbnail, where it scrolls. */
+.opc-block-summary .product-item-inner:has(.copex-wl--garan-item) .product-item-name-block {
+    min-height: 78px;
+}
+
+.opc-block-summary .product-item-inner:has(.copex-wl--garan-item) .copex-wl--garan-item {
+    margin-left: -88px;
 }
 
 .copex-wl--garan-summary {

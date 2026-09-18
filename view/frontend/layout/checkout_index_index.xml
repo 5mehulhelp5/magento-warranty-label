@@ -8,6 +8,36 @@
                     <item name="components" xsi:type="array">
                         <item name="checkout" xsi:type="array">
                             <item name="children" xsi:type="array">
+                                <!-- Magento's own region above the place order button: every payment method renders
+                                     payments-list > before-place-order, the same node the checkout agreements use -->
+                                <item name="steps" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="billing-step" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+                                                <item name="payment" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="payments-list" xsi:type="array">
+                                                            <item name="children" xsi:type="array">
+                                                                <item name="before-place-order" xsi:type="array">
+                                                                    <item name="children" xsi:type="array">
+                                                                        <item name="copex-warranty-notice" xsi:type="array">
+                                                                            <item name="component" xsi:type="string">CopeX_WarrantyLabel/js/view/checkout/notice</item>
+                                                                            <item name="sortOrder" xsi:type="string">50</item>
+                                                                        </item>
+                                                                        <item name="copex-warranty-garan-summary" xsi:type="array">
+                                                                            <item name="component" xsi:type="string">CopeX_WarrantyLabel/js/view/checkout/garan-summary</item>
+                                                                            <item name="sortOrder" xsi:type="string">60</item>
+                                                                        </item>
+                                                                    </item>
+                                                                </item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
                                 <item name="sidebar" xsi:type="array">
                                     <item name="children" xsi:type="array">
                                         <item name="summary" xsi:type="array">
@@ -22,20 +52,6 @@
                                                                     <item name="displayArea" xsi:type="string">after_details</item>
                                                                 </item>
                                                             </item>
-                                                        </item>
-                                                    </item>
-                                                </item>
-                                                <item name="before-place-order" xsi:type="array">
-                                                    <item name="children" xsi:type="array">
-                                                        <item name="copex-warranty-notice" xsi:type="array">
-                                                            <item name="component" xsi:type="string">CopeX_WarrantyLabel/js/view/checkout/notice</item>
-                                                            <item name="sortOrder" xsi:type="string">50</item>
-                                                            <item name="displayArea" xsi:type="string">before-place-order</item>
-                                                        </item>
-                                                        <item name="copex-warranty-garan-summary" xsi:type="array">
-                                                            <item name="component" xsi:type="string">CopeX_WarrantyLabel/js/view/checkout/garan-summary</item>
-                                                            <item name="sortOrder" xsi:type="string">60</item>
-                                                            <item name="displayArea" xsi:type="string">before-place-order</item>
                                                         </item>
                                                     </item>
                                                 </item>
