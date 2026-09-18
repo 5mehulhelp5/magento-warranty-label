@@ -45,7 +45,10 @@ jobs:
           COMPOSER_AUTH: ${{ secrets.MAGENTO_COMPOSER_AUTH }}
         run: |
           composer config repositories.magento composer https://repo.magento.com/
-          composer install --no-interaction --no-progress --prefer-dist
+          # --no-plugins: magento/framework pulls in Composer plugins (dependency version audit, installer) that a
+          # non-interactive install refuses unless allow-plugins lists them. Unit tests need none of them, and an
+          # allow-plugins block in composer.json would only ever apply here, where the module is the root package.
+          composer install --no-interaction --no-progress --prefer-dist --no-plugins
 
       - name: Unit tests
         run: vendor/bin/phpunit --configuration phpunit.xml

@@ -27,6 +27,9 @@ including a placed order, the success page and the confirmation email.
 - The full GARAN label (270 px) did not fit beside the thumbnail of a summary item: 183 px on a phone. It starts at
   the left edge of the item now, below the thumbnail.
 - The header notice sat squeezed between Luma's floated logo and search; it takes a row of its own.
+- The unit test workflow could not have passed: `composer install` stops at Magento's Composer plugins, which a
+  non-interactive run refuses without `allow-plugins`. It installs with `--no-plugins` now. Until the repository
+  secret `MAGENTO_COMPOSER_AUTH` exists the job still ends at its own credentials check, before any test runs.
 - `Test/bootstrap.php` declares `Magento\Catalog\Model\ResourceModel\Product\CollectionFactory` like the other
   two generated factories. Without it `AuditCommandTest` failed wherever the autoloader does not cover
   `generated/code`. The three guards now autoload before they declare, so a real generated class wins as the
