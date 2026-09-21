@@ -26,7 +26,7 @@ Placements can now hand the trigger to the shop, and the email fields are yes/no
 
 - **The two email fields are yes/no instead of a display mode.**
   An email cannot open a dialog, so "Nested" was rendered like "Direct" and the option only invited a choice that had no effect.
-  Installations configured before the switch keep working: a stored "direct" or "nested" still means yes.
+  A data patch converts the stored value, so the admin does not render an old "direct" as "No" and switch the graphic off on the next save.
 
 ### Fixed
 
