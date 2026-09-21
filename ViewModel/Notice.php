@@ -18,6 +18,12 @@ class Notice implements ArgumentInterface
     public const STYLESHEET_ASSET_ID = 'CopeX_WarrantyLabel::css/warranty-label.css';
 
     /**
+     * Loaded through the hyva_* layout handles only: Hyvä ships no RequireJS, so the data-mage-init hooks of the
+     * templates stay unbound there and this script takes over. Luma keeps using the AMD modules.
+     */
+    public const HYVA_SCRIPT_ASSET_ID = 'CopeX_WarrantyLabel::js/hyva/warranty-label.js';
+
+    /**
      * Height / width of the official A4 notice (SVG viewBox 595.28 x 841.89).
      */
     private const ASPECT_RATIO = 841.89 / 595.28;
@@ -107,5 +113,10 @@ class Notice implements ArgumentInterface
     public function getStylesheetUrl(): string
     {
         return $this->assetRepository->getUrl(self::STYLESHEET_ASSET_ID);
+    }
+
+    public function getHyvaScriptUrl(): string
+    {
+        return $this->assetRepository->getUrl(self::HYVA_SCRIPT_ASSET_ID);
     }
 }

@@ -129,6 +129,37 @@ guarantee data — deciding which products qualify and maintaining their values 
 ordinary Magento core container — `header-wrapper`, `footer`, `content`, `cart.summary`, `product.info.main`. No
 third-party theme is required anywhere.
 
+### Hyvä
+
+Supported.
+Keep the shipped defaults — `nested` for the storefront placements: the notice graphic is 420 x 594 px and `direct` pushes a Hyvä header or footer apart.
+
+The GARAN label on the product page is the one placement a Hyvä project has to make itself.
+The module's anchor resolves in Luma only, so the label otherwise renders at the bottom of the product column.
+Place it in the theme:
+
+```xml
+<!-- app/design/frontend/<Vendor>/<theme>/Magento_Catalog/layout/catalog_product_view.xml -->
+<referenceBlock name="copex.warrantylabel.garan.product" remove="true"/>
+<referenceBlock name="product.info">
+    <block class="Magento\Catalog\Block\Product\View"
+           name="copex.warrantylabel.garan.product.hyva"
+           template="CopeX_WarrantyLabel::garan-product.phtml"
+           ifconfig="copex_warrantylabel/garan/enabled">
+        <arguments>
+            <argument name="view_model" xsi:type="object">CopeX\WarrantyLabel\ViewModel\GaranProduct</argument>
+        </arguments>
+    </block>
+</referenceBlock>
+```
+
+```phtml
+<!-- .../Magento_Catalog/templates/product/view/product-info.phtml, where the label belongs -->
+<?= $block->getChildHtml('copex.warrantylabel.garan.product.hyva') ?>
+```
+
+### Checkout
+
 The checkout uses two regions of `Magento_Checkout`:
 
 | Output | jsLayout node | Where Luma shows it |

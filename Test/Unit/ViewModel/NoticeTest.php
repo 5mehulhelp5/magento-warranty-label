@@ -100,4 +100,17 @@ class NoticeTest extends TestCase
         $this->assertTrue($this->viewModel->isEnabled());
         $this->assertSame('https://shop.test/static/css/warranty-label.css', $this->viewModel->getStylesheetUrl());
     }
+
+    public function testHyvaScriptUrl(): void
+    {
+        $this->assetRepository->expects($this->once())
+            ->method('getUrl')
+            ->with('CopeX_WarrantyLabel::js/hyva/warranty-label.js')
+            ->willReturn('https://shop.test/static/js/hyva/warranty-label.js');
+
+        $this->assertSame(
+            'https://shop.test/static/js/hyva/warranty-label.js',
+            $this->viewModel->getHyvaScriptUrl()
+        );
+    }
 }

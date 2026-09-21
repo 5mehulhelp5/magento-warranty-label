@@ -4,6 +4,32 @@ All notable changes to `copex/module-warranty-label` are documented in this file
 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] – 2026-09-21
+
+Hyvä compatibility for the storefront placements, verified on a Hyvä storefront (Magento 2.4.8) with a simple and a configurable product.
+
+### Added
+
+- **The nested display and the GARAN variant switch now work in Hyvä.**
+  Both hung on `data-mage-init`, which needs RequireJS.
+  Hyvä ships none, so the hooks stayed unbound: the nested button never opened its dialog, and on a configurable product the output kept the `hidden` attribute the template sets until a variant is chosen, so no label ever appeared.
+  `view/frontend/web/js/hyva/warranty-label.js` reads the same configuration out of those attributes and binds the same DOM, without jQuery and without AMD.
+  `hyva_default.xml` loads it - Hyvä adds the `hyva_` prefixed handles only while a Hyvä theme is active, so Luma keeps using the AMD modules untouched.
+
+### Fixed
+
+- **The notice link broke the payment form.**
+  `.copex-wl-link` used `overflow-wrap: anywhere`, and its break opportunities count towards min-content.
+  The `<fieldset>` of a payment method (`min-width: min-content`) shrank to the width of one character, which wrapped `europa.eu/youreurope/garantien` vertically, one letter per line, and pushed the place order button out of the form.
+  `break-word` still breaks the URL when it has to, but leaves min-content at the width of the word.
+
+### Known limitations
+
+- **Hyvä, product page: the label renders at the end of the product column.**
+  The block is placed with `after="product.info.price"` inside `product.info.main`, which Luma honours, while Hyvä nests the price in `product.info.main > product.detail.page > product.info`.
+  The module cannot correct this on its own: `product.info` is declared in the Hyvä *theme*, which is merged after every module layout, and it is a block whose template calls each child by name.
+  A project places it in its own theme - see the Themes section of the README.
+
 ## [1.2.0] – 2026-09-18
 
 Luma compatibility, checked placement by placement in a Luma and a Blank storefront at 1280 px and 375 px,
