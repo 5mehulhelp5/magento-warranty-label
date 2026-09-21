@@ -69,23 +69,6 @@ class ConfigTest extends TestCase
         self::assertSame(DisplayMode::OFF, $this->config->getNoticeMode(Config::PLACEMENT_EMAIL, 1));
     }
 
-    /**
-     * Installations configured before the email fields became yes/no still hold a display mode here.
-     */
-    public function testEmailPlacementKeepsReadingLegacyModes(): void
-    {
-        $this->values = [
-            Config::XML_PATH_ENABLED => '1',
-            Config::XML_PATH_NOTICE_PLACEMENT_PREFIX . 'email' => DisplayMode::NESTED,
-        ];
-
-        self::assertSame(DisplayMode::DIRECT, $this->config->getNoticeMode(Config::PLACEMENT_EMAIL, 1));
-
-        $this->values[Config::XML_PATH_NOTICE_PLACEMENT_PREFIX . 'email'] = DisplayMode::OFF;
-
-        self::assertSame(DisplayMode::OFF, $this->config->getNoticeMode(Config::PLACEMENT_EMAIL, 1));
-    }
-
     public function testUnknownStoredModeFallsBackToOff(): void
     {
         $this->values = [

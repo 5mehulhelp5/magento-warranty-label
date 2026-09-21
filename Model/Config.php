@@ -141,9 +141,11 @@ class Config
             return DisplayMode::OFF;
         }
 
-        $value = $this->getString(self::XML_PATH_NOTICE_PLACEMENT_PREFIX . $placement, $storeId);
+        $path = self::XML_PATH_NOTICE_PLACEMENT_PREFIX . $placement;
 
-        return $placement === self::PLACEMENT_EMAIL ? $this->normalizeEmailMode($value) : $this->normalizeMode($value);
+        return $placement === self::PLACEMENT_EMAIL
+            ? $this->getFlagMode($path, $storeId)
+            : $this->normalizeMode($this->getString($path, $storeId));
     }
 
     /**
@@ -156,9 +158,11 @@ class Config
             return DisplayMode::OFF;
         }
 
-        $value = $this->getString(self::XML_PATH_GARAN_PLACEMENT_PREFIX . $placement, $storeId);
+        $path = self::XML_PATH_GARAN_PLACEMENT_PREFIX . $placement;
 
-        return $placement === self::PLACEMENT_EMAIL ? $this->normalizeEmailMode($value) : $this->normalizeMode($value);
+        return $placement === self::PLACEMENT_EMAIL
+            ? $this->getFlagMode($path, $storeId)
+            : $this->normalizeMode($this->getString($path, $storeId));
     }
 
     /**
@@ -197,16 +201,13 @@ class Config
     }
 
     /**
-     * The email fields are yes/no: an email cannot open a dialog, so the only question is whether it carries the
-     * graphic at all. Installations configured before the switch still hold "direct" or "nested" here.
+     * The email fields are yes/no: an email cannot open a dialog.
      */
-    private function normalizeEmailMode(string $value): string
+    private function getFlagMode(string $path, ?int $storeId): string
     {
-        if ($value === '' || $value === '0' || $value === DisplayMode::OFF) {
-            return DisplayMode::OFF;
-        }
-
-        return DisplayMode::DIRECT;
+        return $this->scopeConfig->isSetFlag($path, ScopeInterface::SCOPE_STORE, $storeId)
+            ? DisplayMode::DIRECT
+            : DisplayMode::OFF;
     }
 
     /**
