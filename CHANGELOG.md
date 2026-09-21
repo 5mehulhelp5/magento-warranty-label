@@ -7,6 +7,7 @@ All notable changes to `copex/module-warranty-label` are documented in this file
 ## [1.3.0] – 2026-09-21
 
 Hyvä compatibility for the storefront placements, verified on a Hyvä storefront (Magento 2.4.8) with a simple and a configurable product.
+Placements can now hand the trigger to the shop, and the email fields are yes/no.
 
 ### Added
 
@@ -15,6 +16,17 @@ Hyvä compatibility for the storefront placements, verified on a Hyvä storefron
   Hyvä ships none, so the hooks stayed unbound: the nested button never opened its dialog, and on a configurable product the output kept the `hidden` attribute the template sets until a variant is chosen, so no label ever appeared.
   `view/frontend/web/js/hyva/warranty-label.js` reads the same configuration out of those attributes and binds the same DOM, without jQuery and without AMD.
   `hyva_default.xml` loads it - Hyvä adds the `hyva_` prefixed handles only while a Hyvä theme is active, so Luma keeps using the AMD modules untouched.
+
+- **Display mode "Dialog only".**
+  The dialog is rendered without a trigger, so the shop can place its own anywhere on the page - in a CMS block, in the footer, in a theme template.
+  Any element with class `copex-wl-trigger` and `aria-controls` pointing at the dialog id opens it; the notice ids are `copex-wl-notice-<placement>`, the product label is `copex-wl-garan-pdp`.
+  The scripts now bind triggers document-wide instead of only inside their own element.
+
+### Changed
+
+- **The two email fields are yes/no instead of a display mode.**
+  An email cannot open a dialog, so "Nested" was rendered like "Direct" and the option only invited a choice that had no effect.
+  Installations configured before the switch keep working: a stored "direct" or "nested" still means yes.
 
 ### Fixed
 

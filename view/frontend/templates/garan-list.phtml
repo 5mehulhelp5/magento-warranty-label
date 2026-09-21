@@ -11,6 +11,7 @@ if ($entries === []) {
     return;
 }
 $isNested = $viewModel->isNested();
+$hasTrigger = $viewModel->hasTrigger();
 $infoUrl = $viewModel->getInfoUrl();
 ?>
 <section class="copex-wl copex-wl--garan-list"
@@ -28,7 +29,7 @@ $infoUrl = $viewModel->getInfoUrl();
                         <?php if ($label['productName'] !== '' && $label['productName'] !== $entry['name']): ?>
                             <p class="copex-wl-garan-list__child"><?= $escaper->escapeHtml($label['productName']) ?></p>
                         <?php endif; ?>
-                        <?php if ($isNested): ?>
+                        <?php if ($hasTrigger): ?>
                             <button type="button"
                                     class="copex-wl-trigger copex-wl-trigger--garan"
                                     aria-haspopup="dialog"
@@ -47,6 +48,8 @@ $infoUrl = $viewModel->getInfoUrl();
                                     </span>
                                 <?php endif; ?>
                             </button>
+                        <?php endif; ?>
+                        <?php if ($isNested): ?>
                             <dialog id="<?= $escaper->escapeHtmlAttr($label['dialogId']) ?>"
                                     class="copex-wl-dialog"
                                     aria-label="<?= $escaper->escapeHtmlAttr($label['alt']) ?>">

@@ -19,14 +19,14 @@
                 <cart>nested</cart>
                 <checkout>direct</checkout>
                 <success>direct</success>
-                <email>direct</email>
+                <email>1</email>
             </notice_placement>
             <garan>
                 <enabled>0</enabled>
                 <pdp>nested</pdp>
                 <checkout>direct</checkout>
                 <success>direct</success>
-                <email>direct</email>
+                <email>1</email>
                 <attach_terms>0</attach_terms>
                 <terms_file/>
                 <terms_filename>Garantiebedingungen.pdf</terms_filename>

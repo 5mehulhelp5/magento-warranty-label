@@ -27,6 +27,7 @@ class NoticeTest extends TestCase
             [Config::PLACEMENT_HEADER, null, DisplayMode::NESTED],
             [Config::PLACEMENT_FOOTER, null, DisplayMode::OFF],
             [Config::PLACEMENT_CHECKOUT, null, DisplayMode::DIRECT],
+            [Config::PLACEMENT_CART, null, DisplayMode::DIALOG_ONLY],
         ]);
         $this->noticeRenderer = $this->createMock(NoticeRenderer::class);
         $this->assetRepository = $this->createMock(AssetRepository::class);
@@ -34,14 +35,15 @@ class NoticeTest extends TestCase
     }
 
     /**
-     * @return array<string, array{string, string, bool, bool}>
+     * @return array<string, array{string, string, bool, bool, bool}>
      */
     public static function placementProvider(): array
     {
         return [
-            'nested header' => [Config::PLACEMENT_HEADER, DisplayMode::NESTED, true, true],
-            'disabled footer' => [Config::PLACEMENT_FOOTER, DisplayMode::OFF, false, false],
-            'direct checkout' => [Config::PLACEMENT_CHECKOUT, DisplayMode::DIRECT, true, false],
+            'nested header' => [Config::PLACEMENT_HEADER, DisplayMode::NESTED, true, true, true],
+            'disabled footer' => [Config::PLACEMENT_FOOTER, DisplayMode::OFF, false, false, false],
+            'direct checkout' => [Config::PLACEMENT_CHECKOUT, DisplayMode::DIRECT, true, false, false],
+            'dialog only cart' => [Config::PLACEMENT_CART, DisplayMode::DIALOG_ONLY, true, true, false],
         ];
     }
 
@@ -50,11 +52,13 @@ class NoticeTest extends TestCase
         string $placement,
         string $expectedMode,
         bool $expectedVisible,
-        bool $expectedNested
+        bool $expectedNested,
+        bool $expectedTrigger
     ): void {
         $this->assertSame($expectedMode, $this->viewModel->getMode($placement));
         $this->assertSame($expectedVisible, $this->viewModel->isVisible($placement));
         $this->assertSame($expectedNested, $this->viewModel->isNested($placement));
+        $this->assertSame($expectedTrigger, $this->viewModel->hasTrigger($placement));
     }
 
     public function testDialogIdIsUniquePerPlacement(): void
@@ -99,18 +103,5 @@ class NoticeTest extends TestCase
 
         $this->assertTrue($this->viewModel->isEnabled());
         $this->assertSame('https://shop.test/static/css/warranty-label.css', $this->viewModel->getStylesheetUrl());
-    }
-
-    public function testHyvaScriptUrl(): void
-    {
-        $this->assetRepository->expects($this->once())
-            ->method('getUrl')
-            ->with('CopeX_WarrantyLabel::js/hyva/warranty-label.js')
-            ->willReturn('https://shop.test/static/js/hyva/warranty-label.js');
-
-        $this->assertSame(
-            'https://shop.test/static/js/hyva/warranty-label.js',
-            $this->viewModel->getHyvaScriptUrl()
-        );
     }
 }

@@ -282,13 +282,16 @@ All settings live under *Stores → Configuration → Sales → EU Guarantee Not
 
 ### 4.2 Legal guarantee notice placements
 
-For each placement you choose one of three modes:
+For each storefront placement you choose one of four modes:
 
 | Mode | Meaning |
 |---|---|
 | **Off** | No output at this position. |
 | **Direct (complete graphic)** | The complete official graphic sits directly on the page. |
 | **Nested (button opens dialog)** | A button opens the graphic in a dialog on the first click. |
+| **Dialog only (place your own trigger)** | Like *Nested*, but without the button: you place the trigger yourself, see "Your own trigger". |
+
+The two email fields are yes/no, because an email cannot open a dialog.
 
 The nested display is permitted by the European Commission's guidelines. A stricter reading requires the direct display. Because this is a legal question, the module lets you decide per placement.
 
@@ -301,14 +304,31 @@ The nested display is permitted by the European Commission's guidelines. A stric
 | Shopping Cart | Nested |
 | Checkout (before Place Order) | Direct |
 | Checkout Success Page | Direct |
-| Order Confirmation Email | Direct |
+| Order Confirmation Email | Yes |
 
 Two notes on choosing the mode:
 
 - **Narrow containers speak for "Nested".** Where the available space is narrower than the configured minimum width, the direct graphic is not shrunk but can be scrolled sideways — it is complete but looks cut off. That mainly concerns the checkout on a phone. In the dialog the graphic appears at full size.
-- **Emails have no dialogs.** If the email placement is set to *Nested*, it is rendered like *Direct*.
+- **Emails have no dialogs.** The two email fields therefore only ask whether the graphic travels with the message.
 
 The dialog is fully keyboard operable: Enter or Space open it, Escape closes it, and focus returns to the button afterwards.
+
+#### Your own trigger
+
+In *Dialog only* the module renders the dialog and leaves the trigger to you.
+Any element carrying the class `copex-wl-trigger` and an `aria-controls` with the dialog id opens it, wherever it sits on the page - a CMS block, the footer, a template of your theme:
+
+```html
+<button type="button" class="copex-wl-trigger" aria-controls="copex-wl-notice-footer">
+    Legal guarantee
+</button>
+```
+
+The notice ids are `copex-wl-notice-` plus the placement, so `copex-wl-notice-header`, `-footer`, `-cart`, `-category`, `-search`, `-checkout` and `-success`.
+The GARAN label on the product page uses `copex-wl-garan-pdp`.
+On the success page and in the checkout the GARAN ids carry the order item id; read them from the rendered page there.
+
+Triggers are bound when the page loads. An element a script of your own inserts later has to be in the document before that.
 
 ![In nested mode a button opens the notice](screenshots/05_notice_trigger.png)
 

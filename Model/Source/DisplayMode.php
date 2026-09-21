@@ -11,7 +11,8 @@ class DisplayMode implements OptionSourceInterface
     public const OFF = 'off';
     public const DIRECT = 'direct';
     public const NESTED = 'nested';
-    public const MODES = [self::OFF, self::DIRECT, self::NESTED];
+    public const DIALOG_ONLY = 'dialog_only';
+    public const MODES = [self::OFF, self::DIRECT, self::NESTED, self::DIALOG_ONLY];
 
     /**
      * @return array<int, array{value: string, label: \Magento\Framework\Phrase}>
@@ -22,6 +23,7 @@ class DisplayMode implements OptionSourceInterface
             ['value' => self::OFF, 'label' => __('Off')],
             ['value' => self::DIRECT, 'label' => __('Direct (complete graphic)')],
             ['value' => self::NESTED, 'label' => __('Nested (button opens dialog)')],
+            ['value' => self::DIALOG_ONLY, 'label' => __('Dialog only (place your own trigger)')],
         ];
     }
 }

@@ -86,11 +86,10 @@
                     <label>Checkout Success Page</label>
                     <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
                 </field>
-                <field id="email" translate="label comment" type="select" sortOrder="80"
+                <field id="email" translate="label" type="select" sortOrder="80"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Order Confirmation Email</label>
-                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
-                    <comment>Emails cannot open dialogs, "Nested" is rendered like "Direct".</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
             <group id="garan" translate="label comment" sortOrder="30"
@@ -129,7 +128,7 @@
                 <field id="email" translate="label" type="select" sortOrder="50"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Order Confirmation Email</label>
-                    <source_model>CopeX\WarrantyLabel\Model\Source\DisplayMode</source_model>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

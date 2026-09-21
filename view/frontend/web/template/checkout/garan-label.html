@@ -1,4 +1,4 @@
-<!-- ko if: isNested -->
+<!-- ko if: hasTrigger -->
 <button type="button"
         class="copex-wl-trigger copex-wl-trigger--garan"
         aria-haspopup="dialog"
@@ -10,6 +10,8 @@
     <span class="copex-wl-garan__fallback" data-bind="text: alt"></span>
     <!-- /ko -->
 </button>
+<!-- /ko -->
+<!-- ko if: isNested -->
 <dialog class="copex-wl-dialog" data-bind="attr: {id: dialogId, 'aria-label': alt}, afterRender: initDialog">
     <div class="copex-wl-dialog__header">
         <button type="button" class="copex-wl-dialog__close" data-copex-wl-close="" data-bind="text: closeLabel"></button>

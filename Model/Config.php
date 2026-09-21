@@ -141,7 +141,9 @@ class Config
             return DisplayMode::OFF;
         }
 
-        return $this->normalizeMode($this->getString(self::XML_PATH_NOTICE_PLACEMENT_PREFIX . $placement, $storeId));
+        $value = $this->getString(self::XML_PATH_NOTICE_PLACEMENT_PREFIX . $placement, $storeId);
+
+        return $placement === self::PLACEMENT_EMAIL ? $this->normalizeEmailMode($value) : $this->normalizeMode($value);
     }
 
     /**
@@ -154,7 +156,9 @@ class Config
             return DisplayMode::OFF;
         }
 
-        return $this->normalizeMode($this->getString(self::XML_PATH_GARAN_PLACEMENT_PREFIX . $placement, $storeId));
+        $value = $this->getString(self::XML_PATH_GARAN_PLACEMENT_PREFIX . $placement, $storeId);
+
+        return $placement === self::PLACEMENT_EMAIL ? $this->normalizeEmailMode($value) : $this->normalizeMode($value);
     }
 
     /**
@@ -190,6 +194,19 @@ class Config
     private function normalizeMode(string $mode): string
     {
         return in_array($mode, DisplayMode::MODES, true) ? $mode : DisplayMode::OFF;
+    }
+
+    /**
+     * The email fields are yes/no: an email cannot open a dialog, so the only question is whether it carries the
+     * graphic at all. Installations configured before the switch still hold "direct" or "nested" here.
+     */
+    private function normalizeEmailMode(string $value): string
+    {
+        if ($value === '' || $value === '0' || $value === DisplayMode::OFF) {
+            return DisplayMode::OFF;
+        }
+
+        return DisplayMode::DIRECT;
     }
 
     /**

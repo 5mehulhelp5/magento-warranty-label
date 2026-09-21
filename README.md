@@ -60,16 +60,37 @@ The module is **off by default**. `copex_warrantylabel/general/enabled = 0` is a
 | Group | Purpose |
 |---|---|
 | General Settings | Kill switch, label language, nested button text, notice alt text, minimum notice width, product types without a legal guarantee |
-| Legal Guarantee Notice Placements | Display mode per placement: header, footer, category, search, cart, checkout, success page, order confirmation email |
-| EU GARAN Label | Kill switch, display mode per placement, and the guarantee terms attachment |
+| Legal Guarantee Notice Placements | Display mode per placement: header, footer, category, search, cart, checkout, success page; yes/no for the order confirmation email |
+| EU GARAN Label | Kill switch, display mode per placement, yes/no for the email, and the guarantee terms attachment |
 
-Every placement takes one of three modes:
+Every storefront placement takes one of four modes:
 
 - **Off** — no output.
 - **Direct** — the official graphic is shown inline.
 - **Nested** — a button opens a native `<dialog>` containing the full graphic, as permitted by the EU practical
   guidelines. Use this wherever the container is narrower than the configured minimum width; the checkout sidebar of
   most themes is.
+- **Dialog only** — the same dialog without the button, for shops that place their own trigger. See below.
+
+The two email fields are yes/no, because an email cannot open a dialog.
+
+### Your own trigger
+
+In **Dialog only** the module renders the `<dialog>` and leaves the trigger to you. Any element carrying the class
+`copex-wl-trigger` and an `aria-controls` with the dialog id opens it, wherever it sits on the page — a CMS block, the
+footer, a template of your theme:
+
+```html
+<button type="button" class="copex-wl-trigger" aria-controls="copex-wl-notice-footer">
+    Legal guarantee
+</button>
+```
+
+The ids are `copex-wl-notice-<placement>` for the notice — `copex-wl-notice-header`, `-footer`, `-cart`, `-category`,
+`-search`, `-checkout`, `-success` — and `copex-wl-garan-pdp` for the GARAN label on the product page. On the success
+page and in the checkout the GARAN ids carry the item id, so read them from the rendered markup.
+
+Triggers are bound when the page loads. One added later, by a script of your own, needs to be in the DOM before that.
 
 **Label language is not the locale.** `general/language` selects which of the 24 official language versions is shown;
 it falls back to the locale language, then to English. A German-locale store view serving English-speaking customers

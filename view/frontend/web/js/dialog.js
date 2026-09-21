@@ -1,7 +1,7 @@
 /**
  * Nested display of the EU legal guarantee notice / GARAN label.
  *
- * Binds every `.copex-wl-trigger[aria-controls]` inside the element to its native <dialog>:
+ * Binds every `.copex-wl-trigger[aria-controls]` in the document to its native <dialog>:
  * click (Enter/Space on the button) opens it modally and focuses the close button;
  * ESC, the close button and a click on the backdrop close it and return focus to the trigger.
  */
@@ -147,9 +147,9 @@ define([], function () {
      * @param {Object} config
      * @param {HTMLElement} element
      */
-    return function (config, element) {
-        var root = element || document;
-
-        Array.prototype.forEach.call(root.querySelectorAll('.copex-wl-trigger[aria-controls]'), bindTrigger);
+    return function () {
+        // Scans the whole document, not just the element: in "dialog only" mode the trigger is one the shop placed
+        // itself, outside every module element. bindTrigger is guarded, so repeated calls bind each trigger once.
+        Array.prototype.forEach.call(document.querySelectorAll('.copex-wl-trigger[aria-controls]'), bindTrigger);
     };
 });

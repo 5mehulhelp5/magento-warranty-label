@@ -53,7 +53,18 @@ class GaranProduct implements ArgumentInterface
      *
      * @return bool
      */
+    /**
+     * True for both dialog modes; "dialog_only" differs from "nested" only in who supplies the trigger.
+     */
     public function isNested(): bool
+    {
+        return in_array($this->getMode(), [DisplayMode::NESTED, DisplayMode::DIALOG_ONLY], true);
+    }
+
+    /**
+     * False in "dialog_only": the shop places its own element with class copex-wl-trigger and aria-controls.
+     */
+    public function hasTrigger(): bool
     {
         return $this->getMode() === DisplayMode::NESTED;
     }

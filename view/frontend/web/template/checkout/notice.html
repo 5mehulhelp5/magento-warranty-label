@@ -1,11 +1,13 @@
 <!-- ko if: isVisible() -->
 <div class="copex-wl copex-wl--notice copex-wl--checkout"
      data-bind="css: {'copex-wl--nested': isNested(), 'copex-wl--direct': !isNested()}, attr: {style: getWrapperStyle()}">
-    <!-- ko if: isNested() -->
+    <!-- ko if: hasTrigger() -->
     <button type="button"
             class="copex-wl-trigger"
             aria-haspopup="dialog"
             data-bind="attr: {'aria-controls': dialogId}, text: notice.triggerText"></button>
+    <!-- /ko -->
+    <!-- ko if: isNested() -->
     <dialog class="copex-wl-dialog"
             data-bind="attr: {id: dialogId, 'aria-label': notice.dialogLabel}, afterRender: initDialog">
         <div class="copex-wl-dialog__header">

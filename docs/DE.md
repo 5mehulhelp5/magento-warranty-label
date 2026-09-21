@@ -283,13 +283,16 @@ Alle Einstellungen liegen unter *Stores → Configuration → Sales → EU Guara
 
 ### 4.2 Platzierungen des Gewährleistungshinweises
 
-Für jede Platzierung wählen Sie einen von drei Modi:
+Für jede Platzierung im Shop wählen Sie einen von vier Modi:
 
 | Modus | Bedeutung |
 |---|---|
 | **Off** | Keine Ausgabe an dieser Stelle. |
 | **Direct (complete graphic)** | Die vollständige amtliche Grafik steht unmittelbar auf der Seite. |
 | **Nested (button opens dialog)** | Ein Button öffnet die Grafik beim ersten Klick in einem Dialogfenster. |
+| **Dialog only (place your own trigger)** | Wie *Nested*, aber ohne Button: Sie setzen den Auslöser selbst, siehe Abschnitt „Eigener Auslöser". |
+
+Die beiden E-Mail-Felder kennen nur *Ja* und *Nein*, weil eine E-Mail keinen Dialog öffnen kann.
 
 Die geschachtelte Anzeige ist nach den Leitlinien der EU-Kommission zulässig. Eine strengere Auslegung verlangt die unmittelbare Darstellung. Weil das eine Rechtsfrage ist, lässt das Modul die Entscheidung für jede Platzierung einzeln zu.
 
@@ -302,14 +305,31 @@ Die geschachtelte Anzeige ist nach den Leitlinien der EU-Kommission zulässig. E
 | Shopping Cart | Nested |
 | Checkout (before Place Order) | Direct |
 | Checkout Success Page | Direct |
-| Order Confirmation Email | Direct |
+| Order Confirmation Email | Ja |
 
 Zwei Hinweise zur Wahl des Modus:
 
 - **Enge Container sprechen für „Nested".** Ist der verfügbare Platz schmaler als die eingestellte Mindestbreite, wird die direkte Grafik nicht verkleinert, sondern lässt sich seitlich verschieben – sie ist vollständig, wirkt aber abgeschnitten. Das betrifft vor allem den Checkout auf dem Smartphone. Im Dialog erscheint die Grafik dagegen in voller Größe.
-- **In E-Mails gibt es keine Dialoge.** Steht die E-Mail-Platzierung auf *Nested*, wird sie wie *Direct* ausgegeben.
+- **In E-Mails gibt es keine Dialoge.** Die beiden E-Mail-Felder fragen deshalb nur, ob die Grafik mitgeschickt wird.
 
 Der Dialog ist vollständig mit der Tastatur bedienbar: Enter oder Leertaste öffnen ihn, Escape schließt ihn, und der Fokus kehrt anschließend auf den Button zurück.
+
+#### Eigener Auslöser
+
+Im Modus *Dialog only* liefert das Modul nur das Dialogfenster und überlässt Ihnen den Auslöser.
+Jedes Element mit der Klasse `copex-wl-trigger` und einem `aria-controls` auf die Dialog-ID öffnet ihn, gleich wo es auf der Seite steht – in einem statischen Block, im Footer, in einer Vorlage Ihres Themes:
+
+```html
+<button type="button" class="copex-wl-trigger" aria-controls="copex-wl-notice-footer">
+    Gesetzliche Gewährleistung
+</button>
+```
+
+Die IDs des Hinweises lauten `copex-wl-notice-` plus Platzierung, also `copex-wl-notice-header`, `-footer`, `-cart`, `-category`, `-search`, `-checkout` und `-success`.
+Das GARAN-Label auf der Produktseite hat die ID `copex-wl-garan-pdp`.
+Auf der Erfolgsseite und im Checkout enthalten die GARAN-IDs die Artikelnummer des Bestellpostens; lesen Sie sie dort aus der gerenderten Seite ab.
+
+Die Auslöser werden beim Laden der Seite gebunden. Ein Element, das ein eigenes Skript erst später einfügt, muss vorher im Dokument stehen.
 
 ![Im geschachtelten Modus öffnet ein Button den Hinweis](screenshots/05_notice_trigger.png)
 
