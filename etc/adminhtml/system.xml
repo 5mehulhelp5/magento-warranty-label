@@ -137,7 +137,7 @@
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Brand Comes From</label>
                     <source_model>CopeX\WarrantyLabel\Model\Source\BrandSource</source_model>
-                    <comment>A brand maintained on the product always wins over the fixed value.</comment>
+                    <comment><![CDATA[A brand maintained on the product always wins. Brand and model identifier share one line on the label: a value that is too long is rejected, not shrunk, and the product then shows <strong>no label at all</strong>. Check with <code>bin/magento copex:warranty-label:audit</code>, reason <code>too_long</code>.]]></comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -159,11 +159,11 @@
                         <field id="brand_source">config_value</field>
                     </depends>
                 </field>
-                <field id="model_source" translate="label" type="select" sortOrder="55"
+                <field id="model_source" translate="label comment" type="select" sortOrder="55"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Model Identifier Comes From</label>
                     <source_model>CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource</source_model>
-                    <comment>A model identifier maintained on the product always wins over the product name.</comment>
+                    <comment><![CDATA[A model identifier maintained on the product always wins over the product name. <strong>Careful with "Product name":</strong> most product names are too long for the label line shared with the brand. A value that does not fit is rejected, not shrunk, and the product then shows <strong>no label at all</strong>. Check with <code>bin/magento copex:warranty-label:audit</code>, reason <code>too_long</code>.]]></comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
