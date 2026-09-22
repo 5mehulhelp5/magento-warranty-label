@@ -18,8 +18,8 @@ Placements can now hand the trigger to the shop, the email fields are yes/no, an
   `hyva_default.xml` loads it - Hyvä adds the `hyva_` prefixed handles only while a Hyvä theme is active, so Luma keeps using the AMD modules untouched.
 
 - **The notice and the GARAN labels can travel as attachments.**
-  `Attach the Notice Graphic to the Email` and `Attach the Label Graphics to the Email` send the same graphics as PNG files next to the inline output — independent switches, so a shop can send them inline, attached, both or neither.
-  An email client that blocks remote images shows nothing of an inline graphic; the attached file stays readable.
+  The two email fields now choose between `No`, `Inline in the email` and `As a file attachment`.
+  An email client that blocks remote images shows nothing of an inline graphic; an attached file stays readable and the customer can keep it.
   The GARAN labels are attached one per labelled item, named `garan-label-<sku>.png`; the notice is `legal-guarantee-notice.png`.
   This is about readability, not about the durable medium — only the guarantee terms PDF satisfies that.
 
@@ -53,9 +53,9 @@ Placements can now hand the trigger to the shop, the email fields are yes/no, an
   in a shop, so the placements are now chosen deliberately. Existing installations keep their stored values — only a
   fresh install is affected.
 
-- **The two email fields are yes/no instead of a display mode.**
+- **The two email fields carry their own three-value mode instead of a display mode.**
   An email cannot open a dialog, so "Nested" was rendered like "Direct" and the option only invited a choice that had no effect.
-  A data patch converts the stored value, so the admin does not render an old "direct" as "No" and switch the graphic off on the next save.
+  The data patch `ConvertEmailPlacementsToMode` converts the stored value, so the admin does not render an old "direct" as the first option and switch the graphic off on the next save.
 
 ### Fixed
 

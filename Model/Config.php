@@ -7,6 +7,7 @@ namespace CopeX\WarrantyLabel\Model;
 use CopeX\WarrantyLabel\Model\Language\LanguageRegistry;
 use CopeX\WarrantyLabel\Model\Source\BrandSource;
 use CopeX\WarrantyLabel\Model\Source\DisplayMode;
+use CopeX\WarrantyLabel\Model\Source\EmailMode;
 use CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource;
 use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -28,8 +29,6 @@ class Config
     public const XML_PATH_GARAN_BRAND_VALUE = 'copex_warrantylabel/garan/brand_value';
     public const XML_PATH_GARAN_MODEL_SOURCE = 'copex_warrantylabel/garan/model_source';
     public const XML_PATH_GARAN_TERMS_URL = 'copex_warrantylabel/garan/terms_url';
-    public const XML_PATH_NOTICE_EMAIL_ATTACH = 'copex_warrantylabel/notice_placement/email_attach';
-    public const XML_PATH_GARAN_EMAIL_ATTACH = 'copex_warrantylabel/garan/email_attach';
     public const XML_PATH_GARAN_ATTACH_TERMS = 'copex_warrantylabel/garan/attach_terms';
     public const XML_PATH_GARAN_TERMS_FILE = 'copex_warrantylabel/garan/terms_file';
     public const XML_PATH_GARAN_TERMS_FILENAME = 'copex_warrantylabel/garan/terms_filename';
@@ -203,7 +202,7 @@ class Config
         $path = self::XML_PATH_NOTICE_PLACEMENT_PREFIX . $placement;
 
         return $placement === self::PLACEMENT_EMAIL
-            ? $this->getFlagMode($path, $storeId)
+            ? $this->getInlineMode($path, $storeId)
             : $this->normalizeMode($this->getString($path, $storeId));
     }
 
@@ -220,21 +219,18 @@ class Config
         $path = self::XML_PATH_GARAN_PLACEMENT_PREFIX . $placement;
 
         return $placement === self::PLACEMENT_EMAIL
-            ? $this->getFlagMode($path, $storeId)
+            ? $this->getInlineMode($path, $storeId)
             : $this->normalizeMode($this->getString($path, $storeId));
     }
 
     /**
-     * Whether the notice graphic travels with the order confirmation as a file, independent of the inline output.
+     * Whether the notice graphic travels with the order confirmation as a file instead of being shown inline.
      */
     public function isNoticeEmailAttachmentEnabled(?int $storeId = null): bool
     {
         return $this->isEnabled($storeId)
-            && $this->scopeConfig->isSetFlag(
-                self::XML_PATH_NOTICE_EMAIL_ATTACH,
-                ScopeInterface::SCOPE_STORE,
-                $storeId
-            );
+            && $this->getEmailMode(self::XML_PATH_NOTICE_PLACEMENT_PREFIX . self::PLACEMENT_EMAIL, $storeId)
+                === EmailMode::ATTACHMENT;
     }
 
     /**
@@ -243,11 +239,8 @@ class Config
     public function isGaranEmailAttachmentEnabled(?int $storeId = null): bool
     {
         return $this->isGaranActive($storeId)
-            && $this->scopeConfig->isSetFlag(
-                self::XML_PATH_GARAN_EMAIL_ATTACH,
-                ScopeInterface::SCOPE_STORE,
-                $storeId
-            );
+            && $this->getEmailMode(self::XML_PATH_GARAN_PLACEMENT_PREFIX . self::PLACEMENT_EMAIL, $storeId)
+                === EmailMode::ATTACHMENT;
     }
 
     /**
@@ -286,13 +279,18 @@ class Config
     }
 
     /**
-     * The email fields are yes/no: an email cannot open a dialog.
+     * The email fields carry an EmailMode; only "inline" puts the graphic into the body.
      */
-    private function getFlagMode(string $path, ?int $storeId): string
+    private function getInlineMode(string $path, ?int $storeId): string
     {
-        return $this->scopeConfig->isSetFlag($path, ScopeInterface::SCOPE_STORE, $storeId)
-            ? DisplayMode::DIRECT
-            : DisplayMode::OFF;
+        return $this->getEmailMode($path, $storeId) === EmailMode::INLINE ? DisplayMode::DIRECT : DisplayMode::OFF;
+    }
+
+    private function getEmailMode(string $path, ?int $storeId): string
+    {
+        $mode = $this->getString($path, $storeId);
+
+        return in_array($mode, EmailMode::MODES, true) ? $mode : EmailMode::NO;
     }
 
     /**

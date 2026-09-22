@@ -8,6 +8,7 @@ use CopeX\WarrantyLabel\Model\Config;
 use CopeX\WarrantyLabel\Model\Language\LanguageRegistry;
 use CopeX\WarrantyLabel\Model\Source\BrandSource;
 use CopeX\WarrantyLabel\Model\Source\DisplayMode;
+use CopeX\WarrantyLabel\Model\Source\EmailMode;
 use CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource;
 use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -57,18 +58,20 @@ class ConfigTest extends TestCase
         self::assertSame(DisplayMode::DIRECT, $this->config->getNoticeMode(Config::PLACEMENT_CHECKOUT, 1));
     }
 
-    public function testEmailPlacementReadsYesNo(): void
+    public function testOnlyInlineShowsTheGraphicInTheEmail(): void
     {
         $this->values = [
             Config::XML_PATH_ENABLED => '1',
-            Config::XML_PATH_NOTICE_PLACEMENT_PREFIX . 'email' => '1',
+            Config::XML_PATH_NOTICE_PLACEMENT_PREFIX . 'email' => EmailMode::INLINE,
         ];
 
         self::assertSame(DisplayMode::DIRECT, $this->config->getNoticeMode(Config::PLACEMENT_EMAIL, 1));
 
-        $this->values[Config::XML_PATH_NOTICE_PLACEMENT_PREFIX . 'email'] = '0';
+        foreach ([EmailMode::ATTACHMENT, EmailMode::NO, 'direct', ''] as $mode) {
+            $this->values[Config::XML_PATH_NOTICE_PLACEMENT_PREFIX . 'email'] = $mode;
 
-        self::assertSame(DisplayMode::OFF, $this->config->getNoticeMode(Config::PLACEMENT_EMAIL, 1));
+            self::assertSame(DisplayMode::OFF, $this->config->getNoticeMode(Config::PLACEMENT_EMAIL, 1), $mode);
+        }
     }
 
     public function testUnknownStoredModeFallsBackToOff(): void
@@ -228,9 +231,9 @@ class ConfigTest extends TestCase
     {
         $this->values = [
             Config::XML_PATH_ENABLED => '1',
-            Config::XML_PATH_NOTICE_EMAIL_ATTACH => '1',
+            Config::XML_PATH_NOTICE_PLACEMENT_PREFIX . 'email' => EmailMode::ATTACHMENT,
             Config::XML_PATH_GARAN_ENABLED => '1',
-            Config::XML_PATH_GARAN_EMAIL_ATTACH => '1',
+            Config::XML_PATH_GARAN_PLACEMENT_PREFIX . 'email' => EmailMode::ATTACHMENT,
         ];
 
         self::assertTrue($this->config->isNoticeEmailAttachmentEnabled(1));
@@ -242,11 +245,16 @@ class ConfigTest extends TestCase
         self::assertFalse($this->config->isGaranEmailAttachmentEnabled(1));
     }
 
-    public function testEmailAttachmentsAreOffByDefault(): void
+    public function testInlineAndNoDoNotAttachAnything(): void
     {
         $this->values = [Config::XML_PATH_ENABLED => '1', Config::XML_PATH_GARAN_ENABLED => '1'];
 
-        self::assertFalse($this->config->isNoticeEmailAttachmentEnabled(1));
-        self::assertFalse($this->config->isGaranEmailAttachmentEnabled(1));
+        foreach ([EmailMode::INLINE, EmailMode::NO, ''] as $mode) {
+            $this->values[Config::XML_PATH_NOTICE_PLACEMENT_PREFIX . 'email'] = $mode;
+            $this->values[Config::XML_PATH_GARAN_PLACEMENT_PREFIX . 'email'] = $mode;
+
+            self::assertFalse($this->config->isNoticeEmailAttachmentEnabled(1), $mode);
+            self::assertFalse($this->config->isGaranEmailAttachmentEnabled(1), $mode);
+        }
     }
 }

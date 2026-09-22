@@ -7,6 +7,7 @@ namespace CopeX\WarrantyLabel\Test\Unit\Model\Source;
 use CopeX\WarrantyLabel\Model\Language\LanguageRegistry;
 use CopeX\WarrantyLabel\Model\Source\BrandSource;
 use CopeX\WarrantyLabel\Model\Source\DisplayMode;
+use CopeX\WarrantyLabel\Model\Source\EmailMode;
 use CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource;
 use CopeX\WarrantyLabel\Model\Source\ProductTextAttribute;
 use CopeX\WarrantyLabel\Model\Source\Language;
@@ -110,5 +111,12 @@ class SourceModelsTest extends TestCase
         $factory->method('create')->willReturn($collection);
 
         return $factory;
+    }
+
+    public function testEmailModeOffersAllModes(): void
+    {
+        $values = array_column((new EmailMode())->toOptionArray(), 'value');
+
+        self::assertSame(EmailMode::MODES, $values);
     }
 }

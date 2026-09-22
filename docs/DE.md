@@ -292,7 +292,13 @@ Für jede Platzierung im Shop wählen Sie einen von vier Modi:
 | **Nested (button opens dialog)** | Ein Button öffnet die Grafik beim ersten Klick in einem Dialogfenster. |
 | **Dialog only (place your own trigger)** | Wie *Nested*, aber ohne Button: Sie setzen den Auslöser selbst, siehe Abschnitt „Eigener Auslöser". |
 
-Die beiden E-Mail-Felder kennen nur *Ja* und *Nein*, weil eine E-Mail keinen Dialog öffnen kann.
+Die beiden E-Mail-Felder haben stattdessen drei eigene Werte, weil eine E-Mail keinen Dialog öffnen kann:
+
+| Wert | Bedeutung |
+|---|---|
+| **No** | Die Grafik erscheint nicht in der E-Mail. |
+| **Inline in the email** | Die Grafik steht im Nachrichtentext. |
+| **As a file attachment** | Die Grafik hängt als PNG-Datei an der E-Mail. |
 
 Die geschachtelte Anzeige ist nach den Leitlinien der EU-Kommission zulässig. Eine strengere Auslegung verlangt die unmittelbare Darstellung. Weil das eine Rechtsfrage ist, lässt das Modul die Entscheidung für jede Platzierung einzeln zu.
 
@@ -305,15 +311,15 @@ Die geschachtelte Anzeige ist nach den Leitlinien der EU-Kommission zulässig. E
 | Shopping Cart | Off | Nested |
 | Checkout (before Place Order) | Off | Direct |
 | Checkout Success Page | Off | Direct |
-| Order Confirmation Email | Off | Ja |
+| Order Confirmation Email | No | Inline in the email |
 
 Ausgeliefert wird alles ausgeschaltet: Ein frisch installiertes Modul verändert Ihren Shop an keiner Stelle. Die Spalte *Empfehlung* ist der Ausgangspunkt, den wir für einen typischen Shop vorschlagen — geschachtelt überall dort, wo die Grafik das Layout sprengen würde, direkt dort, wo der Kunde unmittelbar vor oder nach der Bestellung steht.
 
 Zwei Hinweise zur Wahl des Modus:
 
 - **Enge Container sprechen für „Nested".** Ist der verfügbare Platz schmaler als die eingestellte Mindestbreite, wird die direkte Grafik nicht verkleinert, sondern lässt sich seitlich verschieben – sie ist vollständig, wirkt aber abgeschnitten. Das betrifft vor allem den Checkout auf dem Smartphone. Im Dialog erscheint die Grafik dagegen in voller Größe.
-- **In E-Mails gibt es keine Dialoge.** Die beiden E-Mail-Felder fragen deshalb nur, ob die Grafik mitgeschickt wird.
-- **Attach the Notice Graphic to the Email** hängt dieselbe Grafik zusätzlich als PNG-Datei an. *Standard: Nein.* Das ist unabhängig vom Feld darüber und hilft dort, wo das E-Mail-Programm entfernte Bilder blockiert: Der Dateianhang bleibt sichtbar, auch wenn das eingebettete Bild leer bleibt. Dasselbe gibt es beim GARAN-Label, siehe Abschnitt 4.3.
+- **In E-Mails gibt es keine Dialoge.** Die beiden E-Mail-Felder entscheiden deshalb nur, *wie* die Grafik mitkommt.
+- **Wann *As a file attachment*?** Viele E-Mail-Programme blockieren entfernte Bilder; dann bleibt von der eingebetteten Grafik nichts übrig. Der Dateianhang ist in diesem Fall sichtbar und lässt sich vom Kunden ablegen. Dafür steht er nicht mehr im Lesefluss der Nachricht.
 
 Der Dialog ist vollständig mit der Tastatur bedienbar: Enter oder Leertaste öffnen ihn, Escape schließt ihn, und der Fokus kehrt anschließend auf den Button zurück.
 
@@ -344,8 +350,7 @@ Die Auslöser werden beim Laden der Seite gebunden. Ein Element, das ein eigenes
 - **Product Page** — *Standard: Off.*
 - **Checkout (before Place Order)** — *Standard: Off.* Das Label erscheint an zwei Stellen: am jeweiligen Artikel in der Bestellübersicht und gesammelt in der gewählten Zahlungsart, direkt über dem Bestell-Button. Die zweite Stelle ist auf Mobilgeräten wichtig, wo die Bestellübersicht eingeklappt ist.
 - **Checkout Success Page** — *Standard: Off.*
-- **Order Confirmation Email** — *Standard: Nein.*
-- **Attach the Label Graphics to the Email** — schickt zusätzlich je gekennzeichnetem Artikel eine PNG-Datei mit, benannt nach dessen SKU (`garan-label-<sku>.png`). *Standard: Nein.* Unabhängig vom Feld darüber.
+- **Order Confirmation Email** — *Standard: No.* Bei *As a file attachment* hängt je gekennzeichnetem Artikel eine PNG-Datei an der E-Mail, benannt nach dessen SKU (`garan-label-<sku>.png`).
 - **Brand Comes From** — woher die Marke kommt, wenn das Produkt selbst keine `GARAN Brand` trägt. *Standard: GARAN Brand attribute of the product.*
   - *GARAN Brand attribute of the product* — nur das GARAN-Attribut.
   - *Another product attribute* — ein beliebiges anderes Produktattribut, das darunter im Feld **Brand Product Attribute** gewählt wird (alle Text-, Textarea- und Auswahlattribute stehen zur Wahl, etwa `manufacturer`). Bei Auswahlattributen wird die Options­beschriftung verwendet, nicht die Options-ID.
@@ -428,7 +433,7 @@ Ein Link auf eine Webseite genügt rechtlich nicht. Die Garantieerklärung muss 
 
 Das Modul hängt deshalb eine PDF-Datei an die Bestellbestätigung — und zwar nur bei Bestellungen, die mindestens ein Produkt mit GARAN-Label enthalten. Ein Zusatzmodul ist dafür nicht nötig.
 
-Davon zu trennen sind die beiden **Grafik-Anhänge** (*Attach the Notice Graphic to the Email* und *Attach the Label Graphics to the Email*): Sie hängen dieselben Bilder an, die auch in der Mail stehen, und dienen der Lesbarkeit, nicht dem dauerhaften Datenträger. Die Garantieerklärung erfüllt nur das PDF.
+Davon zu trennen ist der Wert *As a file attachment* der beiden E-Mail-Felder: Er hängt die Grafiken an, die sonst im Nachrichtentext stünden, und dient der Lesbarkeit, nicht dem dauerhaften Datenträger. Die Garantieerklärung erfüllt nur das PDF.
 
 ### 6.1 Einrichtung
 

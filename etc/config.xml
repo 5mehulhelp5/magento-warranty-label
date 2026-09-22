@@ -19,16 +19,14 @@
                 <cart>off</cart>
                 <checkout>off</checkout>
                 <success>off</success>
-                <email>0</email>
-                <email_attach>0</email_attach>
+                <email>no</email>
             </notice_placement>
             <garan>
                 <enabled>0</enabled>
                 <pdp>off</pdp>
                 <checkout>off</checkout>
                 <success>off</success>
-                <email>0</email>
-                <email_attach>0</email_attach>
+                <email>no</email>
                 <brand_source>garan_attribute</brand_source>
                 <brand_attribute/>
                 <brand_value/>
