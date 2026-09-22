@@ -130,7 +130,7 @@ Ein Feld, neben dem **Use Default** oder **Use system value** angehakt ist, übe
 
 ![Die Gruppe Legal Guarantee Notice Placements](screenshots/01b_config_notice_placements.png)
 
-Jede Zeile ist eine Stelle im Shop, jede Stelle hat einen der drei Modi *Off*, *Direct* und *Nested* (siehe Abschnitt 4.2). Die Voreinstellung ist ein sinnvoller Ausgangspunkt: geschachtelt überall dort, wo die Grafik das Layout sprengen würde, direkt dort, wo der Kunde unmittelbar vor oder nach der Bestellung steht.
+Jede Zeile ist eine Stelle im Shop, jede Stelle hat einen der vier Modi *Off*, *Direct*, *Nested* und *Dialog only* (siehe Abschnitt 4.2). **Ausgeliefert steht alles auf *Off*** — solange Sie hier nichts umstellen, bleibt der Shop unverändert. Einen Vorschlag, womit Sie anfangen, finden Sie in der Tabelle in Abschnitt 4.2.
 
 | Platzierung | Wo der Hinweis in Luma erscheint |
 |---|---|
@@ -296,16 +296,18 @@ Die beiden E-Mail-Felder kennen nur *Ja* und *Nein*, weil eine E-Mail keinen Dia
 
 Die geschachtelte Anzeige ist nach den Leitlinien der EU-Kommission zulässig. Eine strengere Auslegung verlangt die unmittelbare Darstellung. Weil das eine Rechtsfrage ist, lässt das Modul die Entscheidung für jede Platzierung einzeln zu.
 
-| Platzierung | Standard |
-|---|---|
-| Header | Nested |
-| Footer | Nested |
-| Category Page | Nested |
-| Search Results | Nested |
-| Shopping Cart | Nested |
-| Checkout (before Place Order) | Direct |
-| Checkout Success Page | Direct |
-| Order Confirmation Email | Ja |
+| Platzierung | Standard | Empfehlung |
+|---|---|---|
+| Header | Off | Nested |
+| Footer | Off | Nested |
+| Category Page | Off | Nested |
+| Search Results | Off | Nested |
+| Shopping Cart | Off | Nested |
+| Checkout (before Place Order) | Off | Direct |
+| Checkout Success Page | Off | Direct |
+| Order Confirmation Email | Off | Ja |
+
+Ausgeliefert wird alles ausgeschaltet: Ein frisch installiertes Modul verändert Ihren Shop an keiner Stelle. Die Spalte *Empfehlung* ist der Ausgangspunkt, den wir für einen typischen Shop vorschlagen — geschachtelt überall dort, wo die Grafik das Layout sprengen würde, direkt dort, wo der Kunde unmittelbar vor oder nach der Bestellung steht.
 
 Zwei Hinweise zur Wahl des Modus:
 
@@ -338,10 +340,10 @@ Die Auslöser werden beim Laden der Seite gebunden. Ein Element, das ein eigenes
 ### 4.3 GARAN-Label
 
 - **Enable GARAN Label** — schaltet das Label frei. *Standard: No.* Solange es ausgeschaltet ist, bleiben die Produktattribute erhalten, werden aber nirgends angezeigt.
-- **Product Page** — *Standard: Nested.*
-- **Checkout (before Place Order)** — *Standard: Direct.* Das Label erscheint an zwei Stellen: am jeweiligen Artikel in der Bestellübersicht und gesammelt in der gewählten Zahlungsart, direkt über dem Bestell-Button. Die zweite Stelle ist auf Mobilgeräten wichtig, wo die Bestellübersicht eingeklappt ist.
-- **Checkout Success Page** — *Standard: Direct.*
-- **Order Confirmation Email** — *Standard: Ja.*
+- **Product Page** — *Standard: Off.*
+- **Checkout (before Place Order)** — *Standard: Off.* Das Label erscheint an zwei Stellen: am jeweiligen Artikel in der Bestellübersicht und gesammelt in der gewählten Zahlungsart, direkt über dem Bestell-Button. Die zweite Stelle ist auf Mobilgeräten wichtig, wo die Bestellübersicht eingeklappt ist.
+- **Checkout Success Page** — *Standard: Off.*
+- **Order Confirmation Email** — *Standard: Nein.*
 - **Brand Comes From** — woher die Marke kommt, wenn das Produkt selbst keine `GARAN Brand` trägt. *Standard: GARAN Brand attribute of the product.*
   - *GARAN Brand attribute of the product* — nur das GARAN-Attribut.
   - *Another product attribute* — ein beliebiges anderes Produktattribut, das darunter im Feld **Brand Product Attribute** gewählt wird (alle Text-, Textarea- und Auswahlattribute stehen zur Wahl, etwa `manufacturer`). Bei Auswahlattributen wird die Options­beschriftung verwendet, nicht die Options-ID.

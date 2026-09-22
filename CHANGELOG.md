@@ -40,6 +40,13 @@ Placements can now hand the trigger to the shop, the email fields are yes/no, an
 
 ### Changed
 
+- **Every placement now ships switched off.**
+  The defaults used to enable the notice in the header, footer, category, search, cart, checkout, success page and the
+  order confirmation email, and the GARAN label on the product page, in the checkout, on the success page and in the
+  email, as soon as the kill switch was turned on. A compliance extension should not decide by itself where it appears
+  in a shop, so the placements are now chosen deliberately. Existing installations keep their stored values — only a
+  fresh install is affected.
+
 - **The two email fields are yes/no instead of a display mode.**
   An email cannot open a dialog, so "Nested" was rendered like "Direct" and the option only invited a choice that had no effect.
   A data patch converts the stored value, so the admin does not render an old "direct" as "No" and switch the graphic off on the next save.

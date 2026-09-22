@@ -12,21 +12,21 @@
                 <excluded_product_types>virtual,downloadable,giftcard,mageworx_giftcards</excluded_product_types>
             </general>
             <notice_placement>
-                <header>nested</header>
-                <footer>nested</footer>
-                <category>nested</category>
-                <search>nested</search>
-                <cart>nested</cart>
-                <checkout>direct</checkout>
-                <success>direct</success>
-                <email>1</email>
+                <header>off</header>
+                <footer>off</footer>
+                <category>off</category>
+                <search>off</search>
+                <cart>off</cart>
+                <checkout>off</checkout>
+                <success>off</success>
+                <email>0</email>
             </notice_placement>
             <garan>
                 <enabled>0</enabled>
-                <pdp>nested</pdp>
-                <checkout>direct</checkout>
-                <success>direct</success>
-                <email>1</email>
+                <pdp>off</pdp>
+                <checkout>off</checkout>
+                <success>off</success>
+                <email>0</email>
                 <brand_source>garan_attribute</brand_source>
                 <brand_attribute/>
                 <brand_value/>

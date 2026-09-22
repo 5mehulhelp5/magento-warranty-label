@@ -74,6 +74,10 @@ Every storefront placement takes one of four modes:
 
 The two email fields are yes/no, because an email cannot open a dialog.
 
+Everything ships switched off — both kill switches and every single placement. A freshly installed module changes
+nothing in the storefront until the placements are chosen deliberately; `docs/EN.md` section 4.2 suggests where to
+start.
+
 ### Your own trigger
 
 In **Dialog only** the module renders the `<dialog>` and leaves the trigger to you. Any element carrying the class

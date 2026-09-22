@@ -129,7 +129,7 @@ Open the group **Legal Guarantee Notice Placements**.
 
 ![The Legal Guarantee Notice Placements group](screenshots/01b_config_notice_placements.png)
 
-Each row is a place in the shop, and each place has one of the three modes *Off*, *Direct* and *Nested* (see section 4.2). The defaults are a sensible starting point: nested wherever the graphic would break the layout, direct where the customer stands immediately before or after the order.
+Each row is a place in the shop, and each place has one of the four modes *Off*, *Direct*, *Nested* and *Dialog only* (see section 4.2). **Everything ships set to *Off*** — until you change something here, the shop stays as it is. Section 4.2 suggests where to start.
 
 | Placement | Where the notice appears in Luma |
 |---|---|
@@ -295,16 +295,18 @@ The two email fields are yes/no, because an email cannot open a dialog.
 
 The nested display is permitted by the European Commission's guidelines. A stricter reading requires the direct display. Because this is a legal question, the module lets you decide per placement.
 
-| Placement | Default |
-|---|---|
-| Header | Nested |
-| Footer | Nested |
-| Category Page | Nested |
-| Search Results | Nested |
-| Shopping Cart | Nested |
-| Checkout (before Place Order) | Direct |
-| Checkout Success Page | Direct |
-| Order Confirmation Email | Yes |
+| Placement | Default | Recommendation |
+|---|---|---|
+| Header | Off | Nested |
+| Footer | Off | Nested |
+| Category Page | Off | Nested |
+| Search Results | Off | Nested |
+| Shopping Cart | Off | Nested |
+| Checkout (before Place Order) | Off | Direct |
+| Checkout Success Page | Off | Direct |
+| Order Confirmation Email | Off | Yes |
+
+Everything ships switched off: a freshly installed module changes nothing in your shop. The *Recommendation* column is the starting point we suggest for a typical shop — nested wherever the graphic would break the layout, direct where the customer stands immediately before or after the order.
 
 Two notes on choosing the mode:
 
@@ -337,10 +339,10 @@ Triggers are bound when the page loads. An element a script of your own inserts 
 ### 4.3 GARAN label
 
 - **Enable GARAN Label** — releases the label. *Default: No.* While it is off, the product attributes are kept but displayed nowhere.
-- **Product Page** — *Default: Nested.*
-- **Checkout (before Place Order)** — *Default: Direct.* The label appears in two places: on the individual item in the order summary, and collected inside the selected payment method directly above the place-order button. The second position matters on mobile, where the order summary is collapsed.
-- **Checkout Success Page** — *Default: Direct.*
-- **Order Confirmation Email** — *Default: Yes.*
+- **Product Page** — *Default: Off.*
+- **Checkout (before Place Order)** — *Default: Off.* The label appears in two places: on the individual item in the order summary, and collected inside the selected payment method directly above the place-order button. The second position matters on mobile, where the order summary is collapsed.
+- **Checkout Success Page** — *Default: Off.*
+- **Order Confirmation Email** — *Default: No.*
 - **Brand Comes From** — where the brand comes from when the product carries no `GARAN Brand` of its own. *Default: GARAN Brand attribute of the product.*
   - *GARAN Brand attribute of the product* — the GARAN attribute only.
   - *Another product attribute* — any other product attribute, selected below in **Brand Product Attribute** (every text, textarea and select attribute is offered, e.g. `manufacturer`). For select attributes the option label is used, not the option id.
