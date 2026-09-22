@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace CopeX\WarrantyLabel\Model\Email;
 
 /**
- * Immutable description of one file that is attached to an order email.
+ * Immutable description of one file that is attached to an order email: the guarantee terms document, the notice
+ * graphic, a GARAN label graphic.
  *
- * The content is held in memory on purpose: the attachment has to survive even if the configured file is replaced
- * between resolving and sending, and Symfony renders the part from the string without touching the file again.
+ * The content is held in memory on purpose: the attachment has to survive even if the file is replaced between
+ * resolving and sending, and Symfony renders the part from the string without touching the file again.
  */
-class TermsDocumentData
+class EmailAttachment
 {
     public function __construct(
         private readonly string $name,

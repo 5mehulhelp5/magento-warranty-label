@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!--
+    Hyvä adds a "hyva_" prefixed copy of every layout handle while a Hyvä theme is active
+    (Hyva\Theme\Observer\AddLayoutHandles), so this file never applies to Luma.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <script src="CopeX_WarrantyLabel::js/hyva/warranty-label.js" defer="true"/>
+    </head>
+</page>

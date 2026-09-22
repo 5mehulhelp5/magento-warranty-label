@@ -60,16 +60,44 @@ The module is **off by default**. `copex_warrantylabel/general/enabled = 0` is a
 | Group | Purpose |
 |---|---|
 | General Settings | Kill switch, label language, nested button text, notice alt text, minimum notice width, product types without a legal guarantee |
-| Legal Guarantee Notice Placements | Display mode per placement: header, footer, category, search, cart, checkout, success page, order confirmation email |
-| EU GARAN Label | Kill switch, display mode per placement, and the guarantee terms attachment |
+| Legal Guarantee Notice Placements | Display mode per placement: header, footer, category, search, cart, checkout, success page; yes/no for the order confirmation email |
+| EU GARAN Label | Kill switch, display mode per placement, yes/no for the email, and the guarantee terms attachment |
 
-Every placement takes one of three modes:
+Every storefront placement takes one of four modes:
 
 - **Off** — no output.
 - **Direct** — the official graphic is shown inline.
 - **Nested** — a button opens a native `<dialog>` containing the full graphic, as permitted by the EU practical
   guidelines. Use this wherever the container is narrower than the configured minimum width; the checkout sidebar of
   most themes is.
+- **Dialog only** — the same dialog without the button, for shops that place their own trigger. See below.
+
+The two email fields take an `EmailMode` instead, because an email cannot open a dialog: `no`, `inline` or
+`attachment`. `attachment` sends the graphic as a PNG file rather than in the body, for clients that block remote
+images; the GARAN labels are then attached one per labelled item, named `garan-label-<sku>.png`, and the notice as
+`legal-guarantee-notice.png`.
+
+Everything ships switched off — both kill switches and every single placement. A freshly installed module changes
+nothing in the storefront until the placements are chosen deliberately; `docs/EN.md` section 4.2 suggests where to
+start.
+
+### Your own trigger
+
+In **Dialog only** the module renders the `<dialog>` and leaves the trigger to you. Any element carrying the class
+`copex-wl-trigger` and an `aria-controls` with the dialog id opens it, wherever it sits on the page — a CMS block, the
+footer, a template of your theme:
+
+```html
+<button type="button" class="copex-wl-trigger" aria-controls="copex-wl-notice-footer">
+    Legal guarantee
+</button>
+```
+
+The ids are `copex-wl-notice-<placement>` for the notice — `copex-wl-notice-header`, `-footer`, `-cart`, `-category`,
+`-search`, `-checkout`, `-success` — and `copex-wl-garan-pdp` for the GARAN label on the product page. On the success
+page and in the checkout the GARAN ids carry the item id, so read them from the rendered markup.
+
+Triggers are bound when the page loads. One added later, by a script of your own, needs to be in the DOM before that.
 
 **Label language is not the locale.** `general/language` selects which of the 24 official language versions is shown;
 it falls back to the locale language, then to English. A German-locale store view serving English-speaking customers
@@ -77,7 +105,7 @@ can therefore show the English notice.
 
 ## Product data for GARAN
 
-Four EAV attributes are added to **simple products only**, because the model identifier belongs to the variant:
+Four EAV attributes are added to **every product type**, with **store view** scope:
 
 | Attribute | Notes |
 |---|---|
@@ -86,8 +114,21 @@ Four EAV attributes are added to **simple products only**, because the model ide
 | `garan_duration_years` | Accepts `4,5` and `4.5`; must be > 2, <= 99 and a multiple of 0.5 |
 | `garan_terms_url` | Must be a valid http(s) URL; without it no label is rendered |
 
-A label appears only when all four are valid. Configurable products resolve through the selected child — never the
-parent, and never before a variant is chosen. Bundles resolve across all children.
+A label appears only when all four are valid. Configurable products resolve through the selected child, never before
+a variant is chosen; a child whose field is empty inherits it from its configurable parent. Bundles resolve across all
+children.
+
+**Fallbacks for empty fields.** The product always wins; these only fill a gap:
+
+| Setting | Effect |
+|---|---|
+| `garan/brand_source` | `garan_attribute` (default), `product_attribute` (any text/textarea/select attribute, chosen in `garan/brand_attribute`, resolved to its option label), or `config_value` (the fixed `garan/brand_value`) |
+| `garan/model_source` | `garan_attribute` (default) or `product_name` |
+| `garan/terms_url` | One URL for every product without its own |
+
+`model_source = product_name` is width-validated like any other value: a name too long for the shared brand/model line
+is rejected, not shrunk, and the product gets **no label** with the audit reason `too_long`. Spot-check with
+`bin/magento copex:warranty-label:audit --store=<id>`.
 
 **Half-year durations:** at the official font size only whole years 3–99 and `7,5` fit in front of the calendar icon.
 Other `,5` values are accepted as data but produce **no label** and the audit reason `duration_does_not_fit`, because
@@ -128,6 +169,37 @@ guarantee data — deciding which products qualify and maintaining their values 
 **Luma** (and Blank) is supported out of the box and is what the module is tested against. Every placement is an
 ordinary Magento core container — `header-wrapper`, `footer`, `content`, `cart.summary`, `product.info.main`. No
 third-party theme is required anywhere.
+
+### Hyvä
+
+Supported.
+Keep the shipped defaults — `nested` for the storefront placements: the notice graphic is 420 x 594 px and `direct` pushes a Hyvä header or footer apart.
+
+The GARAN label on the product page is the one placement a Hyvä project has to make itself.
+The module's anchor resolves in Luma only, so the label otherwise renders at the bottom of the product column.
+Place it in the theme:
+
+```xml
+<!-- app/design/frontend/<Vendor>/<theme>/Magento_Catalog/layout/catalog_product_view.xml -->
+<referenceBlock name="copex.warrantylabel.garan.product" remove="true"/>
+<referenceBlock name="product.info">
+    <block class="Magento\Catalog\Block\Product\View"
+           name="copex.warrantylabel.garan.product.hyva"
+           template="CopeX_WarrantyLabel::garan-product.phtml"
+           ifconfig="copex_warrantylabel/garan/enabled">
+        <arguments>
+            <argument name="view_model" xsi:type="object">CopeX\WarrantyLabel\ViewModel\GaranProduct</argument>
+        </arguments>
+    </block>
+</referenceBlock>
+```
+
+```phtml
+<!-- .../Magento_Catalog/templates/product/view/product-info.phtml, where the label belongs -->
+<?= $block->getChildHtml('copex.warrantylabel.garan.product.hyva') ?>
+```
+
+### Checkout
 
 The checkout uses two regions of `Magento_Checkout`:
 

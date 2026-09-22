@@ -129,7 +129,7 @@ Open the group **Legal Guarantee Notice Placements**.
 
 ![The Legal Guarantee Notice Placements group](screenshots/01b_config_notice_placements.png)
 
-Each row is a place in the shop, and each place has one of the three modes *Off*, *Direct* and *Nested* (see section 4.2). The defaults are a sensible starting point: nested wherever the graphic would break the layout, direct where the customer stands immediately before or after the order.
+Each row is a place in the shop, and each place has one of the four modes *Off*, *Direct*, *Nested* and *Dialog only* (see section 4.2). **Everything ships set to *Off*** — until you change something here, the shop stays as it is. Section 4.2 suggests where to start.
 
 | Placement | Where the notice appears in Luma |
 |---|---|
@@ -282,33 +282,62 @@ All settings live under *Stores → Configuration → Sales → EU Guarantee Not
 
 ### 4.2 Legal guarantee notice placements
 
-For each placement you choose one of three modes:
+For each storefront placement you choose one of four modes:
 
 | Mode | Meaning |
 |---|---|
 | **Off** | No output at this position. |
 | **Direct (complete graphic)** | The complete official graphic sits directly on the page. |
 | **Nested (button opens dialog)** | A button opens the graphic in a dialog on the first click. |
+| **Dialog only (place your own trigger)** | Like *Nested*, but without the button: you place the trigger yourself, see "Your own trigger". |
+
+The two email fields have three values of their own instead, because an email cannot open a dialog:
+
+| Value | Meaning |
+|---|---|
+| **No** | The graphic does not appear in the email. |
+| **Inline in the email** | The graphic sits in the message body. |
+| **As a file attachment** | The graphic is attached to the email as a PNG file. |
 
 The nested display is permitted by the European Commission's guidelines. A stricter reading requires the direct display. Because this is a legal question, the module lets you decide per placement.
 
-| Placement | Default |
-|---|---|
-| Header | Nested |
-| Footer | Nested |
-| Category Page | Nested |
-| Search Results | Nested |
-| Shopping Cart | Nested |
-| Checkout (before Place Order) | Direct |
-| Checkout Success Page | Direct |
-| Order Confirmation Email | Direct |
+| Placement | Default | Recommendation |
+|---|---|---|
+| Header | Off | Nested |
+| Footer | Off | Nested |
+| Category Page | Off | Nested |
+| Search Results | Off | Nested |
+| Shopping Cart | Off | Nested |
+| Checkout (before Place Order) | Off | Direct |
+| Checkout Success Page | Off | Direct |
+| Order Confirmation Email | No | Inline in the email |
+
+Everything ships switched off: a freshly installed module changes nothing in your shop. The *Recommendation* column is the starting point we suggest for a typical shop — nested wherever the graphic would break the layout, direct where the customer stands immediately before or after the order.
 
 Two notes on choosing the mode:
 
 - **Narrow containers speak for "Nested".** Where the available space is narrower than the configured minimum width, the direct graphic is not shrunk but can be scrolled sideways — it is complete but looks cut off. That mainly concerns the checkout on a phone. In the dialog the graphic appears at full size.
-- **Emails have no dialogs.** If the email placement is set to *Nested*, it is rendered like *Direct*.
+- **Emails have no dialogs.** The two email fields therefore only decide *how* the graphic travels with the message.
+- **When to pick *As a file attachment*?** Many email clients block remote images, and nothing is left of an embedded graphic. An attachment stays visible in that case and the customer can file it away — but it no longer sits in the flow of the message.
 
 The dialog is fully keyboard operable: Enter or Space open it, Escape closes it, and focus returns to the button afterwards.
+
+#### Your own trigger
+
+In *Dialog only* the module renders the dialog and leaves the trigger to you.
+Any element carrying the class `copex-wl-trigger` and an `aria-controls` with the dialog id opens it, wherever it sits on the page - a CMS block, the footer, a template of your theme:
+
+```html
+<button type="button" class="copex-wl-trigger" aria-controls="copex-wl-notice-footer">
+    Legal guarantee
+</button>
+```
+
+The notice ids are `copex-wl-notice-` plus the placement, so `copex-wl-notice-header`, `-footer`, `-cart`, `-category`, `-search`, `-checkout` and `-success`.
+The GARAN label on the product page uses `copex-wl-garan-pdp`.
+On the success page and in the checkout the GARAN ids carry the order item id; read them from the rendered page there.
+
+Triggers are bound when the page loads. An element a script of your own inserts later has to be in the document before that.
 
 ![In nested mode a button opens the notice](screenshots/05_notice_trigger.png)
 
@@ -317,10 +346,20 @@ The dialog is fully keyboard operable: Enter or Space open it, Escape closes it,
 ### 4.3 GARAN label
 
 - **Enable GARAN Label** — releases the label. *Default: No.* While it is off, the product attributes are kept but displayed nowhere.
-- **Product Page** — *Default: Nested.*
-- **Checkout (before Place Order)** — *Default: Direct.* The label appears in two places: on the individual item in the order summary, and collected inside the selected payment method directly above the place-order button. The second position matters on mobile, where the order summary is collapsed.
-- **Checkout Success Page** — *Default: Direct.*
-- **Order Confirmation Email** — *Default: Direct.*
+- **Product Page** — *Default: Off.*
+- **Checkout (before Place Order)** — *Default: Off.* The label appears in two places: on the individual item in the order summary, and collected inside the selected payment method directly above the place-order button. The second position matters on mobile, where the order summary is collapsed.
+- **Checkout Success Page** — *Default: Off.*
+- **Order Confirmation Email** — *Default: No.* With *As a file attachment*, one PNG file per labelled item is attached to the email, named after its SKU (`garan-label-<sku>.png`).
+- **Brand Comes From** — where the brand comes from when the product carries no `GARAN Brand` of its own. *Default: GARAN Brand attribute of the product.*
+  - *GARAN Brand attribute of the product* — the GARAN attribute only.
+  - *Another product attribute* — any other product attribute, selected below in **Brand Product Attribute** (every text, textarea and select attribute is offered, e.g. `manufacturer`). For select attributes the option label is used, not the option id.
+  - *Fixed value below* — a fixed value from the **Brand** field, useful for single-brand shops.
+- **Model Identifier Comes From** — where the model identifier comes from when the product carries no `GARAN Model Identifier` of its own. *Default: GARAN Model Identifier attribute of the product.* The alternative *Product name* uses the product name.
+- **Guarantee Terms URL** — one address for every product without its own. *Default: empty.*
+
+All three fields only fill in **empty** product values. Whatever the product carries always wins.
+
+> **Careful with long product names.** Brand and model identifier share one line on the label. A value that is too long is not shrunk but rejected — no label appears at all, with no error in the storefront. After switching to *Product name*, spot-check with `bin/magento copex:warranty-label:audit --store=<id>`; the reason is reported as `too_long`.
 
 The remaining fields of the group concern the attachment and are described in chapter 6.
 
@@ -334,13 +373,13 @@ The remaining fields of the group concern the attachment and are described in ch
 
 The module creates no guarantee data. It only displays what you maintain.
 
-On installation, the group **EU GARAN Guarantee** is added to every attribute set, holding four attributes. They apply to **simple products only**, because the model identifier belongs to the specific variant rather than to the configurable parent.
+On installation, the group **EU GARAN Guarantee** is added to every attribute set, holding four attributes. They can be maintained on **every product type** and apply per **store view**, so brand and terms may differ per language.
 
 | Attribute | Scope | Meaning |
 |---|---|---|
-| **GARAN Brand** | global | The brand as printed on the label. |
-| **GARAN Model Identifier** | global | The model identifier as printed on the label. |
-| **GARAN Guarantee Duration (Years)** | global | Whole or half years, more than 2, e.g. `3` or `4,5`. Leave empty when there is no free producer guarantee on the whole product. |
+| **GARAN Brand** | store view | The brand as printed on the label. |
+| **GARAN Model Identifier** | store view | The model identifier as printed on the label. |
+| **GARAN Guarantee Duration (Years)** | store view | Whole or half years, more than 2, e.g. `3` or `4,5`. Leave empty when there is no free producer guarantee on the whole product. |
 | **GARAN Guarantee Terms URL** | store view | Full `http://` or `https://` address of the guarantee terms in the language of the storefront. |
 
 A label appears only when **all four values are present and valid**. If one is missing, the module displays nothing — it never shows an incomplete label.
@@ -366,9 +405,12 @@ If even one of these does not hold, no label may be set. Leave the duration empt
 
 On configurable products the values belong to the selected variant. The module therefore shows
 
-- **no** label on the configurable parent,
 - **no** label while no variant has been selected,
 - and swaps the label as soon as the customer selects a different variant.
+
+**Inheritance.** When the variants differ only in size or colour, there is no need to maintain the four values on each of them: enter them on the configurable parent. Every variant whose own field is empty takes the parent's value. A value maintained on the child always wins.
+
+If the parent itself carries complete values, it shows a label on its own product page too — intended when all variants share the same guarantee. To keep the parent without one, leave at least one field empty there.
 
 On bundle products all contained items are taken into account.
 
@@ -390,6 +432,8 @@ A link to a website is not legally sufficient. The guarantee statement must reac
 
 The module therefore attaches a PDF file to the order confirmation — only for orders containing at least one product with a GARAN label. No additional extension is required.
 
+Keep this apart from the *As a file attachment* value of the two email fields: it attaches the graphics that would otherwise sit in the message body, and serves readability, not the durable medium. Only the PDF satisfies the guarantee statement.
+
 ### 6.1 Setting it up
 
 - **Attach Guarantee Terms to the Order Confirmation** — enables the attachment. *Default: No.*
@@ -410,7 +454,7 @@ The attachment does not replace the link on the label. Both are required: the li
 
 ## 7 Data audit
 
-The following command lists all simple products whose GARAN data is incomplete or invalid and which therefore show no label:
+The following command lists all products whose GARAN data is incomplete or invalid and which therefore show no label:
 
 ```bash
 bin/magento copex:warranty-label:audit

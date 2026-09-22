@@ -6,6 +6,7 @@ namespace CopeX\WarrantyLabel\Observer;
 
 use CopeX\WarrantyLabel\Api\GaranLabelResolverInterface;
 use CopeX\WarrantyLabel\Model\Config;
+use CopeX\WarrantyLabel\Model\Email\GraphicAttachments;
 use CopeX\WarrantyLabel\Model\Email\PendingAttachments;
 use CopeX\WarrantyLabel\Model\Email\TermsDocument;
 use Magento\Framework\DataObject;
@@ -16,11 +17,13 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
- * Registers the guarantee terms document for the order confirmation email.
+ * Registers the files that travel with the order confirmation email: the guarantee terms document, the notice
+ * graphic and the GARAN label graphics. Each has its own switch.
  *
  * The producer's guarantee statement must reach the consumer on a durable medium at the latest at delivery
  * (§ 9a (3) KSchG, § 479 (2) BGB, Art. 17(2) Directive (EU) 2019/771); a link is not enough (CJEU C-49/11), so the
  * configured file is attached to the confirmation mail whenever the order contains a product with a GARAN label.
+ * The two graphics are attached because an email client that blocks remote images shows nothing of them inline.
  *
  * "email_order_set_template_vars_before" is dispatched by Magento\Sales\Model\Order\Email\Sender\OrderSender only -
  * invoice, shipment, credit memo and comment senders each dispatch their own event - so no further restriction is
@@ -28,12 +31,13 @@ use Throwable;
  *
  * Failures are logged and swallowed; the order confirmation must never fail because of this module.
  */
-class RegisterTermsAttachment implements ObserverInterface
+class RegisterEmailAttachments implements ObserverInterface
 {
     public function __construct(
         private readonly Config $config,
         private readonly GaranLabelResolverInterface $resolver,
         private readonly TermsDocument $termsDocument,
+        private readonly GraphicAttachments $graphicAttachments,
         private readonly PendingAttachments $pendingAttachments,
         private readonly LoggerInterface $logger
     ) {
@@ -48,21 +52,32 @@ class RegisterTermsAttachment implements ObserverInterface
             }
 
             $storeId = (int) $order->getStoreId();
-            if (!$this->config->isTermsAttachmentEnabled($storeId) || !$this->hasGaranLabel($order)) {
-                return;
-            }
+            $this->addTermsDocument($order, $storeId);
 
-            $document = $this->termsDocument->resolve($storeId);
-            if ($document === null) {
-                return;
+            $notice = $this->graphicAttachments->forNotice($storeId);
+            if ($notice !== null) {
+                $this->pendingAttachments->add($notice);
             }
-
-            $this->pendingAttachments->add($document);
+            foreach ($this->graphicAttachments->forGaranLabels($order, $storeId) as $label) {
+                $this->pendingAttachments->add($label);
+            }
         } catch (Throwable $exception) {
             $this->logger->error(
-                'CopeX_WarrantyLabel: guarantee terms attachment could not be registered.',
+                'CopeX_WarrantyLabel: the email attachments could not be registered.',
                 ['exception' => $exception]
             );
+        }
+    }
+
+    private function addTermsDocument(Order $order, int $storeId): void
+    {
+        if (!$this->config->isTermsAttachmentEnabled($storeId) || !$this->hasGaranLabel($order)) {
+            return;
+        }
+
+        $document = $this->termsDocument->resolve($storeId);
+        if ($document !== null) {
+            $this->pendingAttachments->add($document);
         }
     }
 

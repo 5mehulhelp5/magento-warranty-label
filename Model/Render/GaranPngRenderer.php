@@ -70,24 +70,59 @@ class GaranPngRenderer
         ?int $storeId = null
     ): ?string {
         try {
-            $relativePath = $this->getRelativePath($label, $variant);
-            $mediaDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
-            if (!$mediaDirectory->isExist($relativePath)) {
-                $this->generate($label, $variant, $mediaDirectory, $relativePath);
-            }
+            $relativePath = $this->ensureFile($label, $variant);
 
             /** @var Store $store */
             $store = $this->storeManager->getStore($storeId);
 
             return $store->getBaseUrl(UrlInterface::URL_TYPE_MEDIA, true) . $relativePath;
         } catch (Throwable $exception) {
-            $this->logger->error(
-                'CopeX_WarrantyLabel: GARAN label PNG could not be provided: ' . $exception->getMessage(),
-                ['exception' => $exception, 'product_id' => $label->getProductId(), 'variant' => $variant]
-            );
+            $this->logFailure($exception, $label, $variant);
 
             return null;
         }
+    }
+
+    /**
+     * Contents of the label PNG, for attaching it to an email. Null if it cannot be provided; never throws.
+     */
+    public function getContents(
+        GaranLabelDataInterface $label,
+        string $variant = self::VARIANT_FULL,
+        ?int $storeId = null
+    ): ?string {
+        try {
+            $mediaDirectory = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA);
+            $contents = $mediaDirectory->readFile($this->ensureFile($label, $variant));
+
+            return $contents === '' ? null : $contents;
+        } catch (Throwable $exception) {
+            $this->logFailure($exception, $label, $variant);
+
+            return null;
+        }
+    }
+
+    /**
+     * Media relative path of the label PNG, generated on first use.
+     */
+    private function ensureFile(GaranLabelDataInterface $label, string $variant): string
+    {
+        $relativePath = $this->getRelativePath($label, $variant);
+        $mediaDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
+        if (!$mediaDirectory->isExist($relativePath)) {
+            $this->generate($label, $variant, $mediaDirectory, $relativePath);
+        }
+
+        return $relativePath;
+    }
+
+    private function logFailure(Throwable $exception, GaranLabelDataInterface $label, string $variant): void
+    {
+        $this->logger->error(
+            'CopeX_WarrantyLabel: GARAN label PNG could not be provided: ' . $exception->getMessage(),
+            ['exception' => $exception, 'product_id' => $label->getProductId(), 'variant' => $variant]
+        );
     }
 
     private function getRelativePath(GaranLabelDataInterface $label, string $variant): string

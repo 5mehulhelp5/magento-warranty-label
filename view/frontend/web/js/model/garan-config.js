@@ -24,7 +24,7 @@ define([
      * @return {Boolean}
      */
     function isActive() {
-        return data.mode === 'direct' || data.mode === 'nested';
+        return data.mode !== 'off' && data.mode !== '' && data.mode !== undefined;
     }
 
     /**
@@ -50,7 +50,8 @@ define([
                 pngFull: safeUrl(label.pngFull),
                 pngNested: safeUrl(label.pngNested),
                 dialogId: 'copex-wl-garan-' + scope + '-' + itemId + '-' + index,
-                isNested: data.mode === 'nested',
+                isNested: data.mode === 'nested' || data.mode === 'dialog_only',
+                hasTrigger: data.mode === 'nested',
                 infoUrl: data.infoUrl,
                 infoLabel: data.infoLabel,
                 termsLabel: data.termsLabel,

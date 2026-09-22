@@ -45,7 +45,22 @@ class Notice implements ArgumentInterface
         return $this->getMode($placement) !== DisplayMode::OFF;
     }
 
+    /**
+     * True for both dialog modes; "dialog_only" differs from "nested" only in who supplies the trigger.
+     */
     public function isNested(string $placement): bool
+    {
+        return in_array(
+            $this->getMode($placement),
+            [DisplayMode::NESTED, DisplayMode::DIALOG_ONLY],
+            true
+        );
+    }
+
+    /**
+     * False in "dialog_only": the shop places its own element with class copex-wl-trigger and aria-controls.
+     */
+    public function hasTrigger(string $placement): bool
     {
         return $this->getMode($placement) === DisplayMode::NESTED;
     }
@@ -108,4 +123,5 @@ class Notice implements ArgumentInterface
     {
         return $this->assetRepository->getUrl(self::STYLESHEET_ASSET_ID);
     }
+
 }

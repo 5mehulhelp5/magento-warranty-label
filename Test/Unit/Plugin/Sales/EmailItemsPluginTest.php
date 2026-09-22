@@ -8,7 +8,7 @@ use CopeX\WarrantyLabel\Api\Data\GaranLabelDataInterface;
 use CopeX\WarrantyLabel\Api\GaranLabelResolverInterface;
 use CopeX\WarrantyLabel\Model\Config;
 use CopeX\WarrantyLabel\Model\Email\PendingAttachments;
-use CopeX\WarrantyLabel\Model\Email\TermsDocumentData;
+use CopeX\WarrantyLabel\Model\Email\EmailAttachment;
 use CopeX\WarrantyLabel\Model\Language\LanguageRegistry;
 use CopeX\WarrantyLabel\Model\Render\GaranPngRenderer;
 use CopeX\WarrantyLabel\Model\Render\NoticeRenderer;
@@ -199,7 +199,7 @@ class EmailItemsPluginTest extends TestCase
     {
         $this->givenModes(DisplayMode::OFF, DisplayMode::DIRECT);
         $this->config->method('isTermsAttachmentEnabled')->with(self::STORE_ID)->willReturn(true);
-        $this->pendingAttachments->add(new TermsDocumentData('Garantiebedingungen.pdf', '%PDF', 'application/pdf'));
+        $this->pendingAttachments->add(new EmailAttachment('Garantiebedingungen.pdf', '%PDF', 'application/pdf'));
         $this->givenOrderWithLabel();
 
         $this->assertStringContainsString(
@@ -224,7 +224,7 @@ class EmailItemsPluginTest extends TestCase
     {
         $this->givenModes(DisplayMode::OFF, DisplayMode::DIRECT);
         $this->config->method('isTermsAttachmentEnabled')->willReturn(false);
-        $this->pendingAttachments->add(new TermsDocumentData('Garantiebedingungen.pdf', '%PDF', 'application/pdf'));
+        $this->pendingAttachments->add(new EmailAttachment('Garantiebedingungen.pdf', '%PDF', 'application/pdf'));
         $this->givenOrderWithLabel();
 
         $this->assertStringNotContainsString(

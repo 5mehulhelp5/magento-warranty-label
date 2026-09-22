@@ -15,11 +15,11 @@ namespace CopeX\WarrantyLabel\Model\Email;
 class PendingAttachments
 {
     /**
-     * @var list<TermsDocumentData>
+     * @var list<EmailAttachment>
      */
     private array $documents = [];
 
-    public function add(TermsDocumentData $document): void
+    public function add(EmailAttachment $document): void
     {
         $this->documents[] = $document;
     }
@@ -35,7 +35,7 @@ class PendingAttachments
     /**
      * Returns every pending document and empties the registry.
      *
-     * @return list<TermsDocumentData>
+     * @return list<EmailAttachment>
      */
     public function takeAll(): array
     {

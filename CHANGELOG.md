@@ -4,6 +4,73 @@ All notable changes to `copex/module-warranty-label` are documented in this file
 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] – 2026-09-22
+
+Hyvä compatibility for the storefront placements, verified on a Hyvä storefront (Magento 2.4.8) with a simple and a configurable product.
+Placements ship switched off and can hand the trigger to the shop, the email fields choose between no, inline and attachment, and brand, model identifier and terms URL have configurable sources.
+
+### Added
+
+- **The nested display and the GARAN variant switch now work in Hyvä.**
+  Both hung on `data-mage-init`, which needs RequireJS.
+  Hyvä ships none, so the hooks stayed unbound: the nested button never opened its dialog, and on a configurable product the output kept the `hidden` attribute the template sets until a variant is chosen, so no label ever appeared.
+  `view/frontend/web/js/hyva/warranty-label.js` reads the same configuration out of those attributes and binds the same DOM, without jQuery and without AMD.
+  `hyva_default.xml` loads it - Hyvä adds the `hyva_` prefixed handles only while a Hyvä theme is active, so Luma keeps using the AMD modules untouched.
+
+- **The notice and the GARAN labels can travel as attachments.**
+  The two email fields now choose between `No`, `Inline in the email` and `As a file attachment`.
+  An email client that blocks remote images shows nothing of an inline graphic; an attached file stays readable and the customer can keep it.
+  The GARAN labels are attached one per labelled item, named `garan-label-<sku>.png`; the notice is `legal-guarantee-notice.png`.
+  This is about readability, not about the durable medium — only the guarantee terms PDF satisfies that.
+
+- **The brand can come from any product attribute or from one fixed value.**
+  `Brand source` chooses between the GARAN attribute of the product, another product attribute (`manufacturer`, an own brand attribute, anything with a text or select input), and a fixed value maintained in the configuration.
+  The product's own GARAN Brand always wins; the configured source only fills an empty field.
+
+- **The model identifier can come from the product name.**
+  `Model Identifier source` switches between the GARAN attribute and the product name.
+  Careful with long names: brand and model share one line on the label, and a value that does not fit is rejected, not shrunk, so the label disappears silently. Check the result with `bin/magento copex:warranty-label:audit --store=<id>`.
+
+- **A guarantee terms URL for the whole store.**
+  `Guarantee terms URL` fills every product that carries none of its own; a URL on the product always wins.
+
+- **The GARAN fields are maintained on every product type and per store view.**
+  They used to be simple-only and global.
+  A configurable product can now carry brand, model, duration and terms URL for all of its variants: a variant without its own values inherits them from its configurable parent.
+  The data patch `WidenGaranAttributes` widens the attributes on installations that already have them.
+
+- **Display mode "Dialog only".**
+  The dialog is rendered without a trigger, so the shop can place its own anywhere on the page - in a CMS block, in the footer, in a theme template.
+  Any element with class `copex-wl-trigger` and `aria-controls` pointing at the dialog id opens it; the notice ids are `copex-wl-notice-<placement>`, the product label is `copex-wl-garan-pdp`.
+  The scripts now bind triggers document-wide instead of only inside their own element.
+
+### Changed
+
+- **Every placement now ships switched off.**
+  The defaults used to enable the notice in the header, footer, category, search, cart, checkout, success page and the
+  order confirmation email, and the GARAN label on the product page, in the checkout, on the success page and in the
+  email, as soon as the kill switch was turned on. A compliance extension should not decide by itself where it appears
+  in a shop, so the placements are now chosen deliberately. Existing installations keep their stored values — only a
+  fresh install is affected.
+
+- **The two email fields carry their own three-value mode instead of a display mode.**
+  An email cannot open a dialog, so "Nested" was rendered like "Direct" and the option only invited a choice that had no effect.
+  The data patch `ConvertEmailPlacementsToMode` converts the stored value, so the admin does not render an old "direct" as the first option and switch the graphic off on the next save.
+
+### Fixed
+
+- **The notice link broke the payment form.**
+  `.copex-wl-link` used `overflow-wrap: anywhere`, and its break opportunities count towards min-content.
+  The `<fieldset>` of a payment method (`min-width: min-content`) shrank to the width of one character, which wrapped `europa.eu/youreurope/garantien` vertically, one letter per line, and pushed the place order button out of the form.
+  `break-word` still breaks the URL when it has to, but leaves min-content at the width of the word.
+
+### Known limitations
+
+- **Hyvä, product page: the label renders at the end of the product column.**
+  The block is placed with `after="product.info.price"` inside `product.info.main`, which Luma honours, while Hyvä nests the price in `product.info.main > product.detail.page > product.info`.
+  The module cannot correct this on its own: `product.info` is declared in the Hyvä *theme*, which is merged after every module layout, and it is a block whose template calls each child by name.
+  A project places it in its own theme - see the Themes section of the README.
+
 ## [1.2.0] – 2026-09-18
 
 Luma compatibility, checked placement by placement in a Luma and a Blank storefront at 1280 px and 375 px,

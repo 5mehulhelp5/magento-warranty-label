@@ -7,24 +7,34 @@ namespace CopeX\WarrantyLabel\Model\Garan;
 use CopeX\WarrantyLabel\Api\Data\GaranLabelDataInterface;
 use CopeX\WarrantyLabel\Api\GaranLabelResolverInterface;
 use CopeX\WarrantyLabel\Model\Config;
+use CopeX\WarrantyLabel\Model\Source\BrandSource;
+use CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource;
 use InvalidArgumentException;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResource;
 use Magento\Framework\DataObject;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Quote\Model\Quote\Item\AbstractItem;
 use Magento\Sales\Model\Order\Item as OrderItem;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class Resolver implements GaranLabelResolverInterface
 {
+    /**
+     * @var array<int, int>
+     */
+    private array $parentIds = [];
+
     public function __construct(
         private readonly Config $config,
         private readonly LabelValidator $labelValidator,
         private readonly DurationParser $durationParser,
         private readonly ProductResource $productResource,
+        private readonly ConfigurableResource $configurableResource,
         private readonly GaranLabelDataFactory $garanLabelDataFactory,
         private readonly Json $json,
         private readonly LoggerInterface $logger
@@ -35,11 +45,11 @@ class Resolver implements GaranLabelResolverInterface
     {
         $typeId = (string) $product->getTypeId();
         $storeId ??= $product instanceof Product ? (int) $product->getStoreId() : 0;
-        if ($typeId !== ProductType::TYPE_SIMPLE || $this->isExcludedType($typeId, $storeId)) {
+        if ($this->isExcludedType($typeId, $storeId)) {
             return null;
         }
 
-        $values = $this->getAttributeValues($product, $storeId);
+        $values = $this->resolveValues($product, $storeId);
         $violations = $this->labelValidator->getViolations(
             $values[Attributes::BRAND],
             $values[Attributes::MODEL_IDENTIFIER],
@@ -191,6 +201,115 @@ class Resolver implements GaranLabelResolverInterface
     }
 
     /**
+     * Label values in order of precedence: the product's own GARAN attributes, then the values of its configurable
+     * parent, then the sources configured in the admin.
+     *
+     * @return array<string, mixed>
+     */
+    public function resolveValues(ProductInterface $product, int $storeId): array
+    {
+        $values = $this->getAttributeValues($product, $storeId);
+        $values = $this->inheritFromParent($values, $product, $storeId);
+
+        if ($this->isBlank($values[Attributes::BRAND])) {
+            $values[Attributes::BRAND] = $this->getConfiguredBrand($product, $storeId);
+        }
+        if ($this->isBlank($values[Attributes::MODEL_IDENTIFIER])
+            && $this->config->getModelIdentifierSource($storeId) === ModelIdentifierSource::PRODUCT_NAME
+        ) {
+            $values[Attributes::MODEL_IDENTIFIER] = (string) $product->getName();
+        }
+        if ($this->isBlank($values[Attributes::TERMS_URL])) {
+            $values[Attributes::TERMS_URL] = $this->config->getGaranTermsUrl($storeId);
+        }
+
+        return $values;
+    }
+
+    /**
+     * A variant without its own values takes those of its configurable parent.
+     *
+     * @param array<string, mixed> $values
+     * @return array<string, mixed>
+     */
+    private function inheritFromParent(array $values, ProductInterface $product, int $storeId): array
+    {
+        $missing = array_keys(array_filter($values, fn (mixed $value): bool => $this->isBlank($value)));
+        $productId = (int) $product->getId();
+        if ($missing === [] || $productId === 0 || (string) $product->getTypeId() !== ProductType::TYPE_SIMPLE) {
+            return $values;
+        }
+
+        $parentId = $this->getParentId($productId);
+        if ($parentId === 0) {
+            return $values;
+        }
+
+        foreach ($this->loadRawValues($parentId, $missing, $storeId) as $code => $value) {
+            if (!$this->isBlank($value)) {
+                $values[$code] = $value;
+            }
+        }
+
+        return $values;
+    }
+
+    private function getParentId(int $productId): int
+    {
+        if (!array_key_exists($productId, $this->parentIds)) {
+            $parents = $this->configurableResource->getParentIdsByChild($productId);
+            $this->parentIds[$productId] = $parents === [] ? 0 : (int) reset($parents);
+        }
+
+        return $this->parentIds[$productId];
+    }
+
+    private function getConfiguredBrand(ProductInterface $product, int $storeId): ?string
+    {
+        return match ($this->config->getBrandSource($storeId)) {
+            BrandSource::PRODUCT_ATTRIBUTE => $this->readAttribute(
+                $product,
+                $this->config->getBrandAttribute($storeId),
+                $storeId
+            ),
+            BrandSource::CONFIG_VALUE => $this->config->getBrandValue($storeId),
+            default => null,
+        };
+    }
+
+    /**
+     * Value of any product attribute, resolved to its option label when it is a select.
+     */
+    private function readAttribute(ProductInterface $product, string $code, int $storeId): ?string
+    {
+        if ($code === '' || !$product instanceof Product) {
+            return null;
+        }
+
+        try {
+            $text = $product->getAttributeText($code);
+            if (is_string($text) && $text !== '') {
+                return $text;
+            }
+        } catch (Throwable) {
+            // A free-text attribute has no source model and a missing one no attribute at all;
+            // the raw value below answers in both cases.
+        }
+
+        $value = $product->getData($code);
+        if ($this->isBlank($value)) {
+            $value = $this->loadRawValues((int) $product->getId(), [$code], $storeId)[$code] ?? null;
+        }
+
+        return $this->isBlank($value) ? null : (string) $value;
+    }
+
+    private function isBlank(mixed $value): bool
+    {
+        return $value === null || $value === '' || $value === false;
+    }
+
+    /**
      * @param list<string> $codes
      * @return array<string, mixed>
      */
@@ -200,10 +319,23 @@ class Resolver implements GaranLabelResolverInterface
         if (is_array($raw)) {
             return array_intersect_key($raw, array_flip($codes));
         }
+        if (count($codes) === 1) {
+            return $raw === false ? [] : [$codes[0] => $raw];
+        }
 
-        // A scalar result means exactly one value exists, and its code is only known when one code was requested.
-        // With several requested codes at least one required field is empty, so the label is incomplete anyway.
-        return count($codes) === 1 && $raw !== false ? [$codes[0] => $raw] : [];
+        // A scalar answer to several codes means exactly one of them is filled, and which one is not part of the
+        // answer. The remaining fields may still come from the configuration, so ask for each code separately.
+        $values = [];
+        foreach ($codes as $code) {
+            $single = $this->productResource->getAttributeRawValue($productId, [$code], $storeId);
+            if (!is_array($single) && $single !== false) {
+                $values[$code] = $single;
+            } elseif (is_array($single) && array_key_exists($code, $single)) {
+                $values[$code] = $single[$code];
+            }
+        }
+
+        return $values;
     }
 
     private function isExcludedType(string $typeId, int $storeId): bool

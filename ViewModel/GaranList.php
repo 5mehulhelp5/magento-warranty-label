@@ -47,11 +47,20 @@ class GaranList implements ArgumentInterface
     }
 
     /**
-     * Nested mode: button with the nested label opens a dialog with the full label.
+     * True for both dialog modes: the full label lives in a dialog instead of the page.
      *
      * @return bool
      */
     public function isNested(): bool
+    {
+        return in_array($this->getMode(), [DisplayMode::NESTED, DisplayMode::DIALOG_ONLY], true);
+    }
+
+    /**
+     * False in "dialog_only". The dialog ids on this page carry the order item id, so a shop placing its own
+     * triggers here has to read them from the rendered markup.
+     */
+    public function hasTrigger(): bool
     {
         return $this->getMode() === DisplayMode::NESTED;
     }

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace CopeX\WarrantyLabel\Model;
 
 use CopeX\WarrantyLabel\Model\Language\LanguageRegistry;
+use CopeX\WarrantyLabel\Model\Source\BrandSource;
 use CopeX\WarrantyLabel\Model\Source\DisplayMode;
+use CopeX\WarrantyLabel\Model\Source\EmailMode;
+use CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource;
 use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
@@ -21,6 +24,11 @@ class Config
     public const XML_PATH_NOTICE_PLACEMENT_PREFIX = 'copex_warrantylabel/notice_placement/';
     public const XML_PATH_GARAN_ENABLED = 'copex_warrantylabel/garan/enabled';
     public const XML_PATH_GARAN_PLACEMENT_PREFIX = 'copex_warrantylabel/garan/';
+    public const XML_PATH_GARAN_BRAND_SOURCE = 'copex_warrantylabel/garan/brand_source';
+    public const XML_PATH_GARAN_BRAND_ATTRIBUTE = 'copex_warrantylabel/garan/brand_attribute';
+    public const XML_PATH_GARAN_BRAND_VALUE = 'copex_warrantylabel/garan/brand_value';
+    public const XML_PATH_GARAN_MODEL_SOURCE = 'copex_warrantylabel/garan/model_source';
+    public const XML_PATH_GARAN_TERMS_URL = 'copex_warrantylabel/garan/terms_url';
     public const XML_PATH_GARAN_ATTACH_TERMS = 'copex_warrantylabel/garan/attach_terms';
     public const XML_PATH_GARAN_TERMS_FILE = 'copex_warrantylabel/garan/terms_file';
     public const XML_PATH_GARAN_TERMS_FILENAME = 'copex_warrantylabel/garan/terms_filename';
@@ -132,6 +140,56 @@ class Config
     }
 
     /**
+     * Where the brand on the label comes from when the product carries none.
+     */
+    public function getBrandSource(?int $storeId = null): string
+    {
+        $source = $this->getString(self::XML_PATH_GARAN_BRAND_SOURCE, $storeId);
+
+        return in_array($source, BrandSource::SOURCES, true) ? $source : BrandSource::GARAN_ATTRIBUTE;
+    }
+
+    /**
+     * Product attribute the brand is read from, empty unless the source is "product_attribute".
+     */
+    public function getBrandAttribute(?int $storeId = null): string
+    {
+        return $this->getBrandSource($storeId) === BrandSource::PRODUCT_ATTRIBUTE
+            ? $this->getString(self::XML_PATH_GARAN_BRAND_ATTRIBUTE, $storeId)
+            : '';
+    }
+
+    /**
+     * Fixed brand, empty unless the source is "config_value".
+     */
+    public function getBrandValue(?int $storeId = null): string
+    {
+        return $this->getBrandSource($storeId) === BrandSource::CONFIG_VALUE
+            ? $this->getString(self::XML_PATH_GARAN_BRAND_VALUE, $storeId)
+            : '';
+    }
+
+    /**
+     * Where the model identifier comes from when the product carries none.
+     */
+    public function getModelIdentifierSource(?int $storeId = null): string
+    {
+        $source = $this->getString(self::XML_PATH_GARAN_MODEL_SOURCE, $storeId);
+
+        return in_array($source, ModelIdentifierSource::SOURCES, true)
+            ? $source
+            : ModelIdentifierSource::GARAN_ATTRIBUTE;
+    }
+
+    /**
+     * Guarantee terms URL for every product without its own.
+     */
+    public function getGaranTermsUrl(?int $storeId = null): string
+    {
+        return $this->getString(self::XML_PATH_GARAN_TERMS_URL, $storeId);
+    }
+
+    /**
      * Display mode of the legal guarantee notice; "off" whenever the module is disabled.
      */
     public function getNoticeMode(string $placement, ?int $storeId = null): string
@@ -141,7 +199,11 @@ class Config
             return DisplayMode::OFF;
         }
 
-        return $this->normalizeMode($this->getString(self::XML_PATH_NOTICE_PLACEMENT_PREFIX . $placement, $storeId));
+        $path = self::XML_PATH_NOTICE_PLACEMENT_PREFIX . $placement;
+
+        return $placement === self::PLACEMENT_EMAIL
+            ? $this->getInlineMode($path, $storeId)
+            : $this->normalizeMode($this->getString($path, $storeId));
     }
 
     /**
@@ -154,7 +216,31 @@ class Config
             return DisplayMode::OFF;
         }
 
-        return $this->normalizeMode($this->getString(self::XML_PATH_GARAN_PLACEMENT_PREFIX . $placement, $storeId));
+        $path = self::XML_PATH_GARAN_PLACEMENT_PREFIX . $placement;
+
+        return $placement === self::PLACEMENT_EMAIL
+            ? $this->getInlineMode($path, $storeId)
+            : $this->normalizeMode($this->getString($path, $storeId));
+    }
+
+    /**
+     * Whether the notice graphic travels with the order confirmation as a file instead of being shown inline.
+     */
+    public function isNoticeEmailAttachmentEnabled(?int $storeId = null): bool
+    {
+        return $this->isEnabled($storeId)
+            && $this->getEmailMode(self::XML_PATH_NOTICE_PLACEMENT_PREFIX . self::PLACEMENT_EMAIL, $storeId)
+                === EmailMode::ATTACHMENT;
+    }
+
+    /**
+     * Whether the GARAN label graphics travel with the order confirmation as files, one per labelled item.
+     */
+    public function isGaranEmailAttachmentEnabled(?int $storeId = null): bool
+    {
+        return $this->isGaranActive($storeId)
+            && $this->getEmailMode(self::XML_PATH_GARAN_PLACEMENT_PREFIX . self::PLACEMENT_EMAIL, $storeId)
+                === EmailMode::ATTACHMENT;
     }
 
     /**
@@ -190,6 +276,21 @@ class Config
     private function normalizeMode(string $mode): string
     {
         return in_array($mode, DisplayMode::MODES, true) ? $mode : DisplayMode::OFF;
+    }
+
+    /**
+     * The email fields carry an EmailMode; only "inline" puts the graphic into the body.
+     */
+    private function getInlineMode(string $path, ?int $storeId): string
+    {
+        return $this->getEmailMode($path, $storeId) === EmailMode::INLINE ? DisplayMode::DIRECT : DisplayMode::OFF;
+    }
+
+    private function getEmailMode(string $path, ?int $storeId): string
+    {
+        $mode = $this->getString($path, $storeId);
+
+        return in_array($mode, EmailMode::MODES, true) ? $mode : EmailMode::NO;
     }
 
     /**

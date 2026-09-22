@@ -13,8 +13,11 @@ use CopeX\WarrantyLabel\Model\Garan\GaranLabelData;
 use CopeX\WarrantyLabel\Model\Garan\GaranLabelDataFactory;
 use CopeX\WarrantyLabel\Model\Garan\LabelValidator;
 use CopeX\WarrantyLabel\Model\Garan\Resolver;
+use CopeX\WarrantyLabel\Model\Source\BrandSource;
+use CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResource;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item as QuoteItem;
@@ -33,11 +36,21 @@ class ResolverTest extends TestCase
     private FieldFitChecker&MockObject $fieldFitChecker;
     private ProductResource&MockObject $productResource;
     private LoggerInterface&MockObject $logger;
+    private ConfigurableResource&MockObject $configurableResource;
     private Resolver $resolver;
+
+    /**
+     * @var array<int, list<int>>
+     */
+    private array $parentIdsByChild = [];
 
     protected function setUp(): void
     {
         $this->config = $this->createMock(Config::class);
+        $this->configurableResource = $this->createMock(ConfigurableResource::class);
+        $this->configurableResource->method('getParentIdsByChild')->willReturnCallback(
+            fn (mixed $childId): array => $this->parentIdsByChild[(int) $childId] ?? []
+        );
         $this->config->method('getExcludedProductTypes')->willReturn(['mageworx_giftcards']);
         $this->fieldFitChecker = $this->createMock(FieldFitChecker::class);
         $this->productResource = $this->createMock(ProductResource::class);
@@ -57,6 +70,7 @@ class ResolverTest extends TestCase
             new LabelValidator($durationParser, $this->fieldFitChecker),
             $durationParser,
             $this->productResource,
+            $this->configurableResource,
             $factory,
             new Json(),
             $this->logger
@@ -85,6 +99,118 @@ class ResolverTest extends TestCase
             GaranLabelDataInterface::DURATION_YEARS => 4.5,
             GaranLabelDataInterface::TERMS_URL => self::TERMS_URL,
         ], $label->toArray());
+    }
+
+    public function testVariantInheritsMissingValuesFromItsConfigurableParent(): void
+    {
+        $this->allFieldsFit();
+        $this->parentIdsByChild[10] = [99];
+        $this->productResource->method('getAttributeRawValue')->willReturnCallback(
+            static fn (int $id, array $codes): array|string => $id === 99
+                ? [
+                    Attributes::BRAND => 'Parent Brand',
+                    Attributes::MODEL_IDENTIFIER => 'Parent Model',
+                    Attributes::DURATION_YEARS => '7.000000',
+                ]
+                : []
+        );
+
+        $label = $this->resolver->forProduct($this->createProduct(10, 'SKU-10', [
+            Attributes::BRAND => null,
+            Attributes::MODEL_IDENTIFIER => null,
+            Attributes::DURATION_YEARS => null,
+            Attributes::TERMS_URL => self::TERMS_URL,
+        ]), self::STORE_ID);
+
+        $this->assertNotNull($label);
+        $this->assertSame('Parent Brand', $label->getBrand());
+        $this->assertSame('Parent Model', $label->getModelIdentifier());
+        $this->assertSame(7.0, $label->getDurationYears());
+    }
+
+    public function testOwnValuesWinOverTheParent(): void
+    {
+        $this->allFieldsFit();
+        $this->parentIdsByChild[10] = [99];
+        $this->productResource->method('getAttributeRawValue')
+            ->willReturn([Attributes::BRAND => 'Parent Brand']);
+
+        $label = $this->resolver->forProduct($this->createProduct(10, 'SKU-10'), self::STORE_ID);
+
+        $this->assertNotNull($label);
+        $this->assertSame('Brand', $label->getBrand());
+    }
+
+    public function testConfiguredFixedBrandFillsAnEmptyBrandAttribute(): void
+    {
+        $this->allFieldsFit();
+        $this->config->method('getBrandSource')->willReturn(BrandSource::CONFIG_VALUE);
+        $this->config->method('getBrandValue')->with(self::STORE_ID)->willReturn('Config Brand');
+
+        $label = $this->resolver->forProduct($this->createProduct(10, 'SKU-10', [
+            Attributes::BRAND => null,
+            Attributes::MODEL_IDENTIFIER => 'Model',
+            Attributes::DURATION_YEARS => '5.000000',
+            Attributes::TERMS_URL => self::TERMS_URL,
+        ]), self::STORE_ID);
+
+        $this->assertNotNull($label);
+        $this->assertSame('Config Brand', $label->getBrand());
+    }
+
+    public function testConfiguredBrandAttributeIsReadFromTheProduct(): void
+    {
+        $this->allFieldsFit();
+        $this->config->method('getBrandSource')->willReturn(BrandSource::PRODUCT_ATTRIBUTE);
+        $this->config->method('getBrandAttribute')->with(self::STORE_ID)->willReturn('manufacturer');
+
+        $product = $this->createProduct(10, 'SKU-10', [
+            Attributes::BRAND => null,
+            Attributes::MODEL_IDENTIFIER => 'Model',
+            Attributes::DURATION_YEARS => '5.000000',
+            Attributes::TERMS_URL => self::TERMS_URL,
+        ]);
+        $product->setData('manufacturer', 'Attribute Brand');
+
+        $label = $this->resolver->forProduct($product, self::STORE_ID);
+
+        $this->assertNotNull($label);
+        $this->assertSame('Attribute Brand', $label->getBrand());
+    }
+
+    public function testProductNameFillsAnEmptyModelIdentifier(): void
+    {
+        $this->allFieldsFit();
+        $this->config->method('getModelIdentifierSource')->willReturn(ModelIdentifierSource::PRODUCT_NAME);
+
+        $label = $this->resolver->forProduct($this->createProduct(10, 'SKU-10', [
+            Attributes::BRAND => 'Brand',
+            Attributes::MODEL_IDENTIFIER => null,
+            Attributes::DURATION_YEARS => '5.000000',
+            Attributes::TERMS_URL => self::TERMS_URL,
+        ]), self::STORE_ID);
+
+        $this->assertNotNull($label);
+        $this->assertSame('Product SKU-10', $label->getModelIdentifier());
+    }
+
+    public function testGlobalTermsUrlOnlyAppliesWhenTheProductHasNone(): void
+    {
+        $this->allFieldsFit();
+        $this->config->method('getGaranTermsUrl')->willReturn('https://example.com/global');
+
+        $withoutOwn = $this->resolver->forProduct($this->createProduct(10, 'SKU-10', [
+            Attributes::BRAND => 'Brand',
+            Attributes::MODEL_IDENTIFIER => 'Model',
+            Attributes::DURATION_YEARS => '5.000000',
+            Attributes::TERMS_URL => null,
+        ]), self::STORE_ID);
+        $withOwn = $this->resolver->forProduct($this->createProduct(11, 'SKU-11'), self::STORE_ID);
+
+        $this->assertNotNull($withoutOwn);
+        $this->assertSame('https://example.com/global', $withoutOwn->getTermsUrl());
+        $this->assertNotNull($withOwn);
+        $this->assertSame(self::TERMS_URL, $withOwn->getTermsUrl());
     }
 
     #[DataProvider('invalidAttributeValues')]
@@ -143,13 +269,14 @@ class ResolverTest extends TestCase
         $this->assertNull($this->resolver->forProduct($this->createProduct(10, 'SKU-10'), self::STORE_ID));
     }
 
-    public function testForProductReturnsNullForNonSimpleType(): void
+    public function testForProductReturnsLabelForNonSimpleType(): void
     {
         $this->allFieldsFit();
 
-        $this->assertNull(
-            $this->resolver->forProduct($this->createProduct(10, 'SKU-10', null, 'virtual'), self::STORE_ID)
-        );
+        $label = $this->resolver->forProduct($this->createProduct(10, 'SKU-10', null, 'virtual'), self::STORE_ID);
+
+        $this->assertNotNull($label);
+        $this->assertSame('Brand', $label->getBrand());
     }
 
     public function testForProductReturnsNullWhenSimpleTypeIsExcluded(): void
@@ -467,6 +594,7 @@ class ResolverTest extends TestCase
             new LabelValidator($durationParser, $this->fieldFitChecker),
             $durationParser,
             $this->productResource,
+            $this->configurableResource,
             $factory,
             new Json(),
             $this->logger

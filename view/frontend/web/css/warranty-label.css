@@ -72,10 +72,13 @@
     margin: 0;
 }
 
+/* "anywhere" counts its break opportunities towards min-content, which shrinks the link to a single character
+   column inside the <fieldset> of a payment method (min-width: min-content) and pushes the place order button
+   out of the form. "break-word" still breaks the URL when it has to, but leaves min-content at the word width. */
 .copex-wl-link {
     display: inline-block;
     margin-top: 0.5rem;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
 }
 
 .copex-wl-trigger {

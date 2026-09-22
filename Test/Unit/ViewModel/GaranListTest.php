@@ -55,6 +55,14 @@ class GaranListTest extends TestCase
         );
     }
 
+    public function testDialogOnlyKeepsTheDialogAndDropsTheTrigger(): void
+    {
+        $this->config->method('getGaranMode')->willReturn(DisplayMode::DIALOG_ONLY);
+
+        $this->assertTrue($this->viewModel->isNested());
+        $this->assertFalse($this->viewModel->hasTrigger());
+    }
+
     public function testModeOffYieldsNoEntries(): void
     {
         $this->givenGaranMode(DisplayMode::OFF);

@@ -88,6 +88,21 @@ class GaranProductTest extends TestCase
         $this->assertNull($this->viewModel->getVariants($product));
     }
 
+    public function testDialogOnlyKeepsTheDialogAndDropsTheTrigger(): void
+    {
+        $this->givenMode(DisplayMode::DIALOG_ONLY);
+
+        $this->assertTrue($this->viewModel->isNested());
+        $this->assertFalse($this->viewModel->hasTrigger());
+    }
+
+    public function testNestedModeCarriesItsOwnTrigger(): void
+    {
+        $this->givenMode(DisplayMode::NESTED);
+
+        $this->assertTrue($this->viewModel->hasTrigger());
+    }
+
     public function testSimpleProductInNestedModeAddsNestedImage(): void
     {
         $this->givenMode(DisplayMode::NESTED);

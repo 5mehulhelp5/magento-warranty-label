@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CopeX\WarrantyLabel\Test\Unit\Model\Email;
 
 use CopeX\WarrantyLabel\Model\Email\PendingAttachments;
-use CopeX\WarrantyLabel\Model\Email\TermsDocumentData;
+use CopeX\WarrantyLabel\Model\Email\EmailAttachment;
 use PHPUnit\Framework\TestCase;
 
 class PendingAttachmentsTest extends TestCase
@@ -25,8 +25,8 @@ class PendingAttachmentsTest extends TestCase
 
     public function testAddedDocumentsAreReturnedInOrder(): void
     {
-        $first = new TermsDocumentData('a.pdf', 'A', 'application/pdf');
-        $second = new TermsDocumentData('b.pdf', 'B', 'application/pdf');
+        $first = new EmailAttachment('a.pdf', 'A', 'application/pdf');
+        $second = new EmailAttachment('b.pdf', 'B', 'application/pdf');
         $this->registry->add($first);
         $this->registry->add($second);
 
@@ -36,7 +36,7 @@ class PendingAttachmentsTest extends TestCase
 
     public function testTakeAllEmptiesTheRegistry(): void
     {
-        $this->registry->add(new TermsDocumentData('a.pdf', 'A', 'application/pdf'));
+        $this->registry->add(new EmailAttachment('a.pdf', 'A', 'application/pdf'));
         $this->registry->takeAll();
 
         $this->assertFalse($this->registry->hasPending());
@@ -45,7 +45,7 @@ class PendingAttachmentsTest extends TestCase
 
     public function testClearDropsPendingDocuments(): void
     {
-        $this->registry->add(new TermsDocumentData('a.pdf', 'A', 'application/pdf'));
+        $this->registry->add(new EmailAttachment('a.pdf', 'A', 'application/pdf'));
         $this->registry->clear();
 
         $this->assertFalse($this->registry->hasPending());

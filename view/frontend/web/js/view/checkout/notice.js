@@ -22,13 +22,22 @@ define([
          * @return {Boolean}
          */
         isVisible: function () {
-            return notice.visible === true && (notice.mode === 'direct' || notice.mode === 'nested');
+            return notice.visible === true && notice.mode !== 'off' && notice.mode !== '';
         },
 
         /**
          * @return {Boolean}
          */
         isNested: function () {
+            return notice.mode === 'nested' || notice.mode === 'dialog_only';
+        },
+
+        /**
+         * False in "dialog_only": the shop places its own trigger.
+         *
+         * @return {Boolean}
+         */
+        hasTrigger: function () {
             return notice.mode === 'nested';
         },
 

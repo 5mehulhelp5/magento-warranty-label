@@ -16,6 +16,7 @@ if ($label === null && $variants === null) {
     return;
 }
 $isNested = $viewModel->isNested();
+$hasTrigger = $viewModel->hasTrigger();
 $dialogId = $viewModel->getDialogId();
 $alt = $label['alt'] ?? '';
 $termsUrl = $label['termsUrl'] ?? '';
@@ -25,7 +26,7 @@ $pngNested = $label['pngNested'] ?? '';
 <div class="copex-wl copex-wl--garan-product copex-wl--<?= $isNested ? 'nested' : 'direct' ?>"
      data-mage-init="<?= $escaper->escapeHtmlAttr($viewModel->getMageInit($variants)) ?>">
     <div class="copex-wl-garan-product" data-copex-wl-output <?= $variants !== null ? 'hidden' : '' ?>>
-        <?php if ($isNested): ?>
+        <?php if ($hasTrigger): ?>
             <button type="button"
                     class="copex-wl-trigger copex-wl-trigger--garan"
                     aria-haspopup="dialog"
@@ -46,6 +47,8 @@ $pngNested = $label['pngNested'] ?? '';
                       data-copex-wl-fallback="nested"
                     <?= $pngNested !== '' ? 'hidden' : '' ?>><?= $escaper->escapeHtml($alt) ?></span>
             </button>
+        <?php endif; ?>
+        <?php if ($isNested): ?>
             <dialog id="<?= $escaper->escapeHtmlAttr($dialogId) ?>"
                     class="copex-wl-dialog"
                     aria-label="<?= $escaper->escapeHtmlAttr($alt) ?>"

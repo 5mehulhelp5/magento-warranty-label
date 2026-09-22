@@ -6,7 +6,7 @@
         never an invoice, shipment, credit memo or comment email.
     -->
     <event name="email_order_set_template_vars_before">
-        <observer name="copex_warranty_label_register_terms_attachment"
-                  instance="CopeX\WarrantyLabel\Observer\RegisterTermsAttachment"/>
+        <observer name="copex_warranty_label_register_email_attachments"
+                  instance="CopeX\WarrantyLabel\Observer\RegisterEmailAttachments"/>
     </event>
 </config>

@@ -130,7 +130,7 @@ Ein Feld, neben dem **Use Default** oder **Use system value** angehakt ist, übe
 
 ![Die Gruppe Legal Guarantee Notice Placements](screenshots/01b_config_notice_placements.png)
 
-Jede Zeile ist eine Stelle im Shop, jede Stelle hat einen der drei Modi *Off*, *Direct* und *Nested* (siehe Abschnitt 4.2). Die Voreinstellung ist ein sinnvoller Ausgangspunkt: geschachtelt überall dort, wo die Grafik das Layout sprengen würde, direkt dort, wo der Kunde unmittelbar vor oder nach der Bestellung steht.
+Jede Zeile ist eine Stelle im Shop, jede Stelle hat einen der vier Modi *Off*, *Direct*, *Nested* und *Dialog only* (siehe Abschnitt 4.2). **Ausgeliefert steht alles auf *Off*** — solange Sie hier nichts umstellen, bleibt der Shop unverändert. Einen Vorschlag, womit Sie anfangen, finden Sie in der Tabelle in Abschnitt 4.2.
 
 | Platzierung | Wo der Hinweis in Luma erscheint |
 |---|---|
@@ -283,33 +283,62 @@ Alle Einstellungen liegen unter *Stores → Configuration → Sales → EU Guara
 
 ### 4.2 Platzierungen des Gewährleistungshinweises
 
-Für jede Platzierung wählen Sie einen von drei Modi:
+Für jede Platzierung im Shop wählen Sie einen von vier Modi:
 
 | Modus | Bedeutung |
 |---|---|
 | **Off** | Keine Ausgabe an dieser Stelle. |
 | **Direct (complete graphic)** | Die vollständige amtliche Grafik steht unmittelbar auf der Seite. |
 | **Nested (button opens dialog)** | Ein Button öffnet die Grafik beim ersten Klick in einem Dialogfenster. |
+| **Dialog only (place your own trigger)** | Wie *Nested*, aber ohne Button: Sie setzen den Auslöser selbst, siehe Abschnitt „Eigener Auslöser". |
+
+Die beiden E-Mail-Felder haben stattdessen drei eigene Werte, weil eine E-Mail keinen Dialog öffnen kann:
+
+| Wert | Bedeutung |
+|---|---|
+| **No** | Die Grafik erscheint nicht in der E-Mail. |
+| **Inline in the email** | Die Grafik steht im Nachrichtentext. |
+| **As a file attachment** | Die Grafik hängt als PNG-Datei an der E-Mail. |
 
 Die geschachtelte Anzeige ist nach den Leitlinien der EU-Kommission zulässig. Eine strengere Auslegung verlangt die unmittelbare Darstellung. Weil das eine Rechtsfrage ist, lässt das Modul die Entscheidung für jede Platzierung einzeln zu.
 
-| Platzierung | Standard |
-|---|---|
-| Header | Nested |
-| Footer | Nested |
-| Category Page | Nested |
-| Search Results | Nested |
-| Shopping Cart | Nested |
-| Checkout (before Place Order) | Direct |
-| Checkout Success Page | Direct |
-| Order Confirmation Email | Direct |
+| Platzierung | Standard | Empfehlung |
+|---|---|---|
+| Header | Off | Nested |
+| Footer | Off | Nested |
+| Category Page | Off | Nested |
+| Search Results | Off | Nested |
+| Shopping Cart | Off | Nested |
+| Checkout (before Place Order) | Off | Direct |
+| Checkout Success Page | Off | Direct |
+| Order Confirmation Email | No | Inline in the email |
+
+Ausgeliefert wird alles ausgeschaltet: Ein frisch installiertes Modul verändert Ihren Shop an keiner Stelle. Die Spalte *Empfehlung* ist der Ausgangspunkt, den wir für einen typischen Shop vorschlagen — geschachtelt überall dort, wo die Grafik das Layout sprengen würde, direkt dort, wo der Kunde unmittelbar vor oder nach der Bestellung steht.
 
 Zwei Hinweise zur Wahl des Modus:
 
 - **Enge Container sprechen für „Nested".** Ist der verfügbare Platz schmaler als die eingestellte Mindestbreite, wird die direkte Grafik nicht verkleinert, sondern lässt sich seitlich verschieben – sie ist vollständig, wirkt aber abgeschnitten. Das betrifft vor allem den Checkout auf dem Smartphone. Im Dialog erscheint die Grafik dagegen in voller Größe.
-- **In E-Mails gibt es keine Dialoge.** Steht die E-Mail-Platzierung auf *Nested*, wird sie wie *Direct* ausgegeben.
+- **In E-Mails gibt es keine Dialoge.** Die beiden E-Mail-Felder entscheiden deshalb nur, *wie* die Grafik mitkommt.
+- **Wann *As a file attachment*?** Viele E-Mail-Programme blockieren entfernte Bilder; dann bleibt von der eingebetteten Grafik nichts übrig. Der Dateianhang ist in diesem Fall sichtbar und lässt sich vom Kunden ablegen. Dafür steht er nicht mehr im Lesefluss der Nachricht.
 
 Der Dialog ist vollständig mit der Tastatur bedienbar: Enter oder Leertaste öffnen ihn, Escape schließt ihn, und der Fokus kehrt anschließend auf den Button zurück.
+
+#### Eigener Auslöser
+
+Im Modus *Dialog only* liefert das Modul nur das Dialogfenster und überlässt Ihnen den Auslöser.
+Jedes Element mit der Klasse `copex-wl-trigger` und einem `aria-controls` auf die Dialog-ID öffnet ihn, gleich wo es auf der Seite steht – in einem statischen Block, im Footer, in einer Vorlage Ihres Themes:
+
+```html
+<button type="button" class="copex-wl-trigger" aria-controls="copex-wl-notice-footer">
+    Gesetzliche Gewährleistung
+</button>
+```
+
+Die IDs des Hinweises lauten `copex-wl-notice-` plus Platzierung, also `copex-wl-notice-header`, `-footer`, `-cart`, `-category`, `-search`, `-checkout` und `-success`.
+Das GARAN-Label auf der Produktseite hat die ID `copex-wl-garan-pdp`.
+Auf der Erfolgsseite und im Checkout enthalten die GARAN-IDs die Artikelnummer des Bestellpostens; lesen Sie sie dort aus der gerenderten Seite ab.
+
+Die Auslöser werden beim Laden der Seite gebunden. Ein Element, das ein eigenes Skript erst später einfügt, muss vorher im Dokument stehen.
 
 ![Im geschachtelten Modus öffnet ein Button den Hinweis](screenshots/05_notice_trigger.png)
 
@@ -318,10 +347,20 @@ Der Dialog ist vollständig mit der Tastatur bedienbar: Enter oder Leertaste öf
 ### 4.3 GARAN-Label
 
 - **Enable GARAN Label** — schaltet das Label frei. *Standard: No.* Solange es ausgeschaltet ist, bleiben die Produktattribute erhalten, werden aber nirgends angezeigt.
-- **Product Page** — *Standard: Nested.*
-- **Checkout (before Place Order)** — *Standard: Direct.* Das Label erscheint an zwei Stellen: am jeweiligen Artikel in der Bestellübersicht und gesammelt in der gewählten Zahlungsart, direkt über dem Bestell-Button. Die zweite Stelle ist auf Mobilgeräten wichtig, wo die Bestellübersicht eingeklappt ist.
-- **Checkout Success Page** — *Standard: Direct.*
-- **Order Confirmation Email** — *Standard: Direct.*
+- **Product Page** — *Standard: Off.*
+- **Checkout (before Place Order)** — *Standard: Off.* Das Label erscheint an zwei Stellen: am jeweiligen Artikel in der Bestellübersicht und gesammelt in der gewählten Zahlungsart, direkt über dem Bestell-Button. Die zweite Stelle ist auf Mobilgeräten wichtig, wo die Bestellübersicht eingeklappt ist.
+- **Checkout Success Page** — *Standard: Off.*
+- **Order Confirmation Email** — *Standard: No.* Bei *As a file attachment* hängt je gekennzeichnetem Artikel eine PNG-Datei an der E-Mail, benannt nach dessen SKU (`garan-label-<sku>.png`).
+- **Brand Comes From** — woher die Marke kommt, wenn das Produkt selbst keine `GARAN Brand` trägt. *Standard: GARAN Brand attribute of the product.*
+  - *GARAN Brand attribute of the product* — nur das GARAN-Attribut.
+  - *Another product attribute* — ein beliebiges anderes Produktattribut, das darunter im Feld **Brand Product Attribute** gewählt wird (alle Text-, Textarea- und Auswahlattribute stehen zur Wahl, etwa `manufacturer`). Bei Auswahlattributen wird die Options­beschriftung verwendet, nicht die Options-ID.
+  - *Fixed value below* — ein fester Wert aus dem Feld **Brand**, sinnvoll für Shops mit nur einer Marke.
+- **Model Identifier Comes From** — woher die Modellkennung kommt, wenn das Produkt selbst keine `GARAN Model Identifier` trägt. *Standard: GARAN Model Identifier attribute of the product.* Die Alternative *Product name* verwendet den Produktnamen.
+- **Guarantee Terms URL** — eine Adresse für alle Produkte ohne eigene. *Standard: leer.*
+
+Alle drei Felder füllen nur **leere** Produktwerte auf. Steht am Produkt etwas, gewinnt immer das Produkt.
+
+> **Vorsicht bei langen Produktnamen.** Marke und Modellkennung teilen sich auf dem Label eine Zeile. Ein zu langer Wert wird nicht verkleinert, sondern abgelehnt — dann erscheint gar kein Label, ohne Fehlermeldung im Shop. Prüfen Sie nach der Umstellung auf *Product name* stichprobenartig mit `bin/magento copex:warranty-label:audit --store=<id>`; der Grund heißt dort `too_long`.
 
 Die übrigen Felder der Gruppe betreffen den Anhang und sind in Kapitel 6 beschrieben.
 
@@ -335,13 +374,13 @@ Die übrigen Felder der Gruppe betreffen den Anhang und sind in Kapitel 6 beschr
 
 Das Modul erzeugt keine Garantiedaten. Es zeigt nur an, was Sie pflegen.
 
-Bei der Installation entsteht in jedem Attributset die Gruppe **EU GARAN Guarantee** mit vier Attributen. Sie gelten **nur für einfache Produkte**, denn die Modellkennung gehört zur konkreten Variante und nicht zum konfigurierbaren Elternprodukt.
+Bei der Installation entsteht in jedem Attributset die Gruppe **EU GARAN Guarantee** mit vier Attributen. Sie lassen sich an **jedem Produkttyp** pflegen und gelten je **Store View**, damit Marke und Bedingungen pro Sprache abweichen können.
 
 | Attribut | Gültigkeitsbereich | Bedeutung |
 |---|---|---|
-| **GARAN Brand** | global | Die Marke, wie sie auf dem Label steht. |
-| **GARAN Model Identifier** | global | Die Modellkennung, wie sie auf dem Label steht. |
-| **GARAN Guarantee Duration (Years)** | global | Ganze oder halbe Jahre, mehr als 2, etwa `3` oder `4,5`. Leer lassen, wenn es keine kostenlose Herstellergarantie auf die gesamte Ware gibt. |
+| **GARAN Brand** | Store View | Die Marke, wie sie auf dem Label steht. |
+| **GARAN Model Identifier** | Store View | Die Modellkennung, wie sie auf dem Label steht. |
+| **GARAN Guarantee Duration (Years)** | Store View | Ganze oder halbe Jahre, mehr als 2, etwa `3` oder `4,5`. Leer lassen, wenn es keine kostenlose Herstellergarantie auf die gesamte Ware gibt. |
 | **GARAN Guarantee Terms URL** | Store View | Vollständige `http://`- oder `https://`-Adresse der Garantiebedingungen in der Sprache der Storefront. |
 
 Ein Label erscheint nur, wenn **alle vier Werte vorhanden und gültig** sind. Fehlt eines, zeigt das Modul nichts an — es zeigt niemals ein unvollständiges Label.
@@ -367,9 +406,12 @@ Trifft auch nur eines davon nicht zu, darf kein Label gesetzt werden. Lassen Sie
 
 Bei konfigurierbaren Produkten hängen die Werte an der gewählten Variante. Das Modul zeigt deshalb
 
-- **kein** Label am konfigurierbaren Elternprodukt,
 - **kein** Label, solange noch keine Variante gewählt ist,
 - und wechselt das Label, sobald der Kunde eine andere Variante wählt.
+
+**Vererbung.** Unterscheiden sich die Varianten nur in Größe oder Farbe, müssen Sie die vier Werte nicht an jeder einzelnen pflegen: Tragen Sie sie am konfigurierbaren Elternprodukt ein. Jede Variante, deren eigenes Feld leer ist, übernimmt den Wert des Elternprodukts. Ein am Kind gepflegter Wert gewinnt immer.
+
+Trägt das Elternprodukt selbst vollständige Werte, zeigt es auch auf seiner eigenen Produktseite ein Label — das ist gewollt, wenn alle Varianten dieselbe Garantie haben. Soll am Elternprodukt keines erscheinen, lassen Sie dort mindestens ein Feld leer.
 
 Bei Bundle-Produkten werden alle enthaltenen Artikel berücksichtigt.
 
@@ -391,6 +433,8 @@ Ein Link auf eine Webseite genügt rechtlich nicht. Die Garantieerklärung muss 
 
 Das Modul hängt deshalb eine PDF-Datei an die Bestellbestätigung — und zwar nur bei Bestellungen, die mindestens ein Produkt mit GARAN-Label enthalten. Ein Zusatzmodul ist dafür nicht nötig.
 
+Davon zu trennen ist der Wert *As a file attachment* der beiden E-Mail-Felder: Er hängt die Grafiken an, die sonst im Nachrichtentext stünden, und dient der Lesbarkeit, nicht dem dauerhaften Datenträger. Die Garantieerklärung erfüllt nur das PDF.
+
 ### 6.1 Einrichtung
 
 - **Attach Guarantee Terms to the Order Confirmation** — schaltet den Anhang ein. *Standard: No.*
@@ -411,7 +455,7 @@ Der Anhang ersetzt nicht den Link am Label. Beide sind vorgeschrieben: der Link 
 
 ## 7 Datenkontrolle
 
-Der folgende Befehl listet alle einfachen Produkte, deren GARAN-Daten unvollständig oder ungültig sind und die deshalb kein Label zeigen:
+Der folgende Befehl listet alle Produkte, deren GARAN-Daten unvollständig oder ungültig sind und die deshalb kein Label zeigen:
 
 ```bash
 bin/magento copex:warranty-label:audit
