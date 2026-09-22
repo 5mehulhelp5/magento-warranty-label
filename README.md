@@ -72,7 +72,9 @@ Every storefront placement takes one of four modes:
   most themes is.
 - **Dialog only** — the same dialog without the button, for shops that place their own trigger. See below.
 
-The two email fields are yes/no, because an email cannot open a dialog.
+The two email fields are yes/no, because an email cannot open a dialog. Next to each of them,
+`notice_placement/email_attach` and `garan/email_attach` attach the same graphics as PNG files — independent switches,
+for clients that block remote images. The GARAN labels are attached one per labelled item, named `garan-label-<sku>.png`.
 
 Everything ships switched off — both kill switches and every single placement. A freshly installed module changes
 nothing in the storefront until the placements are chosen deliberately; `docs/EN.md` section 4.2 suggests where to

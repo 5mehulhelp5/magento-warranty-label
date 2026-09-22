@@ -17,6 +17,12 @@ Placements can now hand the trigger to the shop, the email fields are yes/no, an
   `view/frontend/web/js/hyva/warranty-label.js` reads the same configuration out of those attributes and binds the same DOM, without jQuery and without AMD.
   `hyva_default.xml` loads it - Hyvä adds the `hyva_` prefixed handles only while a Hyvä theme is active, so Luma keeps using the AMD modules untouched.
 
+- **The notice and the GARAN labels can travel as attachments.**
+  `Attach the Notice Graphic to the Email` and `Attach the Label Graphics to the Email` send the same graphics as PNG files next to the inline output — independent switches, so a shop can send them inline, attached, both or neither.
+  An email client that blocks remote images shows nothing of an inline graphic; the attached file stays readable.
+  The GARAN labels are attached one per labelled item, named `garan-label-<sku>.png`; the notice is `legal-guarantee-notice.png`.
+  This is about readability, not about the durable medium — only the guarantee terms PDF satisfies that.
+
 - **The brand can come from any product attribute or from one fixed value.**
   `Brand source` chooses between the GARAN attribute of the product, another product attribute (`manufacturer`, an own brand attribute, anything with a text or select input), and a fixed value maintained in the configuration.
   The product's own GARAN Brand always wins; the configured source only fills an empty field.

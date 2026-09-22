@@ -45,7 +45,7 @@ class TermsDocument
     /**
      * Configured document of the store view, or null if it cannot be attached.
      */
-    public function resolve(?int $storeId = null): ?TermsDocumentData
+    public function resolve(?int $storeId = null): ?EmailAttachment
     {
         try {
             $relativePath = $this->resolveRelativePath($this->config->getTermsFileValue($storeId));
@@ -86,7 +86,7 @@ class TermsDocument
                 return null;
             }
 
-            return new TermsDocumentData(
+            return new EmailAttachment(
                 $this->resolveFileName($relativePath, $storeId),
                 $content,
                 $this->resolveMimeType($relativePath)

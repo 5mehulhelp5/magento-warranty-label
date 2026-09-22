@@ -313,6 +313,7 @@ Zwei Hinweise zur Wahl des Modus:
 
 - **Enge Container sprechen für „Nested".** Ist der verfügbare Platz schmaler als die eingestellte Mindestbreite, wird die direkte Grafik nicht verkleinert, sondern lässt sich seitlich verschieben – sie ist vollständig, wirkt aber abgeschnitten. Das betrifft vor allem den Checkout auf dem Smartphone. Im Dialog erscheint die Grafik dagegen in voller Größe.
 - **In E-Mails gibt es keine Dialoge.** Die beiden E-Mail-Felder fragen deshalb nur, ob die Grafik mitgeschickt wird.
+- **Attach the Notice Graphic to the Email** hängt dieselbe Grafik zusätzlich als PNG-Datei an. *Standard: Nein.* Das ist unabhängig vom Feld darüber und hilft dort, wo das E-Mail-Programm entfernte Bilder blockiert: Der Dateianhang bleibt sichtbar, auch wenn das eingebettete Bild leer bleibt. Dasselbe gibt es beim GARAN-Label, siehe Abschnitt 4.3.
 
 Der Dialog ist vollständig mit der Tastatur bedienbar: Enter oder Leertaste öffnen ihn, Escape schließt ihn, und der Fokus kehrt anschließend auf den Button zurück.
 
@@ -344,6 +345,7 @@ Die Auslöser werden beim Laden der Seite gebunden. Ein Element, das ein eigenes
 - **Checkout (before Place Order)** — *Standard: Off.* Das Label erscheint an zwei Stellen: am jeweiligen Artikel in der Bestellübersicht und gesammelt in der gewählten Zahlungsart, direkt über dem Bestell-Button. Die zweite Stelle ist auf Mobilgeräten wichtig, wo die Bestellübersicht eingeklappt ist.
 - **Checkout Success Page** — *Standard: Off.*
 - **Order Confirmation Email** — *Standard: Nein.*
+- **Attach the Label Graphics to the Email** — schickt zusätzlich je gekennzeichnetem Artikel eine PNG-Datei mit, benannt nach dessen SKU (`garan-label-<sku>.png`). *Standard: Nein.* Unabhängig vom Feld darüber.
 - **Brand Comes From** — woher die Marke kommt, wenn das Produkt selbst keine `GARAN Brand` trägt. *Standard: GARAN Brand attribute of the product.*
   - *GARAN Brand attribute of the product* — nur das GARAN-Attribut.
   - *Another product attribute* — ein beliebiges anderes Produktattribut, das darunter im Feld **Brand Product Attribute** gewählt wird (alle Text-, Textarea- und Auswahlattribute stehen zur Wahl, etwa `manufacturer`). Bei Auswahlattributen wird die Options­beschriftung verwendet, nicht die Options-ID.
@@ -425,6 +427,8 @@ Beim Abschluss einer Bestellung speichert das Modul die Labeldaten an der Bestel
 Ein Link auf eine Webseite genügt rechtlich nicht. Die Garantieerklärung muss den Verbraucher **auf einem dauerhaften Datenträger** erreichen, spätestens bei der Lieferung (Art. 17 Abs. 2 der Richtlinie (EU) 2019/771, § 9a Abs. 3 KSchG, § 479 Abs. 2 BGB). Der Europäische Gerichtshof hat entschieden, dass eine Webseite, auf die nur verwiesen wird, diese Anforderung nicht erfüllt (Rechtssache C-49/11).
 
 Das Modul hängt deshalb eine PDF-Datei an die Bestellbestätigung — und zwar nur bei Bestellungen, die mindestens ein Produkt mit GARAN-Label enthalten. Ein Zusatzmodul ist dafür nicht nötig.
+
+Davon zu trennen sind die beiden **Grafik-Anhänge** (*Attach the Notice Graphic to the Email* und *Attach the Label Graphics to the Email*): Sie hängen dieselben Bilder an, die auch in der Mail stehen, und dienen der Lesbarkeit, nicht dem dauerhaften Datenträger. Die Garantieerklärung erfüllt nur das PDF.
 
 ### 6.1 Einrichtung
 

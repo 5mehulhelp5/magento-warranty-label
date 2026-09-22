@@ -7,10 +7,11 @@ namespace CopeX\WarrantyLabel\Test\Unit\Observer;
 use CopeX\WarrantyLabel\Api\Data\GaranLabelDataInterface;
 use CopeX\WarrantyLabel\Api\GaranLabelResolverInterface;
 use CopeX\WarrantyLabel\Model\Config;
+use CopeX\WarrantyLabel\Model\Email\GraphicAttachments;
 use CopeX\WarrantyLabel\Model\Email\PendingAttachments;
 use CopeX\WarrantyLabel\Model\Email\TermsDocument;
-use CopeX\WarrantyLabel\Model\Email\TermsDocumentData;
-use CopeX\WarrantyLabel\Observer\RegisterTermsAttachment;
+use CopeX\WarrantyLabel\Model\Email\EmailAttachment;
+use CopeX\WarrantyLabel\Observer\RegisterEmailAttachments;
 use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer;
 use Magento\Sales\Model\Order;
@@ -20,29 +21,40 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
-class RegisterTermsAttachmentTest extends TestCase
+class RegisterEmailAttachmentsTest extends TestCase
 {
     private const STORE_ID = 5;
 
     private Config&MockObject $config;
     private GaranLabelResolverInterface&MockObject $resolver;
     private TermsDocument&MockObject $termsDocument;
+    private GraphicAttachments&MockObject $graphicAttachments;
+    private ?EmailAttachment $noticeAttachment = null;
+
+    /**
+     * @var list<EmailAttachment>
+     */
+    private array $garanAttachments = [];
     private PendingAttachments $pendingAttachments;
     private LoggerInterface&MockObject $logger;
-    private RegisterTermsAttachment $observer;
+    private RegisterEmailAttachments $observer;
 
     protected function setUp(): void
     {
         $this->config = $this->createMock(Config::class);
         $this->resolver = $this->createMock(GaranLabelResolverInterface::class);
         $this->termsDocument = $this->createMock(TermsDocument::class);
+        $this->graphicAttachments = $this->createMock(GraphicAttachments::class);
+        $this->graphicAttachments->method('forNotice')->willReturnCallback(fn (): ?EmailAttachment => $this->noticeAttachment);
+        $this->graphicAttachments->method('forGaranLabels')->willReturnCallback(fn (): array => $this->garanAttachments);
         $this->pendingAttachments = new PendingAttachments();
         $this->logger = $this->createMock(LoggerInterface::class);
 
-        $this->observer = new RegisterTermsAttachment(
+        $this->observer = new RegisterEmailAttachments(
             $this->config,
             $this->resolver,
             $this->termsDocument,
+            $this->graphicAttachments,
             $this->pendingAttachments,
             $this->logger
         );
@@ -50,7 +62,7 @@ class RegisterTermsAttachmentTest extends TestCase
 
     public function testDocumentIsRegisteredForAnOrderWithGaranLabel(): void
     {
-        $document = new TermsDocumentData('Garantiebedingungen.pdf', '%PDF', 'application/pdf');
+        $document = new EmailAttachment('Garantiebedingungen.pdf', '%PDF', 'application/pdf');
         $this->config->method('isTermsAttachmentEnabled')->with(self::STORE_ID)->willReturn(true);
         $this->resolver->method('forOrderItem')->willReturn([$this->createMock(GaranLabelDataInterface::class)]);
         $this->termsDocument->method('resolve')->with(self::STORE_ID)->willReturn($document);
@@ -62,7 +74,7 @@ class RegisterTermsAttachmentTest extends TestCase
 
     public function testDeprecatedTransportKeyIsAccepted(): void
     {
-        $document = new TermsDocumentData('Garantiebedingungen.pdf', '%PDF', 'application/pdf');
+        $document = new EmailAttachment('Garantiebedingungen.pdf', '%PDF', 'application/pdf');
         $this->config->method('isTermsAttachmentEnabled')->willReturn(true);
         $this->resolver->method('forOrderItem')->willReturn([$this->createMock(GaranLabelDataInterface::class)]);
         $this->termsDocument->method('resolve')->willReturn($document);
@@ -141,5 +153,22 @@ class RegisterTermsAttachmentTest extends TestCase
         $order->method('getAllVisibleItems')->willReturn([$this->createMock(OrderItem::class)]);
 
         return new Observer([$transportKey => new DataObject(['order' => $order])]);
+    }
+
+    public function testGraphicsAreRegisteredWithoutTheTermsDocument(): void
+    {
+        $this->config->method('isTermsAttachmentEnabled')->willReturn(false);
+        $this->noticeAttachment = new EmailAttachment('legal-guarantee-notice.png', 'PNG', 'image/png');
+        $this->garanAttachments = [new EmailAttachment('garan-label-SKU-1.png', 'PNG', 'image/png')];
+
+        $this->observer->execute($this->createObserver('transportObject'));
+
+        $this->assertSame(
+            ['legal-guarantee-notice.png', 'garan-label-SKU-1.png'],
+            array_map(
+                static fn (EmailAttachment $attachment): string => $attachment->getName(),
+                $this->pendingAttachments->takeAll()
+            )
+        );
     }
 }

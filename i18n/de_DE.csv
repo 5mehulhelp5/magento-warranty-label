@@ -67,3 +67,8 @@
 "GARAN Model Identifier attribute of the product","GARAN-Modellkennungs-Attribut des Produkts"
 "Product name","Produktname"
 "-- Please select --","-- Bitte wählen --"
+"Attach the Notice Graphic to the Email","Hinweisgrafik an die E-Mail anhängen"
+"Sends the graphic as a PNG file as well. Independent of the field above: many email clients block remote images, and an attached file stays readable without them.","Schickt die Grafik zusätzlich als PNG-Datei mit. Unabhängig vom Feld darüber: Viele E-Mail-Programme blockieren entfernte Bilder, ein Dateianhang bleibt auch dann lesbar."
+"Attach the Label Graphics to the Email","Label-Grafiken an die E-Mail anhängen"
+"Sends one PNG file per labelled item as well, named after its SKU. Independent of the field above.","Schickt zusätzlich je gekennzeichnetem Artikel eine PNG-Datei mit, benannt nach dessen SKU. Unabhängig vom Feld darüber."
+"Dialog only (place your own trigger)","Nur Dialog (Auslöser selbst setzen)"

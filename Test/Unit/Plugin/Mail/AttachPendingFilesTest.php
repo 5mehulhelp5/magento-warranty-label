@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CopeX\WarrantyLabel\Test\Unit\Plugin\Mail;
 
 use CopeX\WarrantyLabel\Model\Email\PendingAttachments;
-use CopeX\WarrantyLabel\Model\Email\TermsDocumentData;
+use CopeX\WarrantyLabel\Model\Email\EmailAttachment;
 use CopeX\WarrantyLabel\Plugin\Mail\AttachPendingFiles;
 use Magento\Framework\Mail\EmailMessage;
 use Magento\Framework\Mail\MessageInterface;
@@ -58,7 +58,7 @@ class AttachPendingFilesTest extends TestCase
     {
         $textPart = new TextPart('Order confirmation');
         $symfonyMessage = new SymfonyMessage(new Headers(), $textPart);
-        $this->pendingAttachments->add(new TermsDocumentData(self::NAME, self::CONTENT, 'application/pdf'));
+        $this->pendingAttachments->add(new EmailAttachment(self::NAME, self::CONTENT, 'application/pdf'));
 
         $this->plugin->afterGetTransport($this->subject, $this->createTransport($symfonyMessage));
 
@@ -79,7 +79,7 @@ class AttachPendingFilesTest extends TestCase
         $textPart = new TextPart('Order confirmation');
         $foreignPart = new DataPart('invoice', 'invoice.pdf', 'application/pdf');
         $symfonyMessage = new SymfonyMessage(new Headers(), new MixedPart($textPart, $foreignPart));
-        $this->pendingAttachments->add(new TermsDocumentData(self::NAME, self::CONTENT, 'application/pdf'));
+        $this->pendingAttachments->add(new EmailAttachment(self::NAME, self::CONTENT, 'application/pdf'));
 
         $this->plugin->afterGetTransport($this->subject, $this->createTransport($symfonyMessage));
 
@@ -96,7 +96,7 @@ class AttachPendingFilesTest extends TestCase
     {
         $email = new SymfonyEmail();
         $email->text('Order confirmation');
-        $this->pendingAttachments->add(new TermsDocumentData(self::NAME, self::CONTENT, 'application/pdf'));
+        $this->pendingAttachments->add(new EmailAttachment(self::NAME, self::CONTENT, 'application/pdf'));
 
         $this->plugin->afterGetTransport($this->subject, $this->createTransport($email));
 
@@ -109,7 +109,7 @@ class AttachPendingFilesTest extends TestCase
     {
         $transport = $this->createMock(TransportInterface::class);
         $transport->method('getMessage')->willReturn($this->createMock(MessageInterface::class));
-        $this->pendingAttachments->add(new TermsDocumentData(self::NAME, self::CONTENT, 'application/pdf'));
+        $this->pendingAttachments->add(new EmailAttachment(self::NAME, self::CONTENT, 'application/pdf'));
         $this->logger->expects($this->once())->method('warning');
 
         $this->assertSame($transport, $this->plugin->afterGetTransport($this->subject, $transport));
@@ -118,7 +118,7 @@ class AttachPendingFilesTest extends TestCase
 
     public function testUnexpectedTransportIsReturnedUnchanged(): void
     {
-        $this->pendingAttachments->add(new TermsDocumentData(self::NAME, self::CONTENT, 'application/pdf'));
+        $this->pendingAttachments->add(new EmailAttachment(self::NAME, self::CONTENT, 'application/pdf'));
         $this->logger->expects($this->never())->method('error');
 
         $this->assertNull($this->plugin->afterGetTransport($this->subject, null));
@@ -129,7 +129,7 @@ class AttachPendingFilesTest extends TestCase
     {
         $transport = $this->createMock(TransportInterface::class);
         $transport->method('getMessage')->willThrowException(new RuntimeException('message gone'));
-        $this->pendingAttachments->add(new TermsDocumentData(self::NAME, self::CONTENT, 'application/pdf'));
+        $this->pendingAttachments->add(new EmailAttachment(self::NAME, self::CONTENT, 'application/pdf'));
         $this->logger->expects($this->once())->method('error');
 
         $this->assertSame($transport, $this->plugin->afterGetTransport($this->subject, $transport));

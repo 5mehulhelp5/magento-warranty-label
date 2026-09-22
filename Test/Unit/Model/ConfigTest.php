@@ -223,4 +223,30 @@ class ConfigTest extends TestCase
 
         self::assertSame('https://example.com/terms', $this->config->getGaranTermsUrl(1));
     }
+
+    public function testEmailAttachmentsFollowTheirKillSwitch(): void
+    {
+        $this->values = [
+            Config::XML_PATH_ENABLED => '1',
+            Config::XML_PATH_NOTICE_EMAIL_ATTACH => '1',
+            Config::XML_PATH_GARAN_ENABLED => '1',
+            Config::XML_PATH_GARAN_EMAIL_ATTACH => '1',
+        ];
+
+        self::assertTrue($this->config->isNoticeEmailAttachmentEnabled(1));
+        self::assertTrue($this->config->isGaranEmailAttachmentEnabled(1));
+
+        $this->values[Config::XML_PATH_ENABLED] = '0';
+
+        self::assertFalse($this->config->isNoticeEmailAttachmentEnabled(1));
+        self::assertFalse($this->config->isGaranEmailAttachmentEnabled(1));
+    }
+
+    public function testEmailAttachmentsAreOffByDefault(): void
+    {
+        $this->values = [Config::XML_PATH_ENABLED => '1', Config::XML_PATH_GARAN_ENABLED => '1'];
+
+        self::assertFalse($this->config->isNoticeEmailAttachmentEnabled(1));
+        self::assertFalse($this->config->isGaranEmailAttachmentEnabled(1));
+    }
 }

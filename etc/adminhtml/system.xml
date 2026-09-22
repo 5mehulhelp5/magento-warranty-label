@@ -91,6 +91,12 @@
                     <label>Order Confirmation Email</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="email_attach" translate="label comment" type="select" sortOrder="90"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Attach the Notice Graphic to the Email</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Sends the graphic as a PNG file as well. Independent of the field above: many email clients block remote images, and an attached file stays readable without them.</comment>
+                </field>
             </group>
             <group id="garan" translate="label comment" sortOrder="30"
                    showInDefault="1" showInWebsite="1" showInStore="1">
@@ -129,6 +135,15 @@
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Order Confirmation Email</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="email_attach" translate="label comment" type="select" sortOrder="51"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Attach the Label Graphics to the Email</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Sends one PNG file per labelled item as well, named after its SKU. Independent of the field above.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

@@ -312,6 +312,7 @@ Two notes on choosing the mode:
 
 - **Narrow containers speak for "Nested".** Where the available space is narrower than the configured minimum width, the direct graphic is not shrunk but can be scrolled sideways — it is complete but looks cut off. That mainly concerns the checkout on a phone. In the dialog the graphic appears at full size.
 - **Emails have no dialogs.** The two email fields therefore only ask whether the graphic travels with the message.
+- **Attach the Notice Graphic to the Email** attaches the same graphic as a PNG file on top. *Default: No.* Independent of the field above, and useful where the email client blocks remote images: the attached file stays readable even when the embedded image does not load. The GARAN label has the same option, see section 4.3.
 
 The dialog is fully keyboard operable: Enter or Space open it, Escape closes it, and focus returns to the button afterwards.
 
@@ -343,6 +344,7 @@ Triggers are bound when the page loads. An element a script of your own inserts 
 - **Checkout (before Place Order)** — *Default: Off.* The label appears in two places: on the individual item in the order summary, and collected inside the selected payment method directly above the place-order button. The second position matters on mobile, where the order summary is collapsed.
 - **Checkout Success Page** — *Default: Off.*
 - **Order Confirmation Email** — *Default: No.*
+- **Attach the Label Graphics to the Email** — also sends one PNG file per labelled item, named after its SKU (`garan-label-<sku>.png`). *Default: No.* Independent of the field above.
 - **Brand Comes From** — where the brand comes from when the product carries no `GARAN Brand` of its own. *Default: GARAN Brand attribute of the product.*
   - *GARAN Brand attribute of the product* — the GARAN attribute only.
   - *Another product attribute* — any other product attribute, selected below in **Brand Product Attribute** (every text, textarea and select attribute is offered, e.g. `manufacturer`). For select attributes the option label is used, not the option id.
@@ -424,6 +426,8 @@ When an order is placed, the module stores the label data on the order item. Cha
 A link to a website is not legally sufficient. The guarantee statement must reach the consumer **on a durable medium**, at the latest at delivery (Art. 17(2) of Directive (EU) 2019/771, § 9a (3) KSchG, § 479 (2) BGB). The Court of Justice of the European Union has ruled that a website merely referred to does not meet this requirement (Case C-49/11).
 
 The module therefore attaches a PDF file to the order confirmation — only for orders containing at least one product with a GARAN label. No additional extension is required.
+
+Keep this apart from the two **graphic attachments** (*Attach the Notice Graphic to the Email* and *Attach the Label Graphics to the Email*): they attach the same images that already appear in the message and serve readability, not the durable medium. Only the PDF satisfies the guarantee statement.
 
 ### 6.1 Setting it up
 

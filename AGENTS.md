@@ -40,7 +40,9 @@ Plugin/Sales/EmailItemsPlugin.php      afterToHtml on Magento\Sales\Block\Order\
 Plugin/Mail/AttachPendingFiles.php     afterGetTransport (sortOrder 100, last): attaches registered files in place
 Model/Email/TermsDocument.php          resolves + validates the configured guarantee terms PDF below pub/media
 Model/Email/PendingAttachments.php     request-scoped registry between observer and mail plugin
-Observer/RegisterTermsAttachment.php   email_order_set_template_vars_before: registers the PDF for orders with GARAN items
+Model/Email/EmailAttachment.php        one attached file: name, content, mime type
+Model/Email/GraphicAttachments.php     notice PNG + one GARAN label PNG per item, as attachments
+Observer/RegisterEmailAttachments.php   email_order_set_template_vars_before: registers terms PDF and graphics
 Setup/Patch/Data/AddGaranProductAttributes.php
 ViewModel/                             Notice, GaranList (+ PDP view model)
 view/base/web/notice/                  official notice SVG/PNG per language + CHECKSUMS (see ASSETS.md)

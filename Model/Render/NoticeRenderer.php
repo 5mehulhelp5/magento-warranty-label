@@ -43,6 +43,19 @@ class NoticeRenderer
     }
 
     /**
+     * Absolute path of the official PNG in the module directory, for attaching it to an email.
+     */
+    public function getPngSourceFile(?int $storeId = null): string
+    {
+        return $this->assetRepository
+            ->createAsset(
+                $this->languageRegistry->getNoticeAssetId($this->config->getLanguageCode($storeId), 'png'),
+                ['area' => Area::AREA_FRONTEND]
+            )
+            ->getSourceFile();
+    }
+
+    /**
      * Link target, identical to the QR code destination of the notice.
      */
     public function getLinkUrl(?int $storeId = null): string

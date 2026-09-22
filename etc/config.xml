@@ -20,6 +20,7 @@
                 <checkout>off</checkout>
                 <success>off</success>
                 <email>0</email>
+                <email_attach>0</email_attach>
             </notice_placement>
             <garan>
                 <enabled>0</enabled>
@@ -27,6 +28,7 @@
                 <checkout>off</checkout>
                 <success>off</success>
                 <email>0</email>
+                <email_attach>0</email_attach>
                 <brand_source>garan_attribute</brand_source>
                 <brand_attribute/>
                 <brand_value/>

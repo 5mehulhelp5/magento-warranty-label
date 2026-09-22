@@ -28,6 +28,8 @@ class Config
     public const XML_PATH_GARAN_BRAND_VALUE = 'copex_warrantylabel/garan/brand_value';
     public const XML_PATH_GARAN_MODEL_SOURCE = 'copex_warrantylabel/garan/model_source';
     public const XML_PATH_GARAN_TERMS_URL = 'copex_warrantylabel/garan/terms_url';
+    public const XML_PATH_NOTICE_EMAIL_ATTACH = 'copex_warrantylabel/notice_placement/email_attach';
+    public const XML_PATH_GARAN_EMAIL_ATTACH = 'copex_warrantylabel/garan/email_attach';
     public const XML_PATH_GARAN_ATTACH_TERMS = 'copex_warrantylabel/garan/attach_terms';
     public const XML_PATH_GARAN_TERMS_FILE = 'copex_warrantylabel/garan/terms_file';
     public const XML_PATH_GARAN_TERMS_FILENAME = 'copex_warrantylabel/garan/terms_filename';
@@ -220,6 +222,32 @@ class Config
         return $placement === self::PLACEMENT_EMAIL
             ? $this->getFlagMode($path, $storeId)
             : $this->normalizeMode($this->getString($path, $storeId));
+    }
+
+    /**
+     * Whether the notice graphic travels with the order confirmation as a file, independent of the inline output.
+     */
+    public function isNoticeEmailAttachmentEnabled(?int $storeId = null): bool
+    {
+        return $this->isEnabled($storeId)
+            && $this->scopeConfig->isSetFlag(
+                self::XML_PATH_NOTICE_EMAIL_ATTACH,
+                ScopeInterface::SCOPE_STORE,
+                $storeId
+            );
+    }
+
+    /**
+     * Whether the GARAN label graphics travel with the order confirmation as files, one per labelled item.
+     */
+    public function isGaranEmailAttachmentEnabled(?int $storeId = null): bool
+    {
+        return $this->isGaranActive($storeId)
+            && $this->scopeConfig->isSetFlag(
+                self::XML_PATH_GARAN_EMAIL_ATTACH,
+                ScopeInterface::SCOPE_STORE,
+                $storeId
+            );
     }
 
     /**
