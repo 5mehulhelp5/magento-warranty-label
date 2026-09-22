@@ -4,10 +4,10 @@ All notable changes to `copex/module-warranty-label` are documented in this file
 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0] – 2026-09-21
+## [1.3.0] – 2026-09-22
 
 Hyvä compatibility for the storefront placements, verified on a Hyvä storefront (Magento 2.4.8) with a simple and a configurable product.
-Placements can now hand the trigger to the shop, the email fields are yes/no, and brand, model identifier and terms URL have configurable sources.
+Placements ship switched off and can hand the trigger to the shop, the email fields choose between no, inline and attachment, and brand, model identifier and terms URL have configurable sources.
 
 ### Added
 
