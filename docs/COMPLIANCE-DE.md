@@ -1,6 +1,6 @@
 # Gesetzliche Anforderungen und Abdeckung durch CopeX_WarrantyLabel
 
-Stand: 2026-09-16 · Modulversion 0.1.0
+Stand: 2026-09-22 · Modulversion 1.3.0
 
 Dieses Dokument ordnet jeder rechtlichen Anforderung zu, **wo und wie das Modul sie umsetzt** und **was offen bleibt**.
 Es ist keine Rechtsberatung: Die Auslegung im Einzelfall und die Freigabe der gewählten Darstellungsvarianten liegen
@@ -60,8 +60,7 @@ Nicht verifiziert: Die nationalen Fundstellen stammen aus der Aufbereitung von C
 | Marktplätze | Für Amazon, eBay, Kaufland, Mirakl u. a. liegt die Pflicht beim jeweiligen Interface; solche Store Views sollten das Modul deaktiviert haben |
 | Rechnung, Lieferschein, weitere Mails | Nicht abgedeckt; LL verlangen nur die Bestellbestätigung |
 | Englischsprachige Store Views mit deutscher Locale | Grafik, Link, Button- und Alt-Text sind konfigurierbar englisch; systemseitige Texte wie „Schließen“ und die GARAN-Beschriftungen folgen der Locale und erscheinen dort deutsch |
-| Zahlungsarten ohne `before-place-order` | Hinweis und GARAN-Liste stehen im Checkout in Magentos Region `payments-list > before-place-order`, die jede Zahlungsart in ihrem eigenen Template über dem Bestell-Button ausgibt – dieselbe Stelle wie die AGB-Checkboxen. Eine Zahlungsart, deren Template die Region weglässt, zeigt weder AGB-Checkboxen noch Hinweis. **Je Zahlungsart prüfen:** Zahlungsart wählen, Hinweis muss über dem Button stehen. Fehlt er, ist das Template der Zahlungsart zu korrigieren oder die Komponente im Projekt-Theme an eine andere Stelle zu setzen (README, Abschnitt Themes) |
-| Hyvä | Adapter vorbereitet, aber nicht Teil dieses Release |
+| Hyvä | Storefront-Platzierungen und Checkout sind seit 1.3.0 geprüft (siehe Abschnitt 5, Nachtrag Hyvä). Der Checkout läuft über Hyväs Luma-Fallback-Checkout (`Hyva_LumaCheckout`) und verhält sich dort wie in Luma. Offen bleibt: **Mit *Hyvä Checkout* erscheinen Hinweis und GARAN-Liste nicht** – die drei Komponenten sind Knockout-`uiComponent`s, für die Hyvä Checkout keine Entsprechung lädt; ein Shop mit Hyvä Checkout braucht eine Portierung, sonst ist N2/G5 im Checkout nicht erfüllt. Ausserdem verankert das Projekt-Theme das GARAN-Label auf der Produktseite selbst (README, Abschnitt Themes) |
 
 ## 5. Nachweise aus der Verifikation (lokal, 2026-09-15)
 
@@ -84,4 +83,20 @@ Nicht verifiziert: Die nationalen Fundstellen stammen aus der Aufbereitung von C
   GARAN-Labels.
 - Unit-Tests 334, darunter `Test/Unit/Layout/CheckoutLayoutTest`, der jeden Eltern-Knoten der Checkout-Komponenten
   gegen das Layout von `Magento_Checkout` prüft; phpcs Magento2 ohne Fehler.
-- Nicht geprüft: Hyvä, Zahlungsarten von Drittanbietern (siehe Abschnitt 4, „Zahlungsarten ohne `before-place-order`“).
+
+### Nachtrag Hyvä (lokal, 2026-09-22, Version 1.3.0)
+
+- Anlass: Die geschachtelte Anzeige und der Variantenwechsel hingen an `data-mage-init` und blieben in Hyvä
+  ungebunden, weil Hyvä kein RequireJS ausliefert – der Dialog öffnete nie, und auf einem konfigurierbaren Produkt
+  blieb das Label dauerhaft `hidden`. Seit 1.3.0 übernimmt `view/frontend/web/js/hyva/warranty-label.js` beides ohne
+  jQuery und ohne AMD; geladen wird es über `hyva_default.xml`, also nur bei aktivem Hyvä-Theme.
+- Geprüft auf einer Hyvä-Storefront (Magento 2.4.8) mit einem einfachen und einem konfigurierbaren Produkt:
+  Storefront-Platzierungen einschließlich Dialog und Variantenwechsel.
+- Das GARAN-Label auf der Produktseite verankert das Projekt-Theme selbst: Der Anker `after="product.info.price"`
+  greift nur in Luma, weil `product.info.price` in Hyvä unterhalb des Blocks `product.info` liegt und nicht direkt
+  im Container `product.info.main`. Muster in der README, Abschnitt Themes.
+- Checkout mit Hyväs Luma-Fallback-Checkout (`Hyva_LumaCheckout`) geprüft: Hinweis und GARAN-Liste stehen wie in
+  Luma über dem Bestell-Button.
+- **Hyvä Checkout wird nicht unterstützt** (geprüft): Die drei Checkout-Komponenten sind Knockout-`uiComponent`s,
+  die Hyvä Checkout nicht lädt – Hinweis und GARAN-Liste bleiben dort aus. Ein Shop mit Hyvä Checkout muss die
+  Komponenten portieren, sonst sind N2 und G5 im Checkout nicht erfüllt.

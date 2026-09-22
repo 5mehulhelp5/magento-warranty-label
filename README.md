@@ -175,6 +175,12 @@ third-party theme is required anywhere.
 Supported.
 Keep the shipped defaults — `nested` for the storefront placements: the notice graphic is 420 x 594 px and `direct` pushes a Hyvä header or footer apart.
 
+The nested dialog and the GARAN variant switch need no project setup. Both hang on `data-mage-init` in the shared
+templates, which Hyvä never initialises, so `view/frontend/web/js/hyva/warranty-label.js` reads the same
+configuration out of the same attributes and binds the same DOM, without jQuery and without AMD.
+`view/frontend/layout/hyva_default.xml` loads it — Hyvä adds the `hyva_` prefixed handles only while a Hyvä theme
+is active, so Luma keeps its AMD modules untouched.
+
 The GARAN label on the product page is the one placement a Hyvä project has to make itself.
 The module's anchor resolves in Luma only, so the label otherwise renders at the bottom of the product column.
 Place it in the theme:
@@ -276,15 +282,9 @@ is one Magento provides:
 </referenceBlock>
 ```
 
-**Hyvä** is partially usable today and not yet complete:
-
-| | Status |
-|---|---|
-| Notice in *direct* mode — header, footer, category, search, cart, success page | works — `notice.phtml` renders server-side and loads no JavaScript |
-| Nested display (dialog) and the variant switch on the product page | not yet — both load through RequireJS, and the variant switch also uses jQuery |
-| Checkout | not yet — the three components extend `uiComponent` and render through Knockout templates |
-
-Contributions for the Hyvä side are welcome.
+**Hyvä** renders the checkout through the Luma fallback theme (`Hyva_LumaCheckout`, part of a standard Hyvä
+installation), so RequireJS and Knockout are available and everything in this section applies there unchanged.
+Only a project running *Hyvä Checkout* has to port the three components — contributions for that are welcome.
 
 ## Translations
 
