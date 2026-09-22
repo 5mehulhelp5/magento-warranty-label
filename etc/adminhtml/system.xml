@@ -95,7 +95,7 @@
             <group id="garan" translate="label comment" sortOrder="30"
                    showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>EU GARAN Label</label>
-                <comment><![CDATA[Shown only for products whose producer offers a commercial guarantee of durability free of charge, for the entire good and for more than two years. Maintain brand, model identifier, duration and guarantee terms URL on the simple product (variant).]]></comment>
+                <comment><![CDATA[Shown only for products whose producer offers a commercial guarantee of durability free of charge, for the entire good and for more than two years. Maintain the duration on the product; brand, model identifier and terms URL can come from the settings below. A variant without its own values inherits them from its configurable parent.]]></comment>
                 <field id="enabled" translate="label" type="select" sortOrder="10"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable GARAN Label</label>
@@ -129,6 +129,49 @@
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Order Confirmation Email</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="brand_source" translate="label comment" type="select" sortOrder="52"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Brand Comes From</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\BrandSource</source_model>
+                    <comment>A brand maintained on the product always wins over the fixed value.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="brand_attribute" translate="label" type="select" sortOrder="53"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Brand Product Attribute</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\ProductTextAttribute</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="brand_source">product_attribute</field>
+                    </depends>
+                </field>
+                <field id="brand_value" translate="label" type="text" sortOrder="54"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Brand</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="brand_source">config_value</field>
+                    </depends>
+                </field>
+                <field id="model_source" translate="label" type="select" sortOrder="55"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Model Identifier Comes From</label>
+                    <source_model>CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource</source_model>
+                    <comment>A model identifier maintained on the product always wins over the product name.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="terms_url" translate="label comment" type="text" sortOrder="56"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Guarantee Terms URL</label>
+                    <comment>Used for every product without its own URL. Full http:// or https:// address in the store view language.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

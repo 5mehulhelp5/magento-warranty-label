@@ -7,7 +7,7 @@ All notable changes to `copex/module-warranty-label` are documented in this file
 ## [1.3.0] – 2026-09-21
 
 Hyvä compatibility for the storefront placements, verified on a Hyvä storefront (Magento 2.4.8) with a simple and a configurable product.
-Placements can now hand the trigger to the shop, and the email fields are yes/no.
+Placements can now hand the trigger to the shop, the email fields are yes/no, and brand, model identifier and terms URL have configurable sources.
 
 ### Added
 
@@ -16,6 +16,22 @@ Placements can now hand the trigger to the shop, and the email fields are yes/no
   Hyvä ships none, so the hooks stayed unbound: the nested button never opened its dialog, and on a configurable product the output kept the `hidden` attribute the template sets until a variant is chosen, so no label ever appeared.
   `view/frontend/web/js/hyva/warranty-label.js` reads the same configuration out of those attributes and binds the same DOM, without jQuery and without AMD.
   `hyva_default.xml` loads it - Hyvä adds the `hyva_` prefixed handles only while a Hyvä theme is active, so Luma keeps using the AMD modules untouched.
+
+- **The brand can come from any product attribute or from one fixed value.**
+  `Brand source` chooses between the GARAN attribute of the product, another product attribute (`manufacturer`, an own brand attribute, anything with a text or select input), and a fixed value maintained in the configuration.
+  The product's own GARAN Brand always wins; the configured source only fills an empty field.
+
+- **The model identifier can come from the product name.**
+  `Model Identifier source` switches between the GARAN attribute and the product name.
+  Careful with long names: brand and model share one line on the label, and a value that does not fit is rejected, not shrunk, so the label disappears silently. Check the result with `bin/magento copex:warranty-label:audit --store=<id>`.
+
+- **A guarantee terms URL for the whole store.**
+  `Guarantee terms URL` fills every product that carries none of its own; a URL on the product always wins.
+
+- **The GARAN fields are maintained on every product type and per store view.**
+  They used to be simple-only and global.
+  A configurable product can now carry brand, model, duration and terms URL for all of its variants: a variant without its own values inherits them from its configurable parent.
+  The data patch `WidenGaranAttributes` widens the attributes on installations that already have them.
 
 - **Display mode "Dialog only".**
   The dialog is rendered without a trigger, so the shop can place its own anywhere on the page - in a CMS block, in the footer, in a theme template.

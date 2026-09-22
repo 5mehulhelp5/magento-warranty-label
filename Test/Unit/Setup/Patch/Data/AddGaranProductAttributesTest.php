@@ -71,7 +71,9 @@ class AddGaranProductAttributesTest extends TestCase
         $this->assertSame(TermsUrl::class, $attributes[Attributes::TERMS_URL]['backend']);
         $this->assertSame(ScopedAttributeInterface::SCOPE_STORE, $attributes[Attributes::TERMS_URL]['global']);
         foreach ($attributes as $definition) {
-            $this->assertSame('simple', $definition['apply_to']);
+            // Empty means every product type: the fields are maintained on bundles and configurables too.
+            $this->assertSame('', $definition['apply_to']);
+            $this->assertSame(ScopedAttributeInterface::SCOPE_STORE, $definition['global']);
             $this->assertSame(AddGaranProductAttributes::GROUP_NAME, $definition['group']);
             $this->assertTrue($definition['user_defined']);
             $this->assertFalse($definition['required']);

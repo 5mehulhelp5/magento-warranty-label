@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace CopeX\WarrantyLabel\Model;
 
 use CopeX\WarrantyLabel\Model\Language\LanguageRegistry;
+use CopeX\WarrantyLabel\Model\Source\BrandSource;
 use CopeX\WarrantyLabel\Model\Source\DisplayMode;
+use CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource;
 use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
@@ -21,6 +23,11 @@ class Config
     public const XML_PATH_NOTICE_PLACEMENT_PREFIX = 'copex_warrantylabel/notice_placement/';
     public const XML_PATH_GARAN_ENABLED = 'copex_warrantylabel/garan/enabled';
     public const XML_PATH_GARAN_PLACEMENT_PREFIX = 'copex_warrantylabel/garan/';
+    public const XML_PATH_GARAN_BRAND_SOURCE = 'copex_warrantylabel/garan/brand_source';
+    public const XML_PATH_GARAN_BRAND_ATTRIBUTE = 'copex_warrantylabel/garan/brand_attribute';
+    public const XML_PATH_GARAN_BRAND_VALUE = 'copex_warrantylabel/garan/brand_value';
+    public const XML_PATH_GARAN_MODEL_SOURCE = 'copex_warrantylabel/garan/model_source';
+    public const XML_PATH_GARAN_TERMS_URL = 'copex_warrantylabel/garan/terms_url';
     public const XML_PATH_GARAN_ATTACH_TERMS = 'copex_warrantylabel/garan/attach_terms';
     public const XML_PATH_GARAN_TERMS_FILE = 'copex_warrantylabel/garan/terms_file';
     public const XML_PATH_GARAN_TERMS_FILENAME = 'copex_warrantylabel/garan/terms_filename';
@@ -129,6 +136,56 @@ class Config
         $types = array_map('trim', explode(',', $this->getString(self::XML_PATH_EXCLUDED_PRODUCT_TYPES, $storeId)));
 
         return array_values(array_filter($types, static fn (string $type): bool => $type !== ''));
+    }
+
+    /**
+     * Where the brand on the label comes from when the product carries none.
+     */
+    public function getBrandSource(?int $storeId = null): string
+    {
+        $source = $this->getString(self::XML_PATH_GARAN_BRAND_SOURCE, $storeId);
+
+        return in_array($source, BrandSource::SOURCES, true) ? $source : BrandSource::GARAN_ATTRIBUTE;
+    }
+
+    /**
+     * Product attribute the brand is read from, empty unless the source is "product_attribute".
+     */
+    public function getBrandAttribute(?int $storeId = null): string
+    {
+        return $this->getBrandSource($storeId) === BrandSource::PRODUCT_ATTRIBUTE
+            ? $this->getString(self::XML_PATH_GARAN_BRAND_ATTRIBUTE, $storeId)
+            : '';
+    }
+
+    /**
+     * Fixed brand, empty unless the source is "config_value".
+     */
+    public function getBrandValue(?int $storeId = null): string
+    {
+        return $this->getBrandSource($storeId) === BrandSource::CONFIG_VALUE
+            ? $this->getString(self::XML_PATH_GARAN_BRAND_VALUE, $storeId)
+            : '';
+    }
+
+    /**
+     * Where the model identifier comes from when the product carries none.
+     */
+    public function getModelIdentifierSource(?int $storeId = null): string
+    {
+        $source = $this->getString(self::XML_PATH_GARAN_MODEL_SOURCE, $storeId);
+
+        return in_array($source, ModelIdentifierSource::SOURCES, true)
+            ? $source
+            : ModelIdentifierSource::GARAN_ATTRIBUTE;
+    }
+
+    /**
+     * Guarantee terms URL for every product without its own.
+     */
+    public function getGaranTermsUrl(?int $storeId = null): string
+    {
+        return $this->getString(self::XML_PATH_GARAN_TERMS_URL, $storeId);
     }
 
     /**

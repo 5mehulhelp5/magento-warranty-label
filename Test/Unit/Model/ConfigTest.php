@@ -6,7 +6,9 @@ namespace CopeX\WarrantyLabel\Test\Unit\Model;
 
 use CopeX\WarrantyLabel\Model\Config;
 use CopeX\WarrantyLabel\Model\Language\LanguageRegistry;
+use CopeX\WarrantyLabel\Model\Source\BrandSource;
 use CopeX\WarrantyLabel\Model\Source\DisplayMode;
+use CopeX\WarrantyLabel\Model\Source\ModelIdentifierSource;
 use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\TestCase;
@@ -176,5 +178,49 @@ class ConfigTest extends TestCase
 
         self::assertSame('Deine Gewährleistungsrechte', $this->config->getTriggerText(1));
         self::assertSame('', $this->config->getAltText(1));
+    }
+
+    public function testBrandSourceFallsBackToTheGaranAttribute(): void
+    {
+        self::assertSame(BrandSource::GARAN_ATTRIBUTE, $this->config->getBrandSource(1));
+
+        $this->values[Config::XML_PATH_GARAN_BRAND_SOURCE] = 'something_else';
+
+        self::assertSame(BrandSource::GARAN_ATTRIBUTE, $this->config->getBrandSource(1));
+    }
+
+    public function testBrandAttributeAndValueOnlyAnswerForTheirOwnSource(): void
+    {
+        $this->values = [
+            Config::XML_PATH_GARAN_BRAND_SOURCE => BrandSource::PRODUCT_ATTRIBUTE,
+            Config::XML_PATH_GARAN_BRAND_ATTRIBUTE => 'manufacturer',
+            Config::XML_PATH_GARAN_BRAND_VALUE => 'Fixed Brand',
+        ];
+
+        self::assertSame('manufacturer', $this->config->getBrandAttribute(1));
+        self::assertSame('', $this->config->getBrandValue(1));
+
+        $this->values[Config::XML_PATH_GARAN_BRAND_SOURCE] = BrandSource::CONFIG_VALUE;
+
+        self::assertSame('', $this->config->getBrandAttribute(1));
+        self::assertSame('Fixed Brand', $this->config->getBrandValue(1));
+    }
+
+    public function testModelIdentifierSourceFallsBackToTheGaranAttribute(): void
+    {
+        self::assertSame(ModelIdentifierSource::GARAN_ATTRIBUTE, $this->config->getModelIdentifierSource(1));
+
+        $this->values[Config::XML_PATH_GARAN_MODEL_SOURCE] = ModelIdentifierSource::PRODUCT_NAME;
+
+        self::assertSame(ModelIdentifierSource::PRODUCT_NAME, $this->config->getModelIdentifierSource(1));
+    }
+
+    public function testGaranTermsUrlIsEmptyWhenUnset(): void
+    {
+        self::assertSame('', $this->config->getGaranTermsUrl(1));
+
+        $this->values[Config::XML_PATH_GARAN_TERMS_URL] = 'https://example.com/terms';
+
+        self::assertSame('https://example.com/terms', $this->config->getGaranTermsUrl(1));
     }
 }

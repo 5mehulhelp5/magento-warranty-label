@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace CopeX\WarrantyLabel\Console\Command;
 
+use CopeX\WarrantyLabel\Model\Config;
 use CopeX\WarrantyLabel\Model\Garan\Attributes;
 use CopeX\WarrantyLabel\Model\Garan\LabelValidator;
-use Magento\Catalog\Model\Product\Type as ProductType;
+use CopeX\WarrantyLabel\Model\Garan\Resolver;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
 use Magento\Framework\Console\Cli;
-use Magento\Framework\DataObject;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -22,7 +23,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Lists simple products whose GARAN data is partially set or invalid and therefore renders no label (AC-G3).
+ * Lists products whose GARAN data is partially set or invalid and therefore renders no label (AC-G3).
  */
 class AuditCommand extends Command
 {
@@ -35,6 +36,8 @@ class AuditCommand extends Command
     public function __construct(
         private readonly CollectionFactory $collectionFactory,
         private readonly LabelValidator $labelValidator,
+        private readonly Config $config,
+        private readonly Resolver $resolver,
         private readonly StoreManagerInterface $storeManager,
         private readonly State $appState,
         ?string $name = null
@@ -45,7 +48,7 @@ class AuditCommand extends Command
     protected function configure(): void
     {
         $this->setName(self::NAME)
-            ->setDescription('Lists simple products with incomplete or invalid EU GARAN label data')
+            ->setDescription('Lists products with incomplete or invalid EU GARAN label data')
             ->addOption(
                 self::OPTION_STORE,
                 null,
@@ -112,11 +115,14 @@ class AuditCommand extends Command
         do {
             $pageCount = 0;
             foreach ($this->createPage($storeId, $lastId) as $product) {
-                /** @var DataObject $product */
+                /** @var Product $product */
                 $pageCount++;
                 $lastId = (int) $product->getId();
+                // Through the resolver, so the audit judges the same values the storefront would print:
+                // parent values of a variant and the configured fallbacks included.
+                $resolved = $this->resolver->resolveValues($product, $storeId);
                 $values = array_map(
-                    fn (string $code): string => $this->labelValidator->normalizeText($product->getData($code)),
+                    fn (string $code): string => $this->labelValidator->normalizeText($resolved[$code] ?? null),
                     Attributes::ALL
                 );
                 if (implode('', $values) === '') {
@@ -140,14 +146,13 @@ class AuditCommand extends Command
     }
 
     /**
-     * Next page of simple products with at least one GARAN value, keyset-paginated by entity ID.
+     * Next page of products with at least one GARAN value, keyset-paginated by entity ID.
      */
     private function createPage(int $storeId, int $afterId): Collection
     {
         $collection = $this->collectionFactory->create();
         $collection->setStoreId($storeId);
         $collection->addAttributeToSelect(Attributes::ALL)
-            ->addAttributeToFilter('type_id', ProductType::TYPE_SIMPLE)
             ->addAttributeToFilter('entity_id', ['gt' => $afterId])
             ->addAttributeToFilter(
                 array_map(
@@ -160,6 +165,11 @@ class AuditCommand extends Command
             ->setOrder('entity_id', Collection::SORT_ORDER_ASC)
             ->setPageSize(self::PAGE_SIZE)
             ->setCurPage(1);
+
+        $excluded = $this->config->getExcludedProductTypes($storeId);
+        if ($excluded !== []) {
+            $collection->addAttributeToFilter('type_id', ['nin' => $excluded]);
+        }
 
         return $collection;
     }

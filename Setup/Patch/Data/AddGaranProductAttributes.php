@@ -9,7 +9,6 @@ use CopeX\WarrantyLabel\Model\Attribute\Backend\LabelText;
 use CopeX\WarrantyLabel\Model\Attribute\Backend\TermsUrl;
 use CopeX\WarrantyLabel\Model\Garan\Attributes;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
@@ -88,7 +87,7 @@ class AddGaranProductAttributes implements DataPatchInterface, PatchRevertableIn
         $common = [
             'input' => 'text',
             'group' => self::GROUP_NAME,
-            'apply_to' => ProductType::TYPE_SIMPLE,
+            'apply_to' => '',
             'visible' => true,
             'required' => false,
             'user_defined' => true,
@@ -112,7 +111,7 @@ class AddGaranProductAttributes implements DataPatchInterface, PatchRevertableIn
                 'type' => 'varchar',
                 'label' => 'GARAN Brand',
                 'backend' => LabelText::class,
-                'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
+                'global' => ScopedAttributeInterface::SCOPE_STORE,
                 'sort_order' => 10,
                 'note' => 'Brand of the manufacturer guarantee as printed on the EU GARAN label.',
             ],
@@ -120,7 +119,7 @@ class AddGaranProductAttributes implements DataPatchInterface, PatchRevertableIn
                 'type' => 'varchar',
                 'label' => 'GARAN Model Identifier',
                 'backend' => LabelText::class,
-                'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
+                'global' => ScopedAttributeInterface::SCOPE_STORE,
                 'sort_order' => 20,
                 'note' => 'Model identifier as printed on the EU GARAN label.',
             ],
@@ -128,7 +127,7 @@ class AddGaranProductAttributes implements DataPatchInterface, PatchRevertableIn
                 'type' => 'decimal',
                 'label' => 'GARAN Guarantee Duration (Years)',
                 'backend' => Duration::class,
-                'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
+                'global' => ScopedAttributeInterface::SCOPE_STORE,
                 'sort_order' => 30,
                 'note' => 'Whole or half years, more than 2, e.g. 3 or 4,5. '
                     . 'Leave empty if there is no free manufacturer guarantee on the whole product.',

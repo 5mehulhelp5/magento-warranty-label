@@ -27,6 +27,11 @@
                 <checkout>direct</checkout>
                 <success>direct</success>
                 <email>1</email>
+                <brand_source>garan_attribute</brand_source>
+                <brand_attribute/>
+                <brand_value/>
+                <model_source>garan_attribute</model_source>
+                <terms_url/>
                 <attach_terms>0</attach_terms>
                 <terms_file/>
                 <terms_filename>Garantiebedingungen.pdf</terms_filename>

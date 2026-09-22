@@ -6,10 +6,14 @@ namespace CopeX\WarrantyLabel\Test\Unit\Console\Command;
 
 use ArrayIterator;
 use CopeX\WarrantyLabel\Console\Command\AuditCommand;
+use CopeX\WarrantyLabel\Model\Config;
 use CopeX\WarrantyLabel\Model\Garan\Attributes;
 use CopeX\WarrantyLabel\Model\Garan\DurationParser;
 use CopeX\WarrantyLabel\Model\Garan\FieldFitChecker;
 use CopeX\WarrantyLabel\Model\Garan\LabelValidator;
+use CopeX\WarrantyLabel\Model\Garan\Resolver;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Framework\App\Area;
@@ -57,9 +61,23 @@ class AuditCommandTest extends TestCase
             }
         );
 
+        $config = $this->createMock(Config::class);
+        $config->method('getExcludedProductTypes')->willReturn([]);
+
+        // The fallbacks themselves are covered by ResolverTest; here the product's own values are what counts.
+        $resolver = $this->createMock(Resolver::class);
+        $resolver->method('resolveValues')->willReturnCallback(
+            static fn (ProductInterface $product): array => array_combine(
+                Attributes::ALL,
+                array_map(static fn (string $code): mixed => $product->getData($code), Attributes::ALL)
+            )
+        );
+
         $command = new AuditCommand(
             $this->collectionFactory,
             new LabelValidator(new DurationParser(), $this->fieldFitChecker),
+            $config,
+            $resolver,
             $this->storeManager,
             $appState
         );
@@ -206,14 +224,20 @@ class AuditCommandTest extends TestCase
         ?string $model,
         ?string $duration,
         ?string $termsUrl
-    ): DataObject {
-        return new DataObject([
-            'id' => $id,
-            'sku' => $sku,
-            Attributes::BRAND => $brand,
-            Attributes::MODEL_IDENTIFIER => $model,
-            Attributes::DURATION_YEARS => $duration,
-            Attributes::TERMS_URL => $termsUrl,
-        ]);
+    ): Product {
+        $product = $this->getMockBuilder(Product::class)->disableOriginalConstructor()->getMock();
+        $product->method('getData')->willReturnCallback(
+            static fn (string $key): mixed => [
+                'id' => $id,
+                'sku' => $sku,
+                Attributes::BRAND => $brand,
+                Attributes::MODEL_IDENTIFIER => $model,
+                Attributes::DURATION_YEARS => $duration,
+                Attributes::TERMS_URL => $termsUrl,
+            ][$key] ?? null
+        );
+        $product->method('getId')->willReturn($id);
+
+        return $product;
     }
 }

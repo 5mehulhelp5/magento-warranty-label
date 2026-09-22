@@ -340,7 +340,17 @@ Triggers are bound when the page loads. An element a script of your own inserts 
 - **Product Page** — *Default: Nested.*
 - **Checkout (before Place Order)** — *Default: Direct.* The label appears in two places: on the individual item in the order summary, and collected inside the selected payment method directly above the place-order button. The second position matters on mobile, where the order summary is collapsed.
 - **Checkout Success Page** — *Default: Direct.*
-- **Order Confirmation Email** — *Default: Direct.*
+- **Order Confirmation Email** — *Default: Yes.*
+- **Brand Comes From** — where the brand comes from when the product carries no `GARAN Brand` of its own. *Default: GARAN Brand attribute of the product.*
+  - *GARAN Brand attribute of the product* — the GARAN attribute only.
+  - *Another product attribute* — any other product attribute, selected below in **Brand Product Attribute** (every text, textarea and select attribute is offered, e.g. `manufacturer`). For select attributes the option label is used, not the option id.
+  - *Fixed value below* — a fixed value from the **Brand** field, useful for single-brand shops.
+- **Model Identifier Comes From** — where the model identifier comes from when the product carries no `GARAN Model Identifier` of its own. *Default: GARAN Model Identifier attribute of the product.* The alternative *Product name* uses the product name.
+- **Guarantee Terms URL** — one address for every product without its own. *Default: empty.*
+
+All three fields only fill in **empty** product values. Whatever the product carries always wins.
+
+> **Careful with long product names.** Brand and model identifier share one line on the label. A value that is too long is not shrunk but rejected — no label appears at all, with no error in the storefront. After switching to *Product name*, spot-check with `bin/magento copex:warranty-label:audit --store=<id>`; the reason is reported as `too_long`.
 
 The remaining fields of the group concern the attachment and are described in chapter 6.
 
@@ -354,13 +364,13 @@ The remaining fields of the group concern the attachment and are described in ch
 
 The module creates no guarantee data. It only displays what you maintain.
 
-On installation, the group **EU GARAN Guarantee** is added to every attribute set, holding four attributes. They apply to **simple products only**, because the model identifier belongs to the specific variant rather than to the configurable parent.
+On installation, the group **EU GARAN Guarantee** is added to every attribute set, holding four attributes. They can be maintained on **every product type** and apply per **store view**, so brand and terms may differ per language.
 
 | Attribute | Scope | Meaning |
 |---|---|---|
-| **GARAN Brand** | global | The brand as printed on the label. |
-| **GARAN Model Identifier** | global | The model identifier as printed on the label. |
-| **GARAN Guarantee Duration (Years)** | global | Whole or half years, more than 2, e.g. `3` or `4,5`. Leave empty when there is no free producer guarantee on the whole product. |
+| **GARAN Brand** | store view | The brand as printed on the label. |
+| **GARAN Model Identifier** | store view | The model identifier as printed on the label. |
+| **GARAN Guarantee Duration (Years)** | store view | Whole or half years, more than 2, e.g. `3` or `4,5`. Leave empty when there is no free producer guarantee on the whole product. |
 | **GARAN Guarantee Terms URL** | store view | Full `http://` or `https://` address of the guarantee terms in the language of the storefront. |
 
 A label appears only when **all four values are present and valid**. If one is missing, the module displays nothing — it never shows an incomplete label.
@@ -386,9 +396,12 @@ If even one of these does not hold, no label may be set. Leave the duration empt
 
 On configurable products the values belong to the selected variant. The module therefore shows
 
-- **no** label on the configurable parent,
 - **no** label while no variant has been selected,
 - and swaps the label as soon as the customer selects a different variant.
+
+**Inheritance.** When the variants differ only in size or colour, there is no need to maintain the four values on each of them: enter them on the configurable parent. Every variant whose own field is empty takes the parent's value. A value maintained on the child always wins.
+
+If the parent itself carries complete values, it shows a label on its own product page too — intended when all variants share the same guarantee. To keep the parent without one, leave at least one field empty there.
 
 On bundle products all contained items are taken into account.
 
@@ -430,7 +443,7 @@ The attachment does not replace the link on the label. Both are required: the li
 
 ## 7 Data audit
 
-The following command lists all simple products whose GARAN data is incomplete or invalid and which therefore show no label:
+The following command lists all products whose GARAN data is incomplete or invalid and which therefore show no label:
 
 ```bash
 bin/magento copex:warranty-label:audit

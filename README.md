@@ -98,7 +98,7 @@ can therefore show the English notice.
 
 ## Product data for GARAN
 
-Four EAV attributes are added to **simple products only**, because the model identifier belongs to the variant:
+Four EAV attributes are added to **every product type**, with **store view** scope:
 
 | Attribute | Notes |
 |---|---|
@@ -107,8 +107,21 @@ Four EAV attributes are added to **simple products only**, because the model ide
 | `garan_duration_years` | Accepts `4,5` and `4.5`; must be > 2, <= 99 and a multiple of 0.5 |
 | `garan_terms_url` | Must be a valid http(s) URL; without it no label is rendered |
 
-A label appears only when all four are valid. Configurable products resolve through the selected child — never the
-parent, and never before a variant is chosen. Bundles resolve across all children.
+A label appears only when all four are valid. Configurable products resolve through the selected child, never before
+a variant is chosen; a child whose field is empty inherits it from its configurable parent. Bundles resolve across all
+children.
+
+**Fallbacks for empty fields.** The product always wins; these only fill a gap:
+
+| Setting | Effect |
+|---|---|
+| `garan/brand_source` | `garan_attribute` (default), `product_attribute` (any text/textarea/select attribute, chosen in `garan/brand_attribute`, resolved to its option label), or `config_value` (the fixed `garan/brand_value`) |
+| `garan/model_source` | `garan_attribute` (default) or `product_name` |
+| `garan/terms_url` | One URL for every product without its own |
+
+`model_source = product_name` is width-validated like any other value: a name too long for the shared brand/model line
+is rejected, not shrunk, and the product gets **no label** with the audit reason `too_long`. Spot-check with
+`bin/magento copex:warranty-label:audit --store=<id>`.
 
 **Half-year durations:** at the official font size only whole years 3–99 and `7,5` fit in front of the calendar icon.
 Other `,5` values are accepted as data but produce **no label** and the audit reason `duration_does_not_fit`, because
