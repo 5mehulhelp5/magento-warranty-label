@@ -53,6 +53,8 @@ define([
                 isNested: data.mode === 'nested' || data.mode === 'dialog_only',
                 hasTrigger: data.mode === 'nested',
                 infoUrl: data.infoUrl,
+                linkTarget: data.linkNewTab === true ? '_blank' : null,
+                linkRel: data.linkNewTab === true ? 'noopener' : null,
                 infoLabel: data.infoLabel,
                 termsLabel: data.termsLabel,
                 closeLabel: data.closeLabel,

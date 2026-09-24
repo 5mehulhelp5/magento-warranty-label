@@ -103,6 +103,11 @@ class Notice implements ArgumentInterface
         return $this->noticeRenderer->getLinkLabel();
     }
 
+    public function isLinkNewTab(): bool
+    {
+        return $this->config->isLinkNewTab();
+    }
+
     /**
      * The graphic is never rendered narrower than this width.
      */

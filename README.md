@@ -59,7 +59,7 @@ The module is **off by default**. `copex_warrantylabel/general/enabled = 0` is a
 
 | Group | Purpose |
 |---|---|
-| General Settings | Kill switch, label language, nested button text, notice alt text, minimum notice width, product types without a legal guarantee |
+| General Settings | Kill switch, label language, Your Europe link in a new tab or the same one, nested button text, notice alt text, minimum notice width, product types without a legal guarantee |
 | Legal Guarantee Notice Placements | Display mode per placement: header, footer, category, search, cart, checkout, success page; yes/no for the order confirmation email |
 | EU GARAN Label | Kill switch, display mode per placement, yes/no for the email, and the guarantee terms attachment |
 

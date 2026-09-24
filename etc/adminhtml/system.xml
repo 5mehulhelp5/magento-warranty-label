@@ -23,6 +23,12 @@
                     <source_model>CopeX\WarrantyLabel\Model\Source\Language</source_model>
                     <comment>Selects the official notice version and the Your Europe link. Set it explicitly when the store locale does not match the language of the store content.</comment>
                 </field>
+                <field id="link_new_tab" translate="label comment" type="select" sortOrder="25"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Open Your Europe Link in a New Tab</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Applies to the europa.eu/youreurope link below the notice and next to the GARAN label. "No" opens it in the same tab.</comment>
+                </field>
                 <field id="trigger_text" translate="label comment" type="text" sortOrder="30"
                        showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Nested Display Button Text</label>

@@ -79,6 +79,7 @@ class ConfigProvider implements ConfigProviderInterface
                 'triggerText' => $this->noticeRenderer->getTriggerText($storeId),
                 'linkUrl' => $this->noticeRenderer->getLinkUrl($storeId),
                 'linkLabel' => $this->noticeRenderer->getLinkLabel($storeId),
+                'linkNewTab' => $this->config->isLinkNewTab($storeId),
                 'minWidthPx' => $this->noticeRenderer->getMinWidthPx($storeId),
                 'dialogLabel' => $this->noticeRenderer->getDialogLabel(),
                 'closeLabel' => (string) __('Close'),
@@ -108,6 +109,7 @@ class ConfigProvider implements ConfigProviderInterface
             'triggerText' => '',
             'linkUrl' => '',
             'linkLabel' => '',
+            'linkNewTab' => false,
             'minWidthPx' => 0,
             'dialogLabel' => '',
             'closeLabel' => '',
@@ -131,6 +133,7 @@ class ConfigProvider implements ConfigProviderInterface
                 ? new stdClass()
                 : $this->getGaranItems($quote, $mode === DisplayMode::NESTED, $storeId),
             'infoUrl' => LanguageRegistry::GARAN_INFO_URL,
+            'linkNewTab' => $this->config->isLinkNewTab($storeId),
             'title' => (string) __('Producer guarantee (EU GARAN label)'),
             'infoLabel' => (string) __('Information on the EU guarantee label'),
             'termsLabel' => (string) __('Guarantee terms and conditions'),

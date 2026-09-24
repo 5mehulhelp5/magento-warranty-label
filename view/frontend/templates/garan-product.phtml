@@ -22,6 +22,7 @@ $alt = $label['alt'] ?? '';
 $termsUrl = $label['termsUrl'] ?? '';
 $pngFull = $label['pngFull'] ?? '';
 $pngNested = $label['pngNested'] ?? '';
+$linkTarget = $viewModel->isLinkNewTab() ? ' target="_blank" rel="noopener"' : '';
 ?>
 <div class="copex-wl copex-wl--garan-product copex-wl--<?= $isNested ? 'nested' : 'direct' ?>"
      data-mage-init="<?= $escaper->escapeHtmlAttr($viewModel->getMageInit($variants)) ?>">
@@ -76,7 +77,7 @@ $pngNested = $label['pngNested'] ?? '';
                 <?= $pngFull !== '' ? 'hidden' : '' ?>><?= $escaper->escapeHtml($alt) ?></p>
         </div>
         <p class="copex-wl-garan__links">
-            <a class="copex-wl-link" href="<?= $escaper->escapeUrl($viewModel->getInfoUrl()) ?>">
+            <a class="copex-wl-link" href="<?= $escaper->escapeUrl($viewModel->getInfoUrl()) ?>"<?= /* @noEscape */ $linkTarget ?>>
                 <?= $escaper->escapeHtml(__('Information on the EU guarantee label')) ?>
             </a>
             <a class="copex-wl-link"

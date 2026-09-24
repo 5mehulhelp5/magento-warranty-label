@@ -119,10 +119,11 @@ Ein Feld, neben dem **Use Default** oder **Use system value** angehakt ist, übe
 
 1. Stellen Sie **Enable Module** auf *Yes*.
 2. Wählen Sie bei **Label Language** die Sprache, in der die Inhalte dieser Storefront verfasst sind. *Automatic* genügt, wenn die Locale des Store Views zur Sprache passt. Bei einer englischsprachigen Storefront auf deutscher Locale wählen Sie ausdrücklich *English*.
-3. Lassen Sie **Nested Display Button Text** und **Notice Alternative Text** zunächst leer. Das Modul verwendet dann die übersetzten Standardtexte, im Deutschen „Ihre gesetzlichen Gewährleistungsrechte". Tragen Sie nur etwas ein, wenn Ihr Shop die Kunden duzt oder eine andere Formulierung verwendet.
-4. Lassen Sie **Minimum Notice Width (CSS px)** auf *420*.
-5. Prüfen Sie **Product Types Without Legal Guarantee Notice**. Verkaufen Sie Gutscheine oder Downloads über einen eigenen Produkttyp, der in der Liste nicht markiert ist, markieren Sie ihn zusätzlich (Strg-Klick).
-6. Klicken Sie auf **Save Config**.
+3. Entscheiden Sie bei **Open Your Europe Link in a New Tab**, ob der Link zur EU-Seite in einem neuen Tab öffnen soll. *No* lässt ihn im selben Tab öffnen.
+4. Lassen Sie **Nested Display Button Text** und **Notice Alternative Text** zunächst leer. Das Modul verwendet dann die übersetzten Standardtexte, im Deutschen „Ihre gesetzlichen Gewährleistungsrechte". Tragen Sie nur etwas ein, wenn Ihr Shop die Kunden duzt oder eine andere Formulierung verwendet.
+5. Lassen Sie **Minimum Notice Width (CSS px)** auf *420*.
+6. Prüfen Sie **Product Types Without Legal Guarantee Notice**. Verkaufen Sie Gutscheine oder Downloads über einen eigenen Produkttyp, der in der Liste nicht markiert ist, markieren Sie ihn zusätzlich (Strg-Klick).
+7. Klicken Sie auf **Save Config**.
 
 ### Schritt 3: Die Platzierungen festlegen
 
@@ -276,6 +277,7 @@ Alle Einstellungen liegen unter *Stores → Configuration → Sales → EU Guara
 
 - **Enable Module** — der Hauptschalter. Steht er auf *No*, erscheint in diesem Geltungsbereich weder ein Hinweis noch ein Label, unabhängig von allen anderen Einstellungen. *Standard: No.*
 - **Label Language** — wählt die amtliche Sprachfassung des Hinweises und das Ziel des Links. *Automatic (from store locale)* leitet die Sprache aus der Store-Locale ab. Setzen Sie den Wert ausdrücklich, wenn die Locale nicht der Sprache Ihrer Shop-Inhalte entspricht — etwa bei einer englischsprachigen Storefront, die technisch auf `de_AT` läuft. Lässt sich keine Sprache bestimmen, greift Englisch.
+- **Open Your Europe Link in a New Tab** — ob der Link auf `europa.eu/youreurope/…` unter dem Hinweis und neben dem GARAN-Label in einem neuen Browser-Tab geöffnet wird. *Standard: No*, der Link öffnet im selben Tab. Betrifft nur den Shop; in der E-Mail entscheidet das E-Mail-Programm.
 - **Nested Display Button Text** — die Beschriftung des Buttons, der den Hinweis in der geschachtelten Anzeige öffnet. Leer lassen für den übersetzten Standardtext „Ihre gesetzlichen Gewährleistungsrechte".
 - **Notice Alternative Text** — der Alternativtext der Grafik für Screenreader und für E-Mail-Programme, die Bilder blockieren. Leer lassen für den übersetzten Standardtext.
 - **Minimum Notice Width (CSS px)** — die Grafik wird nie schmaler dargestellt als dieser Wert, damit ihr QR-Code scanbar bleibt. *Standard: 420.* Verkleinern Sie ihn nicht ohne Not: Bei geringerer Breite unterschreitet der QR-Code die geforderte Mindestgröße.

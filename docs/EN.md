@@ -118,10 +118,11 @@ Open the group **General Settings**.
 
 1. Set **Enable Module** to *Yes*.
 2. For **Label Language**, choose the language the content of this storefront is written in. *Automatic* is enough when the locale of the store view matches that language. For an English storefront on a German locale, choose *English* explicitly.
-3. Leave **Nested Display Button Text** and **Notice Alternative Text** empty for now. The module then uses the translated defaults, in English "Your legal guarantee rights". Enter a text only if your shop uses a different wording.
-4. Leave **Minimum Notice Width (CSS px)** at *420*.
-5. Check **Product Types Without Legal Guarantee Notice**. If you sell vouchers or downloads through a product type of their own that is not highlighted in the list, highlight it as well (Ctrl-click).
-6. Click **Save Config**.
+3. Decide with **Open Your Europe Link in a New Tab** whether the link to the EU page opens in a new tab. *No* keeps it in the same tab.
+4. Leave **Nested Display Button Text** and **Notice Alternative Text** empty for now. The module then uses the translated defaults, in English "Your legal guarantee rights". Enter a text only if your shop uses a different wording.
+5. Leave **Minimum Notice Width (CSS px)** at *420*.
+6. Check **Product Types Without Legal Guarantee Notice**. If you sell vouchers or downloads through a product type of their own that is not highlighted in the list, highlight it as well (Ctrl-click).
+7. Click **Save Config**.
 
 ### Step 3: Decide on the placements
 
@@ -275,6 +276,7 @@ All settings live under *Stores → Configuration → Sales → EU Guarantee Not
 
 - **Enable Module** — the main switch. Set to *No*, neither notice nor label appears in this scope, whatever the other settings say. *Default: No.*
 - **Label Language** — selects the official language version of the notice and the target of the link. *Automatic (from store locale)* derives the language from the store locale. Set it explicitly when the locale does not match the language of your shop content — for example an English storefront that technically runs on `de_AT`. If no language can be determined, English is used.
+- **Open Your Europe Link in a New Tab** — whether the `europa.eu/youreurope/…` link below the notice and next to the GARAN label opens in a new browser tab. *Default: No*, the link opens in the same tab. Storefront only; in the email the mail client decides.
 - **Nested Display Button Text** — the caption of the button that opens the notice in nested mode. Leave empty for the translated default "Your legal guarantee rights".
 - **Notice Alternative Text** — the alternative text of the graphic for screen readers and for email clients that block images. Leave empty for the translated default.
 - **Minimum Notice Width (CSS px)** — the graphic is never rendered narrower than this, so its QR code stays scannable. *Default: 420.* Do not lower it without good reason: below that width the QR code falls under the required minimum size.

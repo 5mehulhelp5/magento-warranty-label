@@ -42,6 +42,22 @@ define([
         },
 
         /**
+         * Knockout drops the attribute for null, so the link stays plain unless the setting is on.
+         *
+         * @return {String|null}
+         */
+        linkTarget: function () {
+            return notice.linkNewTab === true ? '_blank' : null;
+        },
+
+        /**
+         * @return {String|null}
+         */
+        linkRel: function () {
+            return notice.linkNewTab === true ? 'noopener' : null;
+        },
+
+        /**
          * @return {Number}
          */
         getMinWidth: function () {

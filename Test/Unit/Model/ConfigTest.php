@@ -175,6 +175,14 @@ class ConfigTest extends TestCase
         self::assertSame(420, $this->config->getMinWidthPx(1));
     }
 
+    public function testLinkOpensInTheSameTabUnlessConfigured(): void
+    {
+        self::assertFalse($this->config->isLinkNewTab(1));
+
+        $this->values = [Config::XML_PATH_LINK_NEW_TAB => '1'];
+        self::assertTrue($this->config->isLinkNewTab(1));
+    }
+
     public function testTextsAreTrimmedAndEmptyWhenUnset(): void
     {
         $this->values = [Config::XML_PATH_TRIGGER_TEXT => '  Deine Gewährleistungsrechte '];

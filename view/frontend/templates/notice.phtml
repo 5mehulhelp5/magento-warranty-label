@@ -14,6 +14,7 @@ $isNested = $viewModel->isNested($placement);
 $hasTrigger = $viewModel->hasTrigger($placement);
 $dialogId = $viewModel->getDialogId($placement);
 $minWidth = $viewModel->getMinWidthPx();
+$linkTarget = $viewModel->isLinkNewTab() ? ' target="_blank" rel="noopener"' : '';
 $cssClass = 'copex-wl copex-wl--notice copex-wl--' . $placement . ' copex-wl--' . ($isNested ? 'nested' : 'direct');
 ?>
 <div class="<?= $escaper->escapeHtmlAttr($cssClass) ?>"
@@ -47,7 +48,7 @@ $cssClass = 'copex-wl copex-wl--notice copex-wl--' . $placement . ' copex-wl--' 
              height="<?= (int) $viewModel->getImageHeightPx() ?>"
              loading="lazy">
     </div>
-    <a class="copex-wl-link" href="<?= $escaper->escapeUrl($viewModel->getLinkUrl()) ?>">
+    <a class="copex-wl-link" href="<?= $escaper->escapeUrl($viewModel->getLinkUrl()) ?>"<?= /* @noEscape */ $linkTarget ?>>
         <?= $escaper->escapeHtml($viewModel->getLinkLabel()) ?>
     </a>
     <?php if ($isNested): ?>

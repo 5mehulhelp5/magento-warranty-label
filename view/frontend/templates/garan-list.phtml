@@ -13,6 +13,7 @@ if ($entries === []) {
 $isNested = $viewModel->isNested();
 $hasTrigger = $viewModel->hasTrigger();
 $infoUrl = $viewModel->getInfoUrl();
+$linkTarget = $viewModel->isLinkNewTab() ? ' target="_blank" rel="noopener"' : '';
 ?>
 <section class="copex-wl copex-wl--garan-list"
          aria-labelledby="copex-wl-garan-list-title"
@@ -72,7 +73,7 @@ $infoUrl = $viewModel->getInfoUrl();
                             <?php endif; ?>
                         </div>
                         <p class="copex-wl-garan__links">
-                            <a class="copex-wl-link" href="<?= $escaper->escapeUrl($infoUrl) ?>">
+                            <a class="copex-wl-link" href="<?= $escaper->escapeUrl($infoUrl) ?>"<?= /* @noEscape */ $linkTarget ?>>
                                 <?= $escaper->escapeHtml(__('Information on the EU guarantee label')) ?>
                             </a>
                             <?php if ($label['termsUrl'] !== ''): ?>

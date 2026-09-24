@@ -90,6 +90,16 @@ class GaranProduct implements ArgumentInterface
     }
 
     /**
+     * Whether the info link opens in a new tab.
+     *
+     * @return bool
+     */
+    public function isLinkNewTab(): bool
+    {
+        return $this->config->isLinkNewTab();
+    }
+
+    /**
      * Label of a qualifying simple product: label values plus pngFull and pngNested ('' = text fallback / direct).
      *
      * @param ProductInterface $product

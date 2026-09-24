@@ -158,6 +158,7 @@ class GaranListTest extends TestCase
         $this->assertSame(DisplayMode::NESTED, $this->viewModel->getMode());
         $this->assertTrue($this->viewModel->isNested());
         $this->assertSame(LanguageRegistry::GARAN_INFO_URL, $this->viewModel->getInfoUrl());
+        $this->assertFalse($this->viewModel->isLinkNewTab());
         $this->assertSame(
             self::ACCESSIBLE_LABEL,
             $this->viewModel->getAccessibleLabel($this->createLabel('Kettle', ''))

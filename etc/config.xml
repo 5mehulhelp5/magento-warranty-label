@@ -6,6 +6,7 @@
             <general>
                 <enabled>0</enabled>
                 <language/>
+                <link_new_tab>0</link_new_tab>
                 <trigger_text/>
                 <alt_text/>
                 <min_width_px>420</min_width_px>

@@ -17,6 +17,7 @@ class Config
 {
     public const XML_PATH_ENABLED = 'copex_warrantylabel/general/enabled';
     public const XML_PATH_LANGUAGE = 'copex_warrantylabel/general/language';
+    public const XML_PATH_LINK_NEW_TAB = 'copex_warrantylabel/general/link_new_tab';
     public const XML_PATH_TRIGGER_TEXT = 'copex_warrantylabel/general/trigger_text';
     public const XML_PATH_ALT_TEXT = 'copex_warrantylabel/general/alt_text';
     public const XML_PATH_MIN_WIDTH_PX = 'copex_warrantylabel/general/min_width_px';
@@ -104,6 +105,14 @@ class Config
 
         return $this->languageRegistry->fromLocale($this->getString(self::XML_PATH_LOCALE, $storeId))
             ?? LanguageRegistry::FALLBACK_LANGUAGE;
+    }
+
+    /**
+     * Whether the Your Europe links (notice link and GARAN info link) open in a new browser tab.
+     */
+    public function isLinkNewTab(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_LINK_NEW_TAB, ScopeInterface::SCOPE_STORE, $storeId);
     }
 
     /**

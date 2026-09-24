@@ -134,6 +134,16 @@ class GaranList implements ArgumentInterface
     }
 
     /**
+     * Whether the info link opens in a new tab.
+     *
+     * @return bool
+     */
+    public function isLinkNewTab(): bool
+    {
+        return $this->config->isLinkNewTab();
+    }
+
+    /**
      * Accessible text of a label.
      *
      * @param GaranLabelDataInterface $label

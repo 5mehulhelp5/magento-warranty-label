@@ -22,6 +22,8 @@
 "Kill switch: ""No"" removes every notice and label output for this scope.","Notabschaltung: „Nein“ entfernt jede Hinweis- und Label-Ausgabe für diesen Geltungsbereich."
 "Label Language","Sprache des Hinweises"
 "Selects the official notice version and the Your Europe link. Set it explicitly when the store locale does not match the language of the store content.","Wählt die offizielle Sprachfassung des Hinweises und den Your-Europe-Link. Explizit setzen, wenn die Store-Locale nicht der Sprache der Shop-Inhalte entspricht."
+"Open Your Europe Link in a New Tab","Your-Europe-Link in neuem Tab öffnen"
+"Applies to the europa.eu/youreurope link below the notice and next to the GARAN label. ""No"" opens it in the same tab.","Gilt für den europa.eu/youreurope-Link unter dem Hinweis und neben dem GARAN-Label. „Nein“ öffnet ihn im selben Tab."
 "Nested Display Button Text","Button-Text bei geschachtelter Anzeige"
 "Text of the button that opens the notice in nested mode. Leave empty for the translated default ""Your legal guarantee rights"".","Text des Buttons, der den Hinweis im geschachtelten Modus öffnet. Leer lassen für den übersetzten Standardtext „Ihre gesetzlichen Gewährleistungsrechte“."
 "Notice Alternative Text","Alternativtext des Hinweises"

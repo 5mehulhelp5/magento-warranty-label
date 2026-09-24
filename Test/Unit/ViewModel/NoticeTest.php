@@ -85,6 +85,13 @@ class NoticeTest extends TestCase
         $this->assertSame('europa.eu/youreurope/garantien', $this->viewModel->getLinkLabel());
     }
 
+    public function testLinkNewTabComesFromConfig(): void
+    {
+        $this->config->method('isLinkNewTab')->willReturn(true);
+
+        $this->assertTrue($this->viewModel->isLinkNewTab());
+    }
+
     public function testImageSizeKeepsA4AspectRatioAtMinimumWidth(): void
     {
         $this->noticeRenderer->method('getMinWidthPx')->willReturn(420);

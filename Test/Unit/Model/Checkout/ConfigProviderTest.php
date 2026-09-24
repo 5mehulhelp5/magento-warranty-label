@@ -84,6 +84,7 @@ class ConfigProviderTest extends TestCase
     {
         $this->givenModes(DisplayMode::NESTED, DisplayMode::OFF);
         $this->givenQuoteWithItems([1 => 'mageworx_giftcards', 2 => 'simple']);
+        $this->config->method('isLinkNewTab')->with(self::STORE_ID)->willReturn(true);
 
         $this->assertSame([
             'mode' => DisplayMode::NESTED,
@@ -93,6 +94,7 @@ class ConfigProviderTest extends TestCase
             'triggerText' => 'Trigger',
             'linkUrl' => 'https://europa.eu/youreurope/garantien',
             'linkLabel' => 'europa.eu/youreurope/garantien',
+            'linkNewTab' => true,
             'minWidthPx' => 420,
             'dialogLabel' => 'EU legal guarantee notice',
             'closeLabel' => 'Close',
@@ -156,6 +158,7 @@ class ConfigProviderTest extends TestCase
         ], $decoded['itemsByQuoteItemId'][11][0]);
         $this->assertSame(DisplayMode::NESTED, $decoded['mode']);
         $this->assertSame(LanguageRegistry::GARAN_INFO_URL, $decoded['infoUrl']);
+        $this->assertFalse($decoded['linkNewTab']);
         $this->assertSame('Producer guarantee (EU GARAN label)', $decoded['title']);
         $this->assertSame('Guarantee terms and conditions', $decoded['termsLabel']);
     }

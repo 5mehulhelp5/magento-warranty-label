@@ -25,7 +25,7 @@
         <!-- /ko -->
     </div>
     <p class="copex-wl-garan__links">
-        <a class="copex-wl-link" data-bind="attr: {href: infoUrl}, text: infoLabel"></a>
+        <a class="copex-wl-link" data-bind="attr: {href: infoUrl, target: linkTarget, rel: linkRel}, text: infoLabel"></a>
         <!-- ko if: termsUrl -->
         <a class="copex-wl-link" data-bind="attr: {href: termsUrl}, text: termsLabel"></a>
         <!-- /ko -->
@@ -42,7 +42,7 @@
     <!-- /ko -->
 </div>
 <p class="copex-wl-garan__links">
-    <a class="copex-wl-link" data-bind="attr: {href: infoUrl}, text: infoLabel"></a>
+    <a class="copex-wl-link" data-bind="attr: {href: infoUrl, target: linkTarget, rel: linkRel}, text: infoLabel"></a>
     <!-- ko if: termsUrl -->
     <a class="copex-wl-link" data-bind="attr: {href: termsUrl}, text: termsLabel"></a>
     <!-- /ko -->

@@ -4,6 +4,14 @@ All notable changes to `copex/module-warranty-label` are documented in this file
 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] – 2026-09-24
+
+### Added
+
+- **The Your Europe link can open in a new tab.**
+  `General Settings → Open Your Europe Link in a New Tab` adds `target="_blank" rel="noopener"` to the `europa.eu/youreurope/…` link below the notice and next to the GARAN label, in every storefront placement including the checkout. Default `No` keeps the link in the same tab, as before.
+  Email links are untouched: the mail client decides how they open.
+
 ## [1.3.0] – 2026-09-22
 
 Hyvä compatibility for the storefront placements, verified on a Hyvä storefront (Magento 2.4.8) with a simple and a configurable product.

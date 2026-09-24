@@ -20,7 +20,7 @@
             <img class="copex-wl-notice__image"
                  data-bind="attr: {src: notice.svgUrl, alt: notice.altText, width: getMinWidth(), height: getImageHeight()}"/>
         </div>
-        <a class="copex-wl-link" data-bind="attr: {href: notice.linkUrl}, text: notice.linkLabel"></a>
+        <a class="copex-wl-link" data-bind="attr: {href: notice.linkUrl, target: linkTarget(), rel: linkRel()}, text: notice.linkLabel"></a>
     </dialog>
     <!-- /ko -->
     <!-- ko ifnot: isNested() -->
@@ -28,7 +28,7 @@
         <img class="copex-wl-notice__image"
              data-bind="attr: {src: notice.svgUrl, alt: notice.altText, width: getMinWidth(), height: getImageHeight()}"/>
     </div>
-    <a class="copex-wl-link" data-bind="attr: {href: notice.linkUrl}, text: notice.linkLabel"></a>
+    <a class="copex-wl-link" data-bind="attr: {href: notice.linkUrl, target: linkTarget(), rel: linkRel()}, text: notice.linkLabel"></a>
     <!-- /ko -->
 </div>
 <!-- /ko -->
